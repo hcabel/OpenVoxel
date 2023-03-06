@@ -8,3 +8,4 @@
 [submodule "Source/ThirdParty/imgui"]
 	path = Source/ThirdParty/imgui
 	url = git@github.com:hcabel/imgui.git
+	branch = docking
