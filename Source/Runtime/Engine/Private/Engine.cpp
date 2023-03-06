@@ -7,11 +7,6 @@
 
 #include <iostream>
 
-Engine::~Engine()
-{
-	std::cout << "Engine::~Engine()" << std::endl;
-}
-
 std::shared_ptr<Engine>& Engine::Get()
 {
 	static std::shared_ptr<Engine> instance = nullptr;
@@ -30,17 +25,13 @@ std::shared_ptr<Engine> Engine::CreateInstance()
 
 void Engine::Start()
 {
-	std::cout << "Engine::Start()" << std::endl;
-
+	m_State = EngineState::Type::Starting;
 	OnStart();
-	m_IsRequestToStop = false;
+	m_State = EngineState::Type::Running;
 	EngineLoop();
-
-	std::cout << "Engine::Start() - End" << std::endl;
 }
 
 void Engine::Stop()
 {
-	std::cout << "Engine::Stop()" << std::endl;
-	m_IsRequestToStop = true;
+	m_State = EngineState::Type::Stopping;
 }

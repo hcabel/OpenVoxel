@@ -26,5 +26,5 @@ void GameEngine::EngineLoop()
 
 bool GameEngine::IsEngineRequestedToStop()
 {
-	return (m_IsRequestToStop);
+	return (m_State == EngineState::Type::Stopping);
 }
