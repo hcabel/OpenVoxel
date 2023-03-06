@@ -27,6 +27,17 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
+
+# build
+build/
+intermediate/
+bin/
+bin-int/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+*.sln
+*.vcxproj*
+
