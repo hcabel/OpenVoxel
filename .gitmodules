@@ -1,6 +1,3 @@
-[submodule "Source/ThirdParty/imgui"]
-	path = Source/ThirdParty/imgui
-	url = git@github.com:hcabel/imgui.git
 [submodule "Source/ThirdParty/GLFW"]
 	path = Source/ThirdParty/GLFW
 	url = git@github.com:hcabel/glfw.git
