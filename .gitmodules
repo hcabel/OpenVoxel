@@ -1,0 +1,10 @@
+[submodule "Source/ThirdParty/imgui"]
+	path = Source/ThirdParty/imgui
+	url = git@github.com:hcabel/imgui.git
+[submodule "Source/ThirdParty/GLFW"]
+	path = Source/ThirdParty/GLFW
+	url = git@github.com:hcabel/glfw.git
+[submodule "Source/ThirdParty/glm"]
+	path = Source/ThirdParty/glm
+	url = https://github.com/g-truc/glm.git
+	branch = 0.9.8
