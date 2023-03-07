@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Logging/LoggingMacros.h"
 #include "EngineModule.h"
 #include "Engine.h"
+
+DECLARE_LOG_CATEGORY(GameEngineLog);
 
 class ENGINE_API GameEngine : public Engine
 {
