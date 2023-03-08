@@ -3,11 +3,14 @@
 #include "Logging/LoggingType.h"
 #include "Logging/Logger.h"
 
-#if OV_DEBUG
-# define OV_LOGGING
-#endif
+#ifdef NO_LOGGING
 
-#ifdef OV_LOGGING
+// Remove the logging macros if logging is disabled
+# define OV_LOG(LogVerbosity, Category, Format, ...)
+# define DECLARE_LOG_CATEGORY(CategoryName)
+# define DEFINE_LOG_CATEGORY(CategoryName)
+
+#else // NO_LOGGING
 
 # define OV_LOG(LogVerbosity, Category, Format, ...) \
 	static_assert(std::is_same<Verbosity::Type, decltype(LogVerbosity)>::value, "Verbosity must be a Verbosity::Type"); \
@@ -17,7 +20,4 @@
 # define DECLARE_LOG_CATEGORY(CategoryName) extern class LogCategory CategoryName;
 # define DEFINE_LOG_CATEGORY(CategoryName) LogCategory CategoryName(#CategoryName);
 
-#else
-// Remove the logging macros if logging is disabled
-
-#endif
+#endif // NO_LOGGING

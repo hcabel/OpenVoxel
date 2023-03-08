@@ -3,9 +3,52 @@
 #include "ProfilingTimer.h"
 #include "ProfilingPerFrame.h"
 
-#define OV_PROFILLING
+#ifdef NO_PROFILING
+// Clean up the macros
 
-#ifdef OV_PROFILLING
+# define TO_SECONDS(x)
+# define TO_MILLISECONDS(x)
+# define TO_MICROSECONDS(x)
+# define TO_NANOSECONDS(x)
+
+# define TO_FLOAT_SECONDS(x)
+# define TO_FLOAT_MILLISECONDS(x)
+# define TO_FLOAT_MICROSECONDS(x)
+
+# define TO_DOUBLE_SECONDS(x)
+# define TO_DOUBLE_MILLISECONDS(x)
+# define TO_DOUBLE_MICROSECONDS(x)
+
+# define START_NAMED_TIMER(Name)
+# define STOP_NAMED_TIMER(Name)
+# define TIMER_NAMED_RESULT(Name)
+# define TIMER_NAMED_ELAPSED(Name)
+
+# define START_TIMER
+# define STOP_TIMER
+# define TIMER_RESULT
+# define TIMER_ELAPSED
+
+# define RESET_ALL_PERFRAME_TIMER_DATA
+# define RESET_PERFRAME_TIMER_DATA(Category)
+
+# define GET_PERFRAME_DATA(Category)
+
+# define START_PERFRAME_TIMER(Category)
+# define STOP_PERFRAME_TIMER(Category)
+
+# define GET_PERFRAME_TIMER_DATA(Category)
+
+# define CREATE_SCOPE_NAMED_TIMER(Name, Lamda)
+# define CREATE_SCOPE_TIMER(Lamda)
+
+# define CREATE_PERFRAME_SCOPE_NAMED_TIMER(Name, Category)
+# define CREATE_PERFRAME_SCOPE_TIMER(Category)
+
+# define CREATE_SCOPE_NAMED_TIMER_CONSOLE(Name)
+# define CREATE_SCOPE_TIMER_CONSOLE
+
+#else // NO_PROFILING
 
 # define TO_SECONDS(x) (std::chrono::duration_cast<std::chrono::seconds>(x).count())
 # define TO_MILLISECONDS(x) (std::chrono::duration_cast<std::chrono::milliseconds>(x).count())
@@ -76,48 +119,4 @@
 /** Create a scope timer, but this one automatically print his data to the console when his done (end of scope) */
 # define CREATE_SCOPE_TIMER_CONSOLE CREATE_SCOPE_NAMED_TIMER_CONSOLE(__ScopeTimer)
 
-#else
-// Clean up the macros
-
-# define TO_SECONDS(x)
-# define TO_MILLISECONDS(x)
-# define TO_MICROSECONDS(x)
-# define TO_NANOSECONDS(x)
-
-# define TO_FLOAT_SECONDS(x)
-# define TO_FLOAT_MILLISECONDS(x)
-# define TO_FLOAT_MICROSECONDS(x)
-
-# define TO_DOUBLE_SECONDS(x)
-# define TO_DOUBLE_MILLISECONDS(x)
-# define TO_DOUBLE_MICROSECONDS(x)
-
-# define START_NAMED_TIMER(Name)
-# define STOP_NAMED_TIMER(Name)
-# define TIMER_NAMED_RESULT(Name)
-# define TIMER_NAMED_ELAPSED(Name)
-
-# define START_TIMER
-# define STOP_TIMER
-# define TIMER_RESULT
-# define TIMER_ELAPSED
-
-# define RESET_ALL_PERFRAME_TIMER_DATA
-# define RESET_PERFRAME_TIMER_DATA(Category)
-
-# define GET_PERFRAME_DATA(Category)
-
-# define START_PERFRAME_TIMER(Category)
-# define STOP_PERFRAME_TIMER(Category)
-
-# define GET_PERFRAME_TIMER_DATA(Category)
-
-# define CREATE_SCOPE_NAMED_TIMER(Name, Lamda)
-# define CREATE_SCOPE_TIMER(Lamda)
-
-# define CREATE_PERFRAME_SCOPE_NAMED_TIMER(Name, Category)
-# define CREATE_PERFRAME_SCOPE_TIMER(Category)
-
-# define CREATE_SCOPE_NAMED_TIMER_CONSOLE(Name)
-# define CREATE_SCOPE_TIMER_CONSOLE
-#endif
+#endif // NO PROFILING
