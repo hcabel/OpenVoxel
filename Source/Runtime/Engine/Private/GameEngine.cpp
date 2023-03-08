@@ -1,6 +1,5 @@
 #include "GameEngine.h"
-
-#include <iostream>
+#include "Profiling/ProfilingMacros.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
@@ -18,6 +17,8 @@ void GameEngine::EngineLoop()
 
 	while (IsEngineRequestedToStop() == false)
 	{
+		RESET_ALL_PERFRAME_TIMER_DATA;
+
 		Stop();
 	}
 
