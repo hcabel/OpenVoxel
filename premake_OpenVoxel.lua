@@ -9,15 +9,15 @@ project "OpenVoxel"
 	objdir ("intermediate/" .. outputdir .. "/%{prj.name}")
 
 	-- TODO: Handle other OS (currently windows only)
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 	systemversion "latest"
 
-	filter "configurations:Debug*"
+	filter "configurations:*Debug"
 		runtime "Debug"
 		symbols "on"
 
-	filter "configurations:Runtime*"
+	filter "configurations:*Release"
 		runtime "Release"
 		optimize "on"
 		symbols "off"
