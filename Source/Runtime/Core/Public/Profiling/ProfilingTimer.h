@@ -45,7 +45,7 @@ public:
 			{
 				// NanoSeconds to MilliSeconds
 				float time = elapsed.count() * 0.001f * 0.001f;
-				OV_LOG(Verbosity::Type::Verbose, ProfilingLog, "ScopeTimer: {} - {:.2f}ms", timerName, time);
+				OV_LOG(Verbose, ProfilingLog, "ScopeTimer: {} - {:.2f}ms", timerName, time);
 			})
 	{}
 

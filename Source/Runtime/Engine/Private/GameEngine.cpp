@@ -9,7 +9,7 @@ GameEngine::~GameEngine()
 
 void GameEngine::OnStart()
 {
-	OV_LOG(Verbosity::Type::Display, GameEngineLog, "Starting Engine");
+	OV_LOG(Display, GameEngineLog, "Starting Engine");
 }
 
 void GameEngine::EngineLoop()
