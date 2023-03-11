@@ -6,7 +6,9 @@
 #ifdef NO_LOGGING
 
 // Remove the logging macros if logging is disabled
-# define OV_LOG(LogVerbosity, Category, Format, ...)
+# define OV_LOG(LogVerbosity, Category, Format, ...) \
+	if (Verbosity::LogVerbosity == Verbosity::Fatal) \
+		assert(false);
 # define DECLARE_LOG_CATEGORY(CategoryName)
 # define DEFINE_LOG_CATEGORY(CategoryName)
 

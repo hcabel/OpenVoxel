@@ -5,20 +5,21 @@
 
 namespace Verbosity
 {
-	enum class Type : uint8_t
+	enum Type : uint8_t
 	{
 		Unknown = 0,
 
+		Fatal = 1,
 		/* Log errors onto file and console, in RED */
-		Error = 1,
+		Error = 2,
 		/* Log warnings onto file and console, in YELLOW */
-		Warning = 2,
+		Warning = 3,
 		/* Log info onto console, in WHITE */
-		Display = 3,
+		Display = 4,
 		/* Log info onto file and console, in WHITE */
-		Verbose = 4,
+		Verbose = 5,
 		/* Log info onto file only */
-		VeryVerbose = 5,
+		VeryVerbose = 6,
 	};
 
 	const char* ToString(Type Verbosity);
