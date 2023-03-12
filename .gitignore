@@ -40,5 +40,3 @@ bin-int/
 .vs/
 *.sln
 *.vcxproj*
-
-/Source/Runtime/Core/Public/MacrosHelper.h
