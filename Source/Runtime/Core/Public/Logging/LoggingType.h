@@ -23,6 +23,7 @@ namespace Verbosity
 	};
 
 	const char* ToString(Type Verbosity);
+	Type ToType(const std::string_view& verbosity);
 }
 
 class LogCategory
