@@ -8,9 +8,33 @@
 // placeholder for removed macro
 #define EMPTY_MACRO
 
-#define CHECK(x) assert(x)
+#define JOIN(Left, Right) JOIN_IMPL(Left, Right)
+#define JOIN_IMPL(Left, Right) Left##Right
 
+#define TO_STRING(x) TO_STRING_IMPL(x)
+#define TO_STRING_IMPL(x) #x
+
+/* Flow Control */
+
+#define FOR_EACH_LOOP(Variable, Array) for (auto& Variable : Array)
+#define IF(Condition) if (Condition)
+
+/* Check */
+
+#define CHECK(x) assert(x)
 #define STATIC_CHECK_TYPE(Type, Variable) static_assert(std::is_same<Type, decltype(Variable)>::value, #Variable " must be a " #Type)
 #define STATIC_CHECKF_TYPE(Type, Variable, Format, ...) static_assert(std::is_same<Type, decltype(Variable)>::value, std::format(Format, __VA_ARGS__))
 
-# define FOR_EACH_LOOP(Variable, Array) for (auto& Variable : Array)
+/* Platform macros */
+
+#if OV_PLATFORM_WINDOWS
+# define OV_PLATFORM_NAME Windows
+#elif OV_PLATFORM_MAC
+# define OV_PLATFORM_NAME Mac
+#elif OV_PLATFORM_LINUX
+# define OV_PLATFORM_MAME Linux
+#else
+# error OV_PLATFORM_NAME does not detect this operating system
+#endif
+
+#define PLATFORM_HEADER(Header) TO_STRING(JOIN(OV_PLATFORM_NAME/OV_PLATFORM_NAME, Header)))

@@ -1,6 +1,6 @@
 #include "GameEngine.h"
 #include "Profiling/ProfilingMacros.h"
-#include "PlatformTime.h"
+#include "HAL/PlatformTime.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
