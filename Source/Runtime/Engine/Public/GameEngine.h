@@ -3,6 +3,7 @@
 #include "Logging/LoggingMacros.h"
 #include "EngineModule.h"
 #include "Engine.h"
+#include "MainWindow.h"
 
 DECLARE_LOG_CATEGORY(GameEngineLog);
 
@@ -18,5 +19,8 @@ public:
 	virtual void EngineLoop() override;
 	bool IsEngineRequestedToStop();
 	//~ End Engine Interface
+
+private:
+	std::unique_ptr<MainWindow> m_Window;
 
 };
