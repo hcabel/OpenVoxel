@@ -22,6 +22,13 @@
 		STATIC_CHECK_TYPE(LogCategory, Category); \
 		Logger::Log(Verbosity::LogVerbosity, Category, std::format(Format, __VA_ARGS__)); \
 	}
+# define OV_LOG_ARRAY(LogVerbosity, Category, Array, Format, ...) \
+	{ \
+		STATIC_CHECK_TYPE(Verbosity::Type, Verbosity::LogVerbosity); \
+		STATIC_CHECK_TYPE(LogCategory, Category); \
+		FOR_EACH_LOOP(Entry, Array) \
+			OV_LOG(LogVerbosity, Category, Format, Entry, __VA_ARGS__); \
+	}
 
 # define DECLARE_LOG_CATEGORY(CategoryName) extern class LogCategory CategoryName;
 # define DEFINE_LOG_CATEGORY(CategoryName) LogCategory CategoryName(#CategoryName);
