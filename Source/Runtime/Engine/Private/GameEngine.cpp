@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "Profiling/ProfilingMacros.h"
+#include "PlatformTime.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
@@ -20,10 +21,15 @@ void GameEngine::OnStart()
 void GameEngine::EngineLoop()
 {
 	OV_LOG(Display, GameEngineLog, "Starting Engine Loop");
+
+	PlatformTime::Init();
 	while (IsEngineRequestedToStop() == false)
 	{
 		RESET_ALL_PERFRAME_TIMER_DATA;
-		// Stop();
+
+		OV_LOG(Display, GameEngineLog, "Engine Loop Tick {:f}", PlatformTime::GetTimeStep());
+
+		PlatformTime::CalculateNewTiming();
 	}
 }
 
