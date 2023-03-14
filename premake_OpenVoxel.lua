@@ -99,12 +99,6 @@ project "OpenVoxel"
 			"OV_DEBUG"
 		}
 
-	filter "configurations:*Release"
-		defines
-		{
-			"OV_RELEASE"
-		}
-
 	-- System specific
 
 	filter "system:windows"

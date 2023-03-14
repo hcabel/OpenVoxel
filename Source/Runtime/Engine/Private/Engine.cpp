@@ -19,8 +19,9 @@ std::shared_ptr<Engine> Engine::CreateInstance()
 {
 #if WITH_EDITOR
 	return std::make_shared<EditorEngine>();
-#endif
+#else
 	return std::make_shared<GameEngine>();
+#endif
 }
 
 void Engine::Start()

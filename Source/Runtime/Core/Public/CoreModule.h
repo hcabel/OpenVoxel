@@ -8,4 +8,4 @@
 # define CORE_API __declspec(dllimport)
 #endif
 
-DEFINE_LOG_CATEGORY(CoreLog);
+DECLARE_LOG_CATEGORY(CoreLog);

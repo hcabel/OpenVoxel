@@ -131,7 +131,7 @@ std::optional<Vulkan::DeviceBundle> Vulkan::CreateDevice(const vk::Instance &ins
 
 #if WITH_LOGGING
 	const auto deviceProperties = device.Physical.getProperties();
-	OV_LOG(Verbose, LogVulkan, "Selected GPU: \"{:s}\" ({:s})", deviceProperties.deviceName, vk::to_string(static_cast<vk::PhysicalDeviceType>(deviceProperties.deviceType)));
+	OV_LOG(Verbose, LogVulkan, "Selected GPU: \"{:s}\"", deviceProperties.deviceName.data());// , vk::to_string(static_cast<vk::PhysicalDeviceType>(deviceProperties.deviceType)));
 #endif
 
 	// Create the logical device for this GPU
