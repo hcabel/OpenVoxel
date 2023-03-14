@@ -22,6 +22,9 @@ public:
 	/** Check if the glfw should close */
 	bool ShouldClose() const { return glfwWindowShouldClose(m_Window); }
 
+	operator GLFWwindow*() { return (m_Window); }
+	GLFWwindow* GetWindows() { return (m_Window); }
+
 private:
 	std::optional<GLFWwindow*> CreateWindow(uint16_t width, uint16_t height, const char *title) const noexcept;
 
