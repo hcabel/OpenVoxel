@@ -1,14 +1,17 @@
 #include "MainWindow.h"
+#include "Vulkan/VulkanPipeline.h"
 
 DEFINE_LOG_CATEGORY(GlfwLog)
 
 MainWindow::MainWindow(uint16_t width, uint16_t height, const char* title)
 {
+	/* GLFW */
 	auto window = CreateWindow(width, height, title);
 	if (window.has_value() == false)
 		OV_LOG(Fatal, GlfwLog, "Failed to create window");
 	m_Window = window.value();
 
+	/* VULKAN SETUP */
 	auto vkInstance = Vulkan::CreateInstance();
 	if (vkInstance.has_value() == false)
 		OV_LOG(Fatal, GlfwLog, "Failed to create Vulkan instance");
@@ -28,18 +31,24 @@ MainWindow::MainWindow(uint16_t width, uint16_t height, const char* title)
 		OV_LOG(Fatal, GlfwLog, "Failed to create Vulkan device");
 	m_Device = device.value();
 
-	auto swapChain = Vulkan::CreateSwapChain(m_VkInstance, m_Device, m_Surface, width, height);
-	if (swapChain.has_value() == false)
-		OV_LOG(Fatal, GlfwLog, "Failed to create Vulkan SwapChain");
-	m_SwapChain = swapChain.value();
+	/* VULKAN PIPELINE */
+	VulkanPipeline::CreatePipeline(m_Device);
+
+	/* Create commands pool */
+	vk::CommandPoolCreateInfo commandPoolCreateInfo(
+		vk::CommandPoolCreateFlags() | vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+		m_Device.Queues[QueueType::Graphics].FamilyIndex
+	);
+	m_CommandPool = m_Device.Logical.createCommandPool(commandPoolCreateInfo);
+
+	m_Swapchain = std::make_unique<VulkanSwapchain>(m_Device, m_Surface, m_CommandPool, vk::PresentModeKHR::eMailbox);
 }
 
 MainWindow::~MainWindow()
 {
 	/* Destroy device */
-	for (auto& frame : m_SwapChain.Frames)
-		m_Device.Logical.destroyImageView(frame.View);
-	m_Device.Logical.destroySwapchainKHR(m_SwapChain.SwapChain);
+	m_Swapchain.reset();
+	m_Device.Logical.destroyCommandPool(m_CommandPool);
 	m_Device.Logical.destroy();
 
 	/* Destroy instance */
@@ -52,6 +61,13 @@ MainWindow::~MainWindow()
 	/* Destroy glfw */
 	glfwDestroyWindow(m_Window);
 	glfwTerminate();
+}
+
+void MainWindow::NewFrame()
+{
+	VulkanSwapchain::Frame frame = m_Swapchain->GetNextFrame();
+
+	m_Swapchain->PresentFrame(frame);
 }
 
 std::optional<GLFWwindow*> MainWindow::CreateWindow(uint16_t width, uint16_t height, const char* title) const noexcept

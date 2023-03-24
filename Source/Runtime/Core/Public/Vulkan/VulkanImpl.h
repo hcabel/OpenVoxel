@@ -16,7 +16,7 @@ namespace QueueType
 		Present = 1,
 	};
 
-	constexpr uint8_t Count = 2;
+	static constexpr uint8_t Count = 2;
 }
 
 /**
@@ -30,6 +30,41 @@ public:
 	~Vulkan() = delete;
 
 public:
+	class DeviceExtensionChain final
+	{
+	public:
+		struct ExtensionHeader
+		{
+			vk::StructureType sType;
+			void* pNext;
+		};
+
+		void AddExtension(const char* extensionName, void* pFeatureStruct = nullptr)
+		{
+			Extensions.push_back(extensionName);
+			if (pFeatureStruct)
+				pFeatureStructs.push_back(reinterpret_cast<ExtensionHeader*>(pFeatureStruct));
+		}
+
+		const std::vector<const char*>& GetExtensions() const { return Extensions; }
+		std::vector<const char*> GetExtensionsCopy() const { return Extensions; }
+
+		ExtensionHeader* ConstructPNextChain() const
+		{
+			ExtensionHeader* pNext = nullptr;
+			for (auto it = pFeatureStructs.rbegin(); it != pFeatureStructs.rend(); ++it)
+			{
+				(*it)->pNext = pNext;
+				pNext = *it;
+			}
+			return pNext;
+		}
+
+	private:
+		std::vector<const char*> Extensions;
+		std::vector<ExtensionHeader*> pFeatureStructs;
+	};
+
 #if OV_DEBUG
 	struct DebugMessenger
 	{
@@ -38,11 +73,17 @@ public:
 	};
 #endif
 
+	struct QueueBundle
+	{
+		vk::Queue Queue;
+		uint32_t FamilyIndex;
+	};
+
 	struct DeviceBundle
 	{
 		vk::PhysicalDevice Physical;
 		vk::Device Logical;
-		std::array<vk::Queue, QueueType::Count> Queues;
+		std::array<QueueBundle, QueueType::Count> Queues;
 	};
 
 	struct QueueFamilyIndices
@@ -51,27 +92,6 @@ public:
 		uint32_t Present = UINT32_MAX;
 
 		bool IsComplete() const { return (Graphics != UINT32_MAX) && (Present != UINT32_MAX); }
-	};
-
-	struct SwapChainSupportDetails
-	{
-		vk::SurfaceCapabilitiesKHR Capabilities;
-		std::vector<vk::SurfaceFormatKHR> Formats;
-		std::vector<vk::PresentModeKHR> PresentModes;
-	};
-
-	struct SwapChainFrame
-	{
-		vk::Image Image;
-		vk::ImageView View;
-	};
-
-	struct SwapChainBundle
-	{
-		vk::SwapchainKHR SwapChain;
-		std::vector<SwapChainFrame> Frames;
-		vk::Format SurfaceFormat;
-		vk::Extent2D Extent;
 	};
 
 public:
@@ -89,7 +109,6 @@ public:
 #endif
 	static std::optional<vk::SurfaceKHR> CreateSurface(const vk::Instance instance, GLFWwindow* window) noexcept;
 	static std::optional<DeviceBundle> CreateDevice(const vk::Instance &instance, const vk::SurfaceKHR &surface) noexcept;
-	static std::optional<SwapChainBundle> CreateSwapChain(const vk::Instance &instance, const DeviceBundle &device, const vk::SurfaceKHR &surface, uint32_t width, uint32_t height) noexcept;
 
 private:
 #pragma region VkInstance
@@ -118,22 +137,14 @@ private:
 #pragma region Device
 	static std::optional<vk::PhysicalDevice> GetPhysicalDevice(const vk::Instance &instance, const std::vector<const char*>& layers, const std::vector<const char*>& extensions) noexcept;
 	static std::vector<const char*> GetDeviceLayers() noexcept;
-	static std::vector<const char*> GetDeviceExtensions() noexcept;
+	static DeviceExtensionChain GetDeviceExtensions() noexcept;
 	static bool IsDeviceSuitable(const vk::PhysicalDevice& device, const std::vector<const char*>& layers, const std::vector<const char*>& extensions) noexcept;
-	static std::optional<vk::Device> CreateLogicalDevice(const vk::PhysicalDevice& device, const std::vector<const char*>& layers, const std::vector<const char*>& extensions, const QueueFamilyIndices& familyIndices) noexcept;
+	static std::optional<vk::Device> CreateLogicalDevice(const vk::PhysicalDevice& device, const std::vector<const char*>& layers, const DeviceExtensionChain& extensions, const QueueFamilyIndices& familyIndices) noexcept;
 #pragma endregion
 
 #pragma region Queue
 	static QueueFamilyIndices FindQueueFamilies(const vk::PhysicalDevice &device, const vk::SurfaceKHR &surface) noexcept;
 	static vk::DeviceQueueCreateInfo CreateQueue(const vk::PhysicalDevice &device, uint32_t queueFamilyIndex) noexcept;
-#pragma endregion
-
-#pragma region SwapChain
-	static SwapChainSupportDetails QuerySwapChainSupport(const DeviceBundle& device, const vk::SurfaceKHR& surface) noexcept;
-	static vk::SurfaceFormatKHR SelectSwapChainSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats) noexcept;
-	static vk::PresentModeKHR SelectSwapChainPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes) noexcept;
-	static vk::Extent2D SelectSwapChainExtent(const vk::SurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height) noexcept;
-	static SwapChainFrame CreateSwapChainFrame(const DeviceBundle& device, const vk::Image &image, const vk::Format& imageFormat) noexcept;
 #pragma endregion
 
 };

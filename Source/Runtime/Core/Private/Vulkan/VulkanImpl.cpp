@@ -1,4 +1,4 @@
-#include "Vulkan.h"
+#include "Vulkan/VulkanImpl.h"
 
 DEFINE_LOG_CATEGORY(LogVulkan);
 #if OV_DEBUG
@@ -118,13 +118,13 @@ std::optional<Vulkan::DeviceBundle> Vulkan::CreateDevice(const vk::Instance &ins
 	OV_LOG(VeryVerbose, LogVulkan, "Vulkan device layers:");
 	OV_LOG_ARRAY(VeryVerbose, LogVulkan, layers, "\t\"{:s}\"");
 
-	std::vector<const char*> extensions = GetDeviceExtensions();
+	auto deviceExtensions = GetDeviceExtensions();
 
 	OV_LOG(VeryVerbose, LogVulkan, "Vulkan device extensions:");
-	OV_LOG_ARRAY(VeryVerbose, LogVulkan, extensions, "\t\"{:s}\"");
+	OV_LOG_ARRAY(VeryVerbose, LogVulkan, deviceExtensions.GetExtensions(), "\t\"{:s}\"");
 
 	// select a GPU that can handle all our extensions and layers
-	auto physicalDevice = GetPhysicalDevice(instance, layers, extensions);
+	auto physicalDevice = GetPhysicalDevice(instance, layers, deviceExtensions.GetExtensions());
 	if (physicalDevice.has_value() == false)
 		return {};
 	device.Physical = physicalDevice.value();
@@ -136,13 +136,15 @@ std::optional<Vulkan::DeviceBundle> Vulkan::CreateDevice(const vk::Instance &ins
 
 	// Create the logical device for this GPU
 	QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(device.Physical, surface);
-	auto logicalDevice = CreateLogicalDevice(device.Physical, layers, extensions, queueFamilyIndices);
+	auto logicalDevice = CreateLogicalDevice(device.Physical, layers, deviceExtensions, queueFamilyIndices);
 	if (logicalDevice.has_value() == false)
 		return {};
 	device.Logical = logicalDevice.value();
 
-	device.Queues[QueueType::Graphics] = device.Logical.getQueue(queueFamilyIndices.Graphics, 0);
-	device.Queues[QueueType::Present] = device.Logical.getQueue(queueFamilyIndices.Present, 0);
+	device.Queues[QueueType::Graphics].Queue = device.Logical.getQueue(queueFamilyIndices.Graphics, 0);
+	device.Queues[QueueType::Graphics].FamilyIndex = queueFamilyIndices.Graphics;
+	device.Queues[QueueType::Present].Queue = device.Logical.getQueue(queueFamilyIndices.Present, 0);
+	device.Queues[QueueType::Present].FamilyIndex = queueFamilyIndices.Present;
 
 	OV_LOG(VeryVerbose, LogVulkan, "Queue created:");
 	OV_LOG(VeryVerbose, LogVulkan, "\tGraphics: {:d}", queueFamilyIndices.Graphics);
@@ -151,71 +153,6 @@ std::optional<Vulkan::DeviceBundle> Vulkan::CreateDevice(const vk::Instance &ins
 	return (device);
 }
 
-std::optional<Vulkan::SwapChainBundle> Vulkan::CreateSwapChain(const vk::Instance &instance, const DeviceBundle &device, const vk::SurfaceKHR &surface, uint32_t width, uint32_t height) noexcept
-{
-	SwapChainSupportDetails supportDetails = QuerySwapChainSupport(device, surface);
-
-	vk::SurfaceFormatKHR selectedSurfaceFormat = SelectSwapChainSurfaceFormat(supportDetails.Formats);
-	OV_LOG(Verbose, LogVulkan, "SwapChain format {:s} ({:s})", vk::to_string(selectedSurfaceFormat.format), vk::to_string(selectedSurfaceFormat.colorSpace));
-
-	vk::PresentModeKHR selectedPresentMode = SelectSwapChainPresentMode(supportDetails.PresentModes);
-	OV_LOG(Verbose, LogVulkan, "SwapChain present mode {:s}", vk::to_string(selectedPresentMode));
-
-	vk::Extent2D selectedExtent = SelectSwapChainExtent(supportDetails.Capabilities, width, height);
-	OV_LOG(Verbose, LogVulkan, "SwapChain extent {:d}x{:d}", selectedExtent.width, selectedExtent.height);
-
-	uint32_t imageCount = std::min(
-		supportDetails.Capabilities.minImageCount + 1,
-		supportDetails.Capabilities.maxImageCount
-	);
-
-	vk::SwapchainCreateInfoKHR createInfo = vk::SwapchainCreateInfoKHR(
-		vk::SwapchainCreateFlagsKHR(),
-		surface,
-		imageCount,
-		selectedSurfaceFormat.format,
-		selectedSurfaceFormat.colorSpace,
-		selectedExtent,
-		1,
-		vk::ImageUsageFlagBits::eColorAttachment
-	);
-
-	QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(device.Physical, surface);
-
-	if (queueFamilyIndices.Graphics != queueFamilyIndices.Present)
-	{
-		uint32_t queueFamilyIndicesArray[] = { queueFamilyIndices.Graphics, queueFamilyIndices.Present };
-		createInfo.imageSharingMode = vk::SharingMode::eConcurrent;
-		createInfo.queueFamilyIndexCount = 2;
-		createInfo.pQueueFamilyIndices = queueFamilyIndicesArray;
-	}
-	else
-		createInfo.imageSharingMode = vk::SharingMode::eExclusive;
-
-	createInfo.preTransform = supportDetails.Capabilities.currentTransform;
-	createInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
-	createInfo.presentMode = selectedPresentMode;
-	createInfo.clipped = VK_TRUE;
-
-	SwapChainBundle swapChain;
-	try {
-		swapChain.SwapChain = device.Logical.createSwapchainKHR(createInfo);
-	}
-	catch (vk::SystemError &e)
-	{
-		OV_LOG(Error, LogVulkan, "Failed to create swap chain: \"{:s}\"", e.what());
-		return {};
-	}
-
-	std::vector<vk::Image> images = device.Logical.getSwapchainImagesKHR(swapChain.SwapChain);
-	swapChain.Frames.resize(images.size());
-	for (size_t i = 0; i < images.size(); i++)
-		swapChain.Frames[i] = CreateSwapChainFrame(device, images[i], selectedSurfaceFormat.format);
-
-	swapChain.SurfaceFormat = selectedSurfaceFormat.format;
-	swapChain.Extent = selectedExtent;
-	return (swapChain);
-}
 #pragma region Private
 # pragma region VkInstance
 uint32_t Vulkan::GetVulkanVersion()
@@ -335,13 +272,25 @@ std::vector<const char*> Vulkan::GetDeviceLayers() noexcept
 	return (layers);
 }
 
-std::vector<const char*> Vulkan::GetDeviceExtensions() noexcept
+Vulkan::DeviceExtensionChain Vulkan::GetDeviceExtensions() noexcept
 {
-	std::vector<const char*> extensions = {
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME
-	};
+	DeviceExtensionChain chain;
 
-	return (extensions);
+	chain.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME); // Allow to present rendering
+
+	// Ray tracing pipeline
+	vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rtPipelineFeatures = {};
+	rtPipelineFeatures.rayTracingPipeline = VK_TRUE;
+	chain.AddExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME, &rtPipelineFeatures);
+
+	// Build acceleration structure
+	vk::PhysicalDeviceAccelerationStructureFeaturesKHR asFeatures = {};
+	asFeatures.accelerationStructure = VK_TRUE;
+	chain.AddExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, &asFeatures);
+
+	// Required by acceleration structure
+	chain.AddExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+	return (chain);
 }
 
 bool Vulkan::IsDeviceSuitable(const vk::PhysicalDevice& device, const std::vector<const char*>& layers, const std::vector<const char*>& extensions) noexcept
@@ -362,7 +311,10 @@ bool Vulkan::IsDeviceSuitable(const vk::PhysicalDevice& device, const std::vecto
 		}
 
 		if (!found)
+		{
+			OV_LOG(VeryVerbose, LogVulkan, "Layer \"{:s}\" is not supported by \"{:s}\"", layer, device.getProperties().deviceName.data());
 			return (false);
+		}
 	}
 
 	/* Check Extensions */
@@ -381,12 +333,15 @@ bool Vulkan::IsDeviceSuitable(const vk::PhysicalDevice& device, const std::vecto
 		}
 
 		if (!found)
+		{
+			OV_LOG(VeryVerbose, LogVulkan, "Extension \"{:s}\" is not supported by \"{:s}\"", extension, device.getProperties().deviceName.data());
 			return (false);
+		}
 	}
 	return (true);
 }
 
-std::optional<vk::Device> Vulkan::CreateLogicalDevice(const vk::PhysicalDevice& device, const std::vector<const char*>& layers, const std::vector<const char*>& extensions, const QueueFamilyIndices &familyIndices) noexcept
+std::optional<vk::Device> Vulkan::CreateLogicalDevice(const vk::PhysicalDevice& device, const std::vector<const char*>& layers, const DeviceExtensionChain& extensions, const QueueFamilyIndices &familyIndices) noexcept
 {
 	std::vector<vk::DeviceQueueCreateInfo> queues = { CreateQueue(device, familyIndices.Graphics) };
 
@@ -394,13 +349,17 @@ std::optional<vk::Device> Vulkan::CreateLogicalDevice(const vk::PhysicalDevice& 
 	if (familyIndices.Present != familyIndices.Graphics)
 		queues.push_back(CreateQueue(device, familyIndices.Present));
 
-	vk::PhysicalDeviceFeatures features = vk::PhysicalDeviceFeatures();
+	const std::vector<const char*> extensionsNames = extensions.GetExtensions();
+	void* pNextChain = extensions.ConstructPNextChain();
+
+	vk::PhysicalDeviceFeatures features = {};
 	vk::DeviceCreateInfo createInfo = vk::DeviceCreateInfo(
 		vk::DeviceCreateFlags(),
 		static_cast<uint32_t>(queues.size()), queues.data(),
 		static_cast<uint32_t>(layers.size()), layers.data(),
-		static_cast<uint32_t>(extensions.size()), extensions.data(),
+		static_cast<uint32_t>(extensionsNames.size()), extensionsNames.data(),
 		&features
+	//	pNextChain
 	);
 
 	try {
@@ -446,74 +405,6 @@ vk::DeviceQueueCreateInfo Vulkan::CreateQueue(const vk::PhysicalDevice& device, 
 		&queuePriority
 	);
 	return (queueCreateInfo);
-}
-# pragma endregion
-
-# pragma region SwapChain
-Vulkan::SwapChainSupportDetails Vulkan::QuerySwapChainSupport(const DeviceBundle& device, const vk::SurfaceKHR& surface) noexcept
-{
-	SwapChainSupportDetails supportDetails;
-
-	supportDetails.Capabilities = device.Physical.getSurfaceCapabilitiesKHR(surface);
-	supportDetails.Formats = device.Physical.getSurfaceFormatsKHR(surface);
-	supportDetails.PresentModes = device.Physical.getSurfacePresentModesKHR(surface);
-
-	return (supportDetails);
-}
-
-vk::SurfaceFormatKHR Vulkan::SelectSwapChainSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats) noexcept
-{
-	for (auto& availableFormat : availableFormats)
-	{
-		if (availableFormat.format == vk::Format::eB8G8R8A8Srgb
-			&& availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
-			return (availableFormat);
-	}
-	return (availableFormats[0]);
-}
-
-vk::PresentModeKHR Vulkan::SelectSwapChainPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes) noexcept
-{
-	for (auto& availablePresentMode : availablePresentModes)
-	{
-		if (availablePresentMode == vk::PresentModeKHR::eMailbox)
-			return (availablePresentMode);
-	}
-	return (vk::PresentModeKHR::eFifo); // FIFO is guaranteed to be available
-}
-
-vk::Extent2D Vulkan::SelectSwapChainExtent(const vk::SurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height) noexcept
-{
-	if (capabilities.currentExtent.width == std::numeric_limits<uint32_t>::max())
-	{
-		vk::Extent2D actualExtent = vk::Extent2D(width, height);
-
-		actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
-		actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
-
-		return (actualExtent);
-	}
-	else
-		return (capabilities.currentExtent);
-}
-
-Vulkan::SwapChainFrame Vulkan::CreateSwapChainFrame(const DeviceBundle& device, const vk::Image& image, const vk::Format& imageFormat) noexcept
-{
-	SwapChainFrame frame;
-
-	frame.Image = image;
-
-	vk::ImageViewCreateInfo createInfo = vk::ImageViewCreateInfo(
-		vk::ImageViewCreateFlags(),
-		image,
-		vk::ImageViewType::e2D,
-		imageFormat,
-		vk::ComponentMapping(),
-		vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)
-	);
-
-	frame.View = device.Logical.createImageView(createInfo);
-	return (frame);
 }
 # pragma endregion
 #pragma endregion

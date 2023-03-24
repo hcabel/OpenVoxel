@@ -2,7 +2,9 @@
 
 #include "CoreModule.h"
 #include "Logging/LoggingMacros.h"
-#include "Vulkan.h"
+#include "Vulkan/VulkanImpl.h"
+#include "Vulkan/VulkanSwapchain.h"
+#include "Renderer/Renderer.h"
 
 #include <GLFW/glfw3.h>
 #include <optional>
@@ -22,6 +24,8 @@ public:
 	/** Check if the glfw should close */
 	bool ShouldClose() const { return glfwWindowShouldClose(m_Window); }
 
+	void NewFrame();
+
 	operator GLFWwindow*() { return (m_Window); }
 	GLFWwindow* GetWindows() { return (m_Window); }
 
@@ -38,7 +42,10 @@ private:
 #endif
 	vk::SurfaceKHR m_Surface;
 	Vulkan::DeviceBundle m_Device;
-	Vulkan::SwapChainBundle m_SwapChain;
+	vk::CommandPool m_CommandPool;
+	std::unique_ptr<VulkanSwapchain> m_Swapchain;
+
+	Renderer *m_Renderer;
 
 #pragma endregion
 };
