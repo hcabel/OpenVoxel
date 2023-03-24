@@ -9,6 +9,7 @@ namespace Verbosity
 	{
 		Unknown = 0,
 
+		/* Log errors onto file and console, in RED and crash the application */
 		Fatal = 1,
 		/* Log errors onto file and console, in RED */
 		Error = 2,
