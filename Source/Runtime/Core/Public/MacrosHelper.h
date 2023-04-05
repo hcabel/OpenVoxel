@@ -38,3 +38,8 @@
 #endif
 
 #define PLATFORM_HEADER(Header) TO_STRING(JOIN(OV_PLATFORM_NAME/OV_PLATFORM_NAME, Header))
+
+/* Compiler macros */
+
+#define OV_DLL_IMPORT __declspec(dllimport)
+#define OV_DLL_EXPORT __declspec(dllexport)

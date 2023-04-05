@@ -1,7 +1,9 @@
 #pragma once
 
+#include "MacrosHelper.h"
+
 #ifdef OV_BUILD_DLL
-# define ENGINE_API __declspec(dllexport)
+# define ENGINE_API OV_DLL_EXPORT
 #else
-# define ENGINE_API __declspec(dllimport)
+# define ENGINE_API OV_DLL_IMPORT
 #endif
