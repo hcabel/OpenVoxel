@@ -37,4 +37,4 @@
 # error OV_PLATFORM_NAME does not detect this operating system
 #endif
 
-#define PLATFORM_HEADER(Header) TO_STRING(JOIN(OV_PLATFORM_NAME/OV_PLATFORM_NAME, Header)))
+#define PLATFORM_HEADER(Header) TO_STRING(JOIN(OV_PLATFORM_NAME/OV_PLATFORM_NAME, Header))

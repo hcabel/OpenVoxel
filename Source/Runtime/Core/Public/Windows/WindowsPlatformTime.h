@@ -2,7 +2,7 @@
 
 #include "Generic/GenericPlatformTime.h"
 
-class WindowsPlatformTime
+class WindowsPlatformTime : public GenericPlatformTime
 {
 public:
 	WindowsPlatformTime() = delete;
