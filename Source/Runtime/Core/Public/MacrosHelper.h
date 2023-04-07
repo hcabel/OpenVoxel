@@ -17,7 +17,6 @@
 /* Flow Control */
 
 #define FOR_EACH_LOOP(Variable, Array) for (auto& Variable : Array)
-#define IF(Condition) if (Condition)
 
 /* Check */
 
