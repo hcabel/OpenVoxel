@@ -19,29 +19,23 @@
 #define OV_VERSION_GET_PATCH(version) ((version) >> 2) & 0x3FF)
 
 // Take the major, minor and patch version and make convert it to a uint32_t version
-#define OV_MAKE_VERSION(major, minor, patch) ((((major & 0x3FF) << 20) + ((minor & 0x3FF) << 10) + (patch & 0x3FF)) << 2)
+#define OV_MAKE_VERSION(major, minor, patch) ((((major & 0x3FF) << 20) | ((minor & 0x3FF) << 10) | (patch & 0x3FF)) << 2)
 
 /* OPEN VOXEL CURRENT VERSION */
 
-#define OV_VERSION_MAJOR 1 // The current major version of Open Voxel
-#define OV_VERSION_MINOR 25 // The current minor version of Open Voxel
-#define OV_VERSION_PATCH 51 // The current patch version of Open Voxel
+#define OV_CURRENT_VERSION_MAJOR 0 // The current major version of Open Voxel
+#define OV_CURRENT_VERSION_MINOR 0 // The current minor version of Open Voxel
+#define OV_CURRENT_VERSION_PATCH 0 // The current patch version of Open Voxel
 
 // The current version of Open Voxel
-#define OV_VERSION_CURRENT OV_MAKE_VERSION(OV_VERSION_MAJOR, OV_VERSION_MINOR, OV_VERSION_PATCH)
+#define OV_CURRENT_VERSION OV_MAKE_VERSION(OV_CURRENT_VERSION_MAJOR, OV_CURRENT_VERSION_MINOR, OV_CURRENT_VERSION_PATCH)
 
 /* ************************* */
 
 // Tell whether or the the version x has been reached/overpassed or not
-#define OV_VERSION(Major, Minor) (OV_VERSION_CURRENT >= OV_MAKE_VERSION(Major, Minor, 0))
+#define OV_VERSION(Major, Minor) (OV_CURRENT_VERSION >= OV_MAKE_VERSION(Major, Minor, 0))
 // Tell whether or the the version x has been reached/overpassed or not (precise version)
-#define OV_VERSION_PRECISE(Major, Minor, Patch) (OV_VERSION_CURRENT >= OV_MAKE_VERSION(Major, Minor, Patch))
-
-#if OV_MAKE_VERSION(1, 25, 52) < OV_VERSION_CURRENT
-// code here 1.25+
-#else
-// code here 1.24-
-#endif
+#define OV_VERSION_PRECISE(Major, Minor, Patch) (OV_CURRENT_VERSION >= OV_MAKE_VERSION(Major, Minor, Patch))
 
 // Subtract 2 version and return the offset
 #define OV_VERSION_OFFSET(VersionA, VersionB) (VersionA - VersionB)
@@ -55,7 +49,7 @@
 // The error message to display when the deprecation limit has been reach
 #define OV_DEPRECATION_LIMIT_ERROR_MSG "The deprecation limit has been reach for this element please remove it or update the version (not recommended)"
 // Tell whether or not the given version has reached the deprecation limit
-#define HAS_REACHED_DEPRECATION_LIMIT(VersionDeprecatedSince) OV_VERSION_LIMMIT_OFFSET(OV_VERSION_CURRENT, VersionDeprecatedSince, OV_DEPRECATION_LIMIT)
+#define HAS_REACHED_DEPRECATION_LIMIT(VersionDeprecatedSince) OV_VERSION_LIMMIT_OFFSET(OV_CURRENT_VERSION, VersionDeprecatedSince, OV_DEPRECATION_LIMIT)
 
 // Tell that the function bellow is deprecated since a given version
 // A deprecated function will trigger a warning when used
