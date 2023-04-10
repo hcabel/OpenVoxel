@@ -41,7 +41,7 @@ public:
 public:
 	/** Create and start the engine, called constructor */
 	void Start();
-	/** Stop the Engine from running */
+	/** Request the Engine to Stop running, (will happened at the end of the frame) */
 	void Stop();
 	/** Whether or not the engine should stop running */
 	virtual bool IsEngineRequestedToStop() { return (m_State == EngineState::Stopping); }
