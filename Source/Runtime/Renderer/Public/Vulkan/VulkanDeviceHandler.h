@@ -101,6 +101,8 @@ public:
 	/** Get all the queues */
 	const std::array<VulkanQueue, VulkanQueueType::COUNT>& GetQueues() const { return (m_Queues); }
 
+	vk::PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties() const { return (m_PhysicalDevice.getMemoryProperties()); }
+
 private:
 	// pointer to the vulkan instance
 	const VulkanInstanceHandler* m_VkInstance = nullptr;

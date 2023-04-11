@@ -4,6 +4,7 @@
 #include "Vulkan/VulkanInstanceHandler.h"
 #include "Vulkan/VulkanDeviceHandler.h"
 #include "Vulkan/VulkanSwapChainHandler.h"
+#include "Vulkan/VulkanAccelerationStructure.h"
 
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
@@ -61,6 +62,7 @@ private:
 	vk::CommandPool m_CommandPool;
 	VulkanSwapChainHandler m_VkSwapChain;
 	vk::SurfaceKHR m_Surface;
+	VulkanAccelerationStructure m_AccelerationStructure;
 
 	uint8_t m_CurrentFrameIndex;
 };

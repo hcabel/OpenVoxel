@@ -51,7 +51,7 @@ void VulkanInstanceHandler::CreateInstance(const char* name, uint32_t fix, uint3
 
 void VulkanInstanceHandler::DestroyInstance()
 {
-	CHECKF(m_IsInstanceCreated, "Vulkan instance has never been created");
+	CHECK(m_IsInstanceCreated, "Vulkan instance has never been created");
 
 	m_Instance.destroy();
 

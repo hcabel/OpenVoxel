@@ -198,7 +198,7 @@ bool VulkanDeviceHandler::allLayersAreSupported() const
 
 std::array<uint32_t, VulkanQueueType::COUNT> VulkanDeviceHandler::FindQueueFamilyIndices(const vk::SurfaceKHR& surface) const
 {
-	CHECKF(m_PhysicalDevice, "No physical device selected, Unable to find queues indices's");
+	CHECK(m_PhysicalDevice, "No physical device selected, Unable to find queues indices's");
 	std::array<uint32_t, VulkanQueueType::COUNT> queueFamilyIndices;
 	// Fill with default value otherwise it will be filled with garbage or 0 (which is a valid index)
 	queueFamilyIndices.fill(UINT32_MAX);

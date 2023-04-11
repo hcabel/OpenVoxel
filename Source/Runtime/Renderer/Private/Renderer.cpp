@@ -9,6 +9,7 @@ Renderer::Renderer(GLFWwindow* window)
 #if OV_DEBUG
 	VulkanDebugMessenger::Initialize(m_VkInstance);
 #endif
+
 	InitSurfaceKHR(window);
 	InitVulkanDevice();
 
@@ -19,11 +20,18 @@ Renderer::Renderer(GLFWwindow* window)
 	m_CommandPool = m_VkDevice.Raw().createCommandPool(commandPoolCreateInfo);
 
 	InitSwapChain();
+
+	m_AccelerationStructure.SetVulkanDevice(&m_VkDevice);
+	m_AccelerationStructure.CreateDispatchLoaderDynamic(&m_VkInstance, &m_VkDevice);
+
+	m_AccelerationStructure.CreateAccelerationStructure(m_VkSwapChain.GetFrames().back().CommandBuffer);
 }
 
 Renderer::~Renderer()
 {
 	m_VkDevice.Raw().waitIdle();
+
+	m_AccelerationStructure.DestroyAccelerationStructure();
 
 	m_VkSwapChain.DestroySwapChain();
 
@@ -39,20 +47,20 @@ Renderer::~Renderer()
 
 Renderer* Renderer::Get()
 {
-	CHECKF(s_Instance, "Renderer has never been initialized before, you need to call Renderer::Initialize() first");
+	CHECK(s_Instance, "Renderer has never been initialized before, you need to call Renderer::Initialize() first");
 	return (s_Instance);
 }
 
 Renderer* Renderer::Initialize(GLFWwindow* window)
 {
-	CHECKF(!s_Instance, "Renderer has already been initialized before");
+	CHECK(!s_Instance, "Renderer has already been initialized before");
 	s_Instance = new Renderer(window);
 	return (s_Instance);
 }
 
 void Renderer::Shutdown()
 {
-	CHECKF(s_Instance, "Renderer has never been initialized before, you need to call Renderer::Initialize() first");
+	CHECK(s_Instance, "Renderer has never been initialized before, you need to call Renderer::Initialize() first");
 	delete s_Instance;
 	s_Instance = nullptr;
 }

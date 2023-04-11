@@ -100,6 +100,7 @@ public:
 	void SetCommandPool(const vk::CommandPool* commandPool) { m_CommandPool = commandPool; }
 
 	const VulkanSwapChainFrame& GetFrame(uint8_t frameIndex) const { return m_Frames[frameIndex]; }
+	const std::vector<VulkanSwapChainFrame>& GetFrames() const { return m_Frames; }
 
 private:
 	const VulkanDeviceHandler* m_VkDevice = nullptr;
