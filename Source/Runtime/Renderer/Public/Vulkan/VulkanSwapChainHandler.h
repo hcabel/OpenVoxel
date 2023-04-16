@@ -18,6 +18,9 @@ struct VulkanSwapChainFrame
 {
 	vk::Image Image;
 	vk::CommandBuffer CommandBuffer;
+	vk::Fence RenderedFence;
+	vk::Semaphore RenderedSemaphore;
+	vk::Semaphore AcquiredSemaphore;
 };
 
 class RENDERER_API VulkanSwapChainHandler final
@@ -46,11 +49,11 @@ public:
 	void DestroySwapChain();
 
 	/** Acquire the next image in the swap chain. */
-	uint8_t AcquireNextFrameIndex() const;
+	uint8_t AcquireNextFrameIndex();
 	/** Render frame */
 	void SubmitWork(uint8_t frameIndex) const;
 	/** Present frame */
-	void PresentFrame(uint8_t frameIndex) const;
+	void PresentFrame(uint8_t frameIndex);
 
 private:
 	VulkanSwapChainSupportProperties RequestSwapchainProperties() const;
@@ -92,6 +95,11 @@ public:
 	/** Get the vulkan swap chain */
 	vk::SwapchainKHR Raw() const { return m_Swapchain; }
 
+	/** Get the size of the swap chain */
+	vk::Extent2D GetExtent() const { return m_Extent; }
+	/** Get the swap chain image format */
+	vk::Format GetFormat() const { return m_SurfaceFormat.format; }
+
 	/** Connect the swap chain to a device */
 	void SetVulkanDevice(const VulkanDeviceHandler* vkDevice) { m_VkDevice = vkDevice; }
 	/** Connect the swap chain to a surface */
@@ -110,7 +118,9 @@ private:
 	bool m_IsSwapChainCreated = false;
 
 	/** An index that keep track of which frame is the next to be rendered */
-	uint32_t m_CurrentFrameIndex = 0;
+	uint8_t m_CurrentFrameIndex;
+	uint8_t m_CurrentSemaphoreIndex = 0;
+	uint8_t m_ImageCount;
 
 	/** The vulkan swap chain */
 	vk::SwapchainKHR m_Swapchain;
@@ -122,11 +132,4 @@ private:
 	vk::PresentModeKHR m_PresentMode = vk::PresentModeKHR::eFifo;
 	/** All the frame in the swap chain */
 	std::vector<VulkanSwapChainFrame> m_Frames;
-
-	/** A semaphore to be signaled when the new frame has been acquired */
-	vk::Semaphore m_FrameAcquiredSemaphore;
-	/** A semaphore to be signaled when the new frame has been rendered */
-	vk::Semaphore m_FrameRenderedSemaphore;
-	/** A fence to be signaled when the new frame has been rendered */
-	vk::Fence m_FrameRenderedFence;
 };

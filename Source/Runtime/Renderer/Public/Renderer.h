@@ -4,7 +4,10 @@
 #include "Vulkan/VulkanInstanceHandler.h"
 #include "Vulkan/VulkanDeviceHandler.h"
 #include "Vulkan/VulkanSwapChainHandler.h"
+#include "Vulkan/VulkanRayTracingPipeline.h"
 #include "Vulkan/VulkanAccelerationStructure.h"
+#include "Vulkan/VulkanShaderBindingTable.h"
+#include "Vulkan/VulkanDescriptorSet.h"
 
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
@@ -45,14 +48,16 @@ public:
 	void RenderNewFrame();
 
 private:
-	/** Initialize, setup, and create the vulkan instance */
+	/** Create, initialize and setup the vulkan instance */
 	void InitVulkanInstance();
 	/** Create the GLFW window vulkan surface */
 	void InitSurfaceKHR(GLFWwindow* window);
-	/** Initialize, setup, and create the vulkan device */
+	/** Create, initialize and setup the vulkan device */
 	void InitVulkanDevice();
-
+	/** Create, initialize and setup the vulkan swap chain */
 	void InitSwapChain();
+	/** Create, initialize and setup a vulkan ray tracing image that will be use to store ray tracing color result */
+	void CreateRayTracingImage(const vk::CommandBuffer& commandBuffer);
 
 private:
 	static Renderer* s_Instance;
@@ -62,7 +67,16 @@ private:
 	vk::CommandPool m_CommandPool;
 	VulkanSwapChainHandler m_VkSwapChain;
 	vk::SurfaceKHR m_Surface;
+	VulkanRayTracingPipeline m_Pipeline;
 	VulkanAccelerationStructure m_AccelerationStructure;
+	VulkanShaderBindingTable m_ShaderBindingTable;
+	VulkanDescriptorSet m_DescriptorSet;
+
+	vk::DispatchLoaderDynamic m_Dldi;
 
 	uint8_t m_CurrentFrameIndex;
+
+	vk::Image m_RayTracingImage;
+	vk::DeviceMemory m_RayTracingImageMemory;
+	vk::ImageView m_RayTracingImageView;
 };

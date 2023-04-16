@@ -1,0 +1,44 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+struct Ray
+{
+	vec3 origin;
+	vec3 direction;
+};
+
+struct Aabb
+{
+	vec3 minimum;
+	vec3 maximum;
+};
+
+// Ray-AABB intersection
+float hitAabb(const Aabb aabb, const Ray r)
+{
+	vec3  invDir = 1.0 / r.direction;
+	vec3  tbot   = invDir * (aabb.minimum - r.origin);
+	vec3  ttop   = invDir * (aabb.maximum - r.origin);
+	vec3  tmin   = min(ttop, tbot);
+	vec3  tmax   = max(ttop, tbot);
+	float t0     = max(tmin.x, max(tmin.y, tmin.z));
+	float t1     = min(tmax.x, min(tmax.y, tmax.z));
+	return t1 > max(t0, 0.0) ? t0 : -1.0;
+}
+
+void main()
+{
+	Ray ray;
+	ray.origin    = gl_WorldRayOriginEXT;
+	ray.direction = gl_WorldRayDirectionEXT;
+
+	Aabb aabb;
+	vec3 aabbCenter = vec3(0.0, 0.0, 0.0);
+	aabb.minimum = aabbCenter - vec3(0.5);
+	aabb.maximum = aabbCenter + vec3(0.5);
+	float tHit = hitAabb(aabb, ray);
+
+	if(tHit > 0)
+		reportIntersectionEXT(tHit, 1);
+}
+

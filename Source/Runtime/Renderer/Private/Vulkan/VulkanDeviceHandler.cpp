@@ -54,6 +54,11 @@ void VulkanDeviceHandler::CreateDevice(const vk::SurfaceKHR& surface)
 		m_Queues[queueType].FamilyIndex = famillyIndices[queueType];
 	}
 
+	m_PhysicalDeviceProperties = m_PhysicalDevice.getProperties();
+
+	m_PhysicalDeviceProperties2.pNext = &m_RaytracingProperties;
+	m_PhysicalDevice.getProperties2(&m_PhysicalDeviceProperties2);
+
 	m_IsDeviceCreated = true;
 }
 
@@ -283,4 +288,39 @@ const char* VulkanQueueType::ToString(Type vulkanQueueType)
 	default:
 		return ("Unknown");
 	}
+}
+
+VulkanMemoryRequirementsExtended VulkanDeviceHandler::FindMemoryRequirement(const vk::Buffer& buffer, vk::MemoryPropertyFlags memoryProperty) const
+{
+	VulkanMemoryRequirementsExtended memoryRequirements = static_cast<VulkanMemoryRequirementsExtended>(m_Device.getBufferMemoryRequirements(buffer));
+	memoryRequirements.MemoryTypeIndex = FindMemoryTypeIndex(memoryRequirements, memoryProperty);
+
+	return (memoryRequirements);
+}
+
+VulkanMemoryRequirementsExtended VulkanDeviceHandler::FindMemoryRequirement(const vk::Image& image, vk::MemoryPropertyFlags memoryProperty) const
+{
+	VulkanMemoryRequirementsExtended memoryRequirements = static_cast<VulkanMemoryRequirementsExtended>(m_Device.getImageMemoryRequirements(image));
+	memoryRequirements.MemoryTypeIndex = FindMemoryTypeIndex(memoryRequirements, memoryProperty);
+
+	return (memoryRequirements);
+}
+
+uint32_t VulkanDeviceHandler::FindMemoryTypeIndex(const VulkanMemoryRequirementsExtended& memoryRequirements, vk::MemoryPropertyFlags memoryProperty) const
+{
+	vk::PhysicalDeviceMemoryProperties memoryProperties = GetPhysicalDeviceMemoryProperties();
+
+	uint32_t memoryTypeIndex = -1;
+	for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
+	{
+		if (memoryRequirements.memoryTypeBits & (1 << i))
+		{
+			if (memoryProperties.memoryTypes[i].propertyFlags & memoryProperty)
+			{
+				memoryTypeIndex = i;
+				break;
+			}
+		}
+	}
+	return (memoryTypeIndex);
 }

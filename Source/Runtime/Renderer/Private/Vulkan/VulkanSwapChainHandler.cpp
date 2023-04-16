@@ -20,7 +20,7 @@ void VulkanSwapChainHandler::CreateSwapChain(vk::PresentModeKHR preferredPresent
 	OV_LOG(Verbose, LogVulkan, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
 	OV_LOG(Verbose, LogVulkan, "\tExtent: {:d}x{:d}", m_Extent.width, m_Extent.height);
 
-	uint32_t imageCount = std::min(
+	m_ImageCount = std::min(
 		supportProperties.Capabilities.minImageCount + 1,
 		supportProperties.Capabilities.maxImageCount
 	);
@@ -28,12 +28,12 @@ void VulkanSwapChainHandler::CreateSwapChain(vk::PresentModeKHR preferredPresent
 	vk::SwapchainCreateInfoKHR swapChainCreateInfo(
 		vk::SwapchainCreateFlagsKHR(),
 		*m_Surface,
-		imageCount,
+		m_ImageCount,
 		m_SurfaceFormat.format,
 		m_SurfaceFormat.colorSpace,
 		m_Extent,
 		1,
-		vk::ImageUsageFlagBits::eColorAttachment,
+		vk::ImageUsageFlagBits::eTransferDst,
 		vk::SharingMode::eExclusive,
 		0,
 		nullptr,
@@ -53,21 +53,10 @@ void VulkanSwapChainHandler::CreateSwapChain(vk::PresentModeKHR preferredPresent
 
 	/* Create frames */
 	std::vector<vk::Image> images = m_VkDevice->Raw().getSwapchainImagesKHR(m_Swapchain);
-	imageCount = static_cast<uint32_t>(images.size());
-	m_Frames.reserve(imageCount);
-	for (uint32_t i = 0; i < imageCount; ++i)
+	m_ImageCount = static_cast<uint32_t>(images.size());
+	m_Frames.reserve(m_ImageCount);
+	for (uint32_t i = 0; i < m_ImageCount; ++i)
 		m_Frames.push_back(CreateFrame(images[i]));
-
-	/* Create semaphores */
-	vk::SemaphoreCreateInfo semaphoreCreateInfo;
-	semaphoreCreateInfo.flags = vk::SemaphoreCreateFlags();
-	m_FrameAcquiredSemaphore = m_VkDevice->Raw().createSemaphore(semaphoreCreateInfo);
-	m_FrameRenderedSemaphore = m_VkDevice->Raw().createSemaphore(semaphoreCreateInfo);
-
-	/* Create fence */
-	vk::FenceCreateInfo fenceCreateInfo;
-	fenceCreateInfo.flags = vk::FenceCreateFlagBits::eSignaled;
-	m_FrameRenderedFence = m_VkDevice->Raw().createFence(fenceCreateInfo);
 
 	m_IsSwapChainCreated = true;
 }
@@ -76,13 +65,14 @@ void VulkanSwapChainHandler::DestroySwapChain()
 {
 	CHECK(m_IsSwapChainCreated);
 
-	m_VkDevice->Raw().destroySemaphore(m_FrameRenderedSemaphore);
-	m_VkDevice->Raw().destroySemaphore(m_FrameAcquiredSemaphore);
-	m_VkDevice->Raw().destroyFence(m_FrameRenderedFence);
-
 	// destroy every allocated command buffer
 	for (auto& frame : m_Frames)
+	{
+		m_VkDevice->Raw().destroySemaphore(frame.RenderedSemaphore);
+		m_VkDevice->Raw().destroySemaphore(frame.AcquiredSemaphore);
+		m_VkDevice->Raw().destroyFence(frame.RenderedFence);
 		m_VkDevice->Raw().freeCommandBuffers(*m_CommandPool, frame.CommandBuffer);
+	}
 
 	m_VkDevice->Raw().destroySwapchainKHR(m_Swapchain);
 
@@ -92,17 +82,18 @@ void VulkanSwapChainHandler::DestroySwapChain()
 	m_IsSwapChainCreated = false;
 }
 
-uint8_t VulkanSwapChainHandler::AcquireNextFrameIndex() const
+uint8_t VulkanSwapChainHandler::AcquireNextFrameIndex()
 {
 	CHECK(m_IsSwapChainCreated);
 
-	// block until the previous frame has finish rendering (not presenting)
-	m_VkDevice->Raw().waitForFences(m_FrameRenderedFence, VK_TRUE, UINT64_MAX);
-	m_VkDevice->Raw().resetFences(m_FrameRenderedFence);
+	m_CurrentFrameIndex =
+		static_cast <uint8_t>(m_VkDevice->Raw().acquireNextImageKHR(m_Swapchain, UINT64_MAX, m_Frames[m_CurrentSemaphoreIndex].AcquiredSemaphore, nullptr).value);
 
-	uint8_t imageIndex =
-		static_cast <uint8_t>(m_VkDevice->Raw().acquireNextImageKHR(m_Swapchain, UINT64_MAX, m_FrameAcquiredSemaphore, nullptr).value);
-	return (imageIndex);
+	// block until the previous frame has finish rendering (not presenting)
+	m_VkDevice->Raw().waitForFences(m_Frames[m_CurrentFrameIndex].RenderedFence, VK_TRUE, UINT64_MAX);
+	m_VkDevice->Raw().resetFences(m_Frames[m_CurrentFrameIndex].RenderedFence);
+
+	return (m_CurrentFrameIndex);
 }
 
 void VulkanSwapChainHandler::SubmitWork(uint8_t frameIndex) const
@@ -112,28 +103,29 @@ void VulkanSwapChainHandler::SubmitWork(uint8_t frameIndex) const
 	vk::PipelineStageFlags stageToWait = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 
 	vk::SubmitInfo infoToSubmit(
-		1, &m_FrameAcquiredSemaphore,
+		1, &m_Frames[m_CurrentSemaphoreIndex].AcquiredSemaphore,
 		&stageToWait,
 		1, &m_Frames[frameIndex].CommandBuffer,
-		1, &m_FrameRenderedSemaphore
+		1, &m_Frames[m_CurrentSemaphoreIndex].RenderedSemaphore
 	);
 
-	m_VkDevice->GetQueue(VulkanQueueType::Graphic).submit(infoToSubmit, m_FrameRenderedFence);
+	m_VkDevice->GetQueue(VulkanQueueType::Graphic).submit(infoToSubmit, m_Frames[m_CurrentSemaphoreIndex].RenderedFence);
 }
 
-void VulkanSwapChainHandler::PresentFrame(uint8_t frameIndex) const
+void VulkanSwapChainHandler::PresentFrame(uint8_t frameIndex)
 {
 	CHECK(m_IsSwapChainCreated);
 
 	uint32_t frameIndex32bit = frameIndex;
 	vk::Result result;
 	vk::PresentInfoKHR presentInfos(
-		1, &m_FrameRenderedSemaphore,
+		1, &m_Frames[m_CurrentSemaphoreIndex].RenderedSemaphore,
 		1, &m_Swapchain,
 		&frameIndex32bit,
 		&result
 	);
-	m_VkDevice->GetQueue(VulkanQueueType::Present).presentKHR(presentInfos);
+	m_VkDevice->GetQueue(VulkanQueueType::Graphic).presentKHR(presentInfos);
+	m_CurrentSemaphoreIndex = (m_CurrentSemaphoreIndex + 1) % m_ImageCount;
 }
 
 VulkanSwapChainSupportProperties VulkanSwapChainHandler::RequestSwapchainProperties() const
@@ -199,6 +191,16 @@ VulkanSwapChainFrame VulkanSwapChainHandler::CreateFrame(const vk::Image& image)
 	newFrame.CommandBuffer = m_VkDevice->Raw().allocateCommandBuffers(commandBufferAllocateInfo)[0];
 	newFrame.Image = image;
 
+	/* Create semaphores */
+	vk::SemaphoreCreateInfo semaphoreCreateInfo;
+	semaphoreCreateInfo.flags = vk::SemaphoreCreateFlags();
+	newFrame.AcquiredSemaphore = m_VkDevice->Raw().createSemaphore(semaphoreCreateInfo);
+	newFrame.RenderedSemaphore = m_VkDevice->Raw().createSemaphore(semaphoreCreateInfo);
+
+	/* Create fence */
+	vk::FenceCreateInfo fenceCreateInfo;
+	fenceCreateInfo.flags = vk::FenceCreateFlagBits::eSignaled;
+	newFrame.RenderedFence = m_VkDevice->Raw().createFence(fenceCreateInfo);
+
 	return (newFrame);
 }
-

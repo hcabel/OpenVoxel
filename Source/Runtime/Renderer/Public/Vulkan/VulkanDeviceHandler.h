@@ -24,6 +24,11 @@ namespace VulkanQueueType
 	const char* ToString(Type vulkanQueueType);
 }
 
+struct VulkanMemoryRequirementsExtended : public vk::MemoryRequirements
+{
+	uint32_t MemoryTypeIndex = -1;
+};
+
 class RENDERER_API VulkanDeviceHandler final
 {
 
@@ -67,7 +72,11 @@ public:
 	/** Add a layer to the vulkan device */
 	void AddLayer(const char* layer);
 
+	VulkanMemoryRequirementsExtended FindMemoryRequirement(const vk::Buffer& buffer, vk::MemoryPropertyFlags memoryProperty) const;
+	VulkanMemoryRequirementsExtended FindMemoryRequirement(const vk::Image& image, vk::MemoryPropertyFlags memoryProperty) const;
+
 private:
+	uint32_t FindMemoryTypeIndex(const VulkanMemoryRequirementsExtended& memoryRequirements, vk::MemoryPropertyFlags memoryProperty) const;
 	/**
 	 * Get a suitable physical device.
 	 * \return Suitable physical device
@@ -101,6 +110,10 @@ public:
 	/** Get all the queues */
 	const std::array<VulkanQueue, VulkanQueueType::COUNT>& GetQueues() const { return (m_Queues); }
 
+	const vk::PhysicalDeviceProperties& GetPhysicalDeviceProperties() const { return (m_PhysicalDeviceProperties); }
+	const vk::PhysicalDeviceProperties2& GetPhysicalDeviceProperties2() const { return (m_PhysicalDeviceProperties2); }
+	const vk::PhysicalDeviceRayTracingPipelinePropertiesKHR& GetRaytracingProperties() const { return (m_RaytracingProperties); }
+
 	vk::PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties() const { return (m_PhysicalDevice.getMemoryProperties()); }
 
 private:
@@ -120,5 +133,9 @@ private:
 	// The physical device that correspond to one of your GPU
 	vk::PhysicalDevice m_PhysicalDevice;
 	std::array<VulkanQueue, VulkanQueueType::COUNT> m_Queues;
+
+	vk::PhysicalDeviceRayTracingPipelinePropertiesKHR m_RaytracingProperties;
+	vk::PhysicalDeviceProperties m_PhysicalDeviceProperties;
+	vk::PhysicalDeviceProperties2 m_PhysicalDeviceProperties2;
 
 };
