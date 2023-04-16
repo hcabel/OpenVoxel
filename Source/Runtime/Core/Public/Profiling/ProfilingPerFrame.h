@@ -33,15 +33,15 @@ protected:
 /**
  * This static cast collect/store data from PerFrame timer and store them.
  */
-class PerFrameProfiler final
+class PerFrameProfilerStorage final
 {
 public:
 	static void Report(std::string_view categoryName, std::chrono::nanoseconds &timeMicroSeconds);
 	static void Report(const char* categoryName, std::chrono::nanoseconds &timeMicroSeconds);
 
-	static void ResetAllData();
-	static void ResetData(std::string_view categoryName);
-	static void ResetData(const char* categoryName);
+	static void ClearAllData();
+	static void ClearData(std::string_view categoryName);
+	static void ClearData(const char* categoryName);
 
 	static const PerFrameProfilingData& GetData(std::string_view categoryName);
 
@@ -60,7 +60,7 @@ public:
 	ScopeTimerPerFrame(const char* categoryName)
 		: ScopeTimer([categoryName](std::chrono::nanoseconds elapsed)
 			{
-				PerFrameProfiler::Report(categoryName, elapsed);
+				PerFrameProfilerStorage::Report(categoryName, elapsed);
 			})
 	{}
 

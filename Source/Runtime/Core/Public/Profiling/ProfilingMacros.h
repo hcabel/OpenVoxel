@@ -88,18 +88,18 @@
 
 // Per frame timer
 
-/** Reset all per frame timer data, use at the start of each frame (you probably don't want to mess with this) */
-# define RESET_ALL_PERFRAME_TIMER_DATA PerFrameProfiler::ResetAllData();
-/** Reset a single category of per frame timer data */
-# define RESET_PERFRAME_TIMER_DATA(Category) PerFrameProfiler::ResetData(Category);
+/** Clear all per frame timer data, use at the start of each frame (you probably don't want to mess with this) */
+# define CLEAR_ALL_PERFRAME_TIMER_DATA PerFrameProfilerStorage::ClearAllData();
+/** Clear a single category of per frame timer data */
+# define CLEAR_PERFRAME_TIMER_DATA(Category) PerFrameProfilerStorage::ClearData(Category);
 
 /** Get data of a per frame timer category */
-# define GET_PERFRAME_DATA(Category) PerFrameProfiler::GetData(Category)
+# define GET_PERFRAME_DATA(Category) PerFrameProfilerStorage::GetData(Category)
 
 /** Start a Timer that track execution on a per frame basis (How many time it's called, min/max/average time per frame) */
 # define START_PERFRAME_TIMER(Category) START_NAMED_TIMER(__PerFrameNamedTimer##Category)
 /**  Stop a per frame timer tracking, (and report the value to the PerFrameProfiller class) */
-# define STOP_PERFRAME_TIMER(Category) PerFrameProfiler::Report(#Category, TIMER_NAMED_ELAPSED(__PerFrameNamedTimer##Category))
+# define STOP_PERFRAME_TIMER(Category) PerFrameProfilerStorage::Report(#Category, TIMER_NAMED_ELAPSED(__PerFrameNamedTimer##Category))
 /** Get data of a per frame timer */
 # define GET_PERFRAME_TIMER_DATA(Category) GET_PERFRAME_DATA(#Category)
 

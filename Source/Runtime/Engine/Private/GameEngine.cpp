@@ -31,7 +31,7 @@ void GameEngine::EngineLoop()
 	PlatformTime::Init();
 	while (IsEngineRequestedToStop() == false)
 	{
-		RESET_ALL_PERFRAME_TIMER_DATA;
+		CLEAR_ALL_PERFRAME_TIMER_DATA;
 
 		Renderer::Get()->PrepareNewFrame();
 

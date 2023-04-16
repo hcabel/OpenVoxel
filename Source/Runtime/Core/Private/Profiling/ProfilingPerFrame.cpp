@@ -1,6 +1,6 @@
 #include "Profiling/ProfilingPerFrame.h"
 
-std::unordered_map<std::string, PerFrameProfilingData> PerFrameProfiler::s_ProfilingDatas;
+std::unordered_map<std::string, PerFrameProfilingData> PerFrameProfilerStorage::s_ProfilingDatas;
 
 void PerFrameProfilingData::AddCall(std::chrono::nanoseconds timeMicroSeconds)
 {
@@ -31,12 +31,12 @@ std::chrono::nanoseconds PerFrameProfilingData::CalculateTotal() const
 	return (sum);
 }
 
-void PerFrameProfiler::Report(std::string_view categoryName, std::chrono::nanoseconds &timeMicroSeconds)
+void PerFrameProfilerStorage::Report(std::string_view categoryName, std::chrono::nanoseconds& timeMicroSeconds)
 {
 	Report(categoryName.data(), timeMicroSeconds);
 }
 
-void PerFrameProfiler::Report(const char* categoryName, std::chrono::nanoseconds &timeMicroSeconds)
+void PerFrameProfilerStorage::Report(const char* categoryName, std::chrono::nanoseconds& timeMicroSeconds)
 {
 	if (s_ProfilingDatas.find(categoryName) == s_ProfilingDatas.end())
 		s_ProfilingDatas[categoryName] = PerFrameProfilingData();
@@ -44,22 +44,22 @@ void PerFrameProfiler::Report(const char* categoryName, std::chrono::nanoseconds
 		.AddCall(timeMicroSeconds);
 }
 
-void PerFrameProfiler::ResetAllData()
+void PerFrameProfilerStorage::ClearAllData()
 {
 	s_ProfilingDatas.clear();
 }
 
-void PerFrameProfiler::ResetData(std::string_view categoryName)
+void PerFrameProfilerStorage::ClearData(std::string_view categoryName)
 {
-	ResetData(categoryName.data());
+	ClearData(categoryName.data());
 }
 
-void PerFrameProfiler::ResetData(const char* categoryName)
+void PerFrameProfilerStorage::ClearData(const char* categoryName)
 {
 	s_ProfilingDatas.erase(categoryName);
 }
 
-const PerFrameProfilingData& PerFrameProfiler::GetData(std::string_view categoryName)
+const PerFrameProfilingData& PerFrameProfilerStorage::GetData(std::string_view categoryName)
 {
 	return (s_ProfilingDatas.at(categoryName.data()));
 }

@@ -12,6 +12,7 @@ class Timer
 public:
 	Timer();
 
+	void Start() { Reset(); }
 	void Reset();
 	std::chrono::nanoseconds Elapsed();
 

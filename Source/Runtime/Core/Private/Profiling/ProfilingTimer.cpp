@@ -4,7 +4,7 @@ DEFINE_LOG_CATEGORY(ProfilingLog);
 
 Timer::Timer()
 {
-	Reset();
+	Start();
 }
 
 void Timer::Reset()
