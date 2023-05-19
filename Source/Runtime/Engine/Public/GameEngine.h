@@ -29,8 +29,4 @@ private:
 	 * \param timestep The time step between the last frame and the current frame. (in second)
 	 */
 	void Tick(float timestep);
-
-private:
-	GLFWwindow* m_Window;
-
 };

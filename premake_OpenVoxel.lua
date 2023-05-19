@@ -1,4 +1,4 @@
-RuntimeModules = { "Core", "Engine", "Renderer" }
+RuntimeModules = { "Core", "Engine", "Renderer", "Launch" }
 EditorModules = { "Editor" }
 
 project "OpenVoxel"
