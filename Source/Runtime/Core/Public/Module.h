@@ -1,12 +1,13 @@
 #pragma once
 
+#include "CoreModule.h"
 #include "MacrosHelper.h"
 #include <vector>
 
 /**
  * AModule is the base class for every module.
  */
-class AModule
+class CORE_API AModule
 {
 
 public:
