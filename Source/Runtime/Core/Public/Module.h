@@ -2,7 +2,21 @@
 
 #include "CoreModule.h"
 #include "MacrosHelper.h"
+#include <unordered_map>
 #include <vector>
+
+namespace LoadingPhase
+{
+	enum Type : uint8_t
+	{
+		/** Will be loaded just before the default modules */
+		PreDefault,
+		/** Will be loaded at the start of the program before the engine but after the core modules */
+		Default = 0,
+		/** Will be loaded right after the default modules */
+		PostDefault
+	};
+}
 
 /**
  * AModule is the base class for every module.
@@ -11,7 +25,7 @@ class CORE_API AModule
 {
 
 public:
-	AModule();
+	AModule(LoadingPhase::Type loadingPhase = LoadingPhase::Default);
 	~AModule() = default;
 
 	AModule(const AModule&) = delete;
@@ -22,29 +36,24 @@ public:
 	virtual void StartupModule() = 0;
 	/** Called when unloading the module */
 	virtual void ShutdownModule() = 0;
-
-private:
-	bool m_IsLoaded;
 };
 
 /** 
  * The module manager is here to handle all the module.
- * TODO: Add module loading phases (default, early, ...)
  */
 namespace ModuleManager
 {
 	namespace Private
 	{
-		inline std::vector<AModule*> s_ModuleList;
+		inline std::unordered_map<LoadingPhase::Type, std::vector<AModule*>> s_Modules;
 	}
 
 	/** Register a new module to the module list */
-	void RegisterNewModule(AModule *module);
-	/** Load all the registered modules */
-	void LoadModules();
+	void RegisterNewModule(AModule *module, LoadingPhase::Type loadingPhase);
+	/** Load all the registered modules of the specified phase */
+	void LoadModules(LoadingPhase::Type loadingPhase);
 	/** Unload all the registered modules */
 	void UnloadModules();
 }
 
 #define REGISTER_MODULE(ModuleClass) inline AModule* JOIN(g_, ModuleClass) = new ModuleClass();
-

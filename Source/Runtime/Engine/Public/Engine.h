@@ -25,17 +25,14 @@ class ENGINE_API Engine
 
 protected:
 	Engine() = default;
-	virtual ~Engine() = default;
 
 public:
+	virtual ~Engine() = default;
+
 	// Remove copy constructor and copy assignment operator
 	// A single engine instance is allowed
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;
-
-	static std::shared_ptr<Engine>& Get();
-
-	static std::shared_ptr<Engine> CreateInstance();
 
 #pragma region Methods
 public:
@@ -62,3 +59,5 @@ protected:
 	EngineState::Type m_State = EngineState::Type::Stopped;
 #pragma endregion
 };
+
+inline Engine* g_Engine;

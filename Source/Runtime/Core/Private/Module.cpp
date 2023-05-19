@@ -1,19 +1,18 @@
 #include "Module.h"
 
-AModule::AModule()
+AModule::AModule(LoadingPhase::Type loadingPhase)
 {
-	m_IsLoaded = false;
-	ModuleManager::RegisterNewModule(this);
+	ModuleManager::RegisterNewModule(this, loadingPhase);
 }
 
-void ModuleManager::RegisterNewModule(AModule* module)
+void ModuleManager::RegisterNewModule(AModule* module, LoadingPhase::Type loadingPhase)
 {
-	ModuleManager::Private::s_ModuleList.push_back(module);
+	ModuleManager::Private::s_Modules[loadingPhase].push_back(module);
 }
 
-void ModuleManager::LoadModules()
+void ModuleManager::LoadModules(LoadingPhase::Type loadingPhase)
 {
-	for (auto& module : ModuleManager::Private::s_ModuleList)
+	for (auto& module : ModuleManager::Private::s_Modules[loadingPhase])
 	{
 		module->StartupModule();
 	}
@@ -21,7 +20,7 @@ void ModuleManager::LoadModules()
 
 void ModuleManager::UnloadModules()
 {
-	for (auto& module : ModuleManager::Private::s_ModuleList)
+	for (auto& module : ModuleManager::Private::s_Modules[LoadingPhase::Default])
 	{
 		module->ShutdownModule();
 	}
