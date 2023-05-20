@@ -11,7 +11,7 @@ public:
 
 public:
 	//~ Begin Engine interface
-	virtual void OnStart() override;
+	virtual void OnInitialize() override;
 	virtual void EngineLoop() override;
 	//~ End Engine interface
 

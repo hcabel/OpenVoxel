@@ -19,6 +19,10 @@ int main(int argc, char** argv)
 	g_Engine = new GameEngine();
 #endif
 
+	ModuleManager::LoadModules(LoadingPhase::PreEngine);
+	g_Engine->Initialize();
+	ModuleManager::LoadModules(LoadingPhase::PostEngine);
+
 	g_Engine->Start();
 
 	delete g_Engine;

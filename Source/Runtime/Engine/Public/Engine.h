@@ -36,15 +36,17 @@ public:
 
 #pragma region Methods
 public:
+	/** Called before starting the engine */
+	void Initialize();
 	/** Create and start the engine, called constructor */
 	void Start();
 	/** Request the Engine to Stop running, (will happened at the end of the frame) */
 	void Stop();
 	/** Whether or not the engine should stop running */
-	virtual bool IsEngineRequestedToStop() { return (m_State == EngineState::Stopping); }
+	virtual bool EngineShouldStop() { return (m_State == EngineState::Stopping); }
 
-	/** Called after the engine started */
-	virtual void OnStart() = 0;
+	/** Called when the engine is in starting state */
+	virtual void OnInitialize() = 0;
 	/** Called after start, the engine will cleanup automatically when this function die */
 	virtual void EngineLoop() = 0;
 #pragma endregion

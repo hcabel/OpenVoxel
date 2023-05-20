@@ -10,20 +10,20 @@ GameEngine::~GameEngine()
 	Renderer::Shutdown();
 }
 
-void GameEngine::OnStart()
+void GameEngine::OnInitialize()
 {
 	CREATE_SCOPE_NAMED_TIMER_CONSOLE(EngineStartup);
-	OV_LOG(Display, GameEngineLog, "Starting Engine");
+	OV_LOG(Display, GameEngineLog, "Init Engine");
 }
 
 void GameEngine::EngineLoop()
 {
-	OV_LOG(Display, GameEngineLog, "Starting Engine Loop");
+	OV_LOG(Display, GameEngineLog, "Engine Running");
 
 	PlatformTime::Init();
-	while (IsEngineRequestedToStop() == false)
+	while (EngineShouldStop() == false)
 	{
-		CLEAR_ALL_PERFRAME_TIMER_DATA;
+		CLEAR_ALL_PERFRAME_TIMER_DATA();
 
 		Renderer::Get()->PrepareNewFrame();
 
@@ -49,7 +49,7 @@ void GameEngine::Tick(float timeStep)
 	Stop();
 }
 
-bool GameEngine::IsEngineRequestedToStop()
+bool GameEngine::EngineShouldStop()
 {
 	GLFWwindow* glfwWindow = RendererModule::GetWindow();
 	return (

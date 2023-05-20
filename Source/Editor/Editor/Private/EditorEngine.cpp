@@ -4,13 +4,13 @@ EditorEngine::~EditorEngine()
 {
 }
 
-void EditorEngine::OnStart()
+void EditorEngine::OnInitialize()
 {
 }
 
 void EditorEngine::EngineLoop()
 {
-	while (IsEngineRequestedToStop() == false)
+	while (EngineShouldStop() == false)
 	{
 		Stop();
 	}

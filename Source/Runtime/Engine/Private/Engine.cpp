@@ -1,9 +1,13 @@
 #include "Engine.h"
 
-void Engine::Start()
+void Engine::Initialize()
 {
 	m_State = EngineState::Type::Starting;
-	OnStart();
+	OnInitialize();
+}
+
+void Engine::Start()
+{
 	m_State = EngineState::Type::Running;
 	EngineLoop();
 }

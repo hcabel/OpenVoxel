@@ -89,7 +89,7 @@
 // Per frame timer
 
 /** Clear all per frame timer data, use at the start of each frame (you probably don't want to mess with this) */
-# define CLEAR_ALL_PERFRAME_TIMER_DATA PerFrameProfilerStorage::ClearAllData();
+# define CLEAR_ALL_PERFRAME_TIMER_DATA() PerFrameProfilerStorage::ClearAllData();
 /** Clear a single category of per frame timer data */
 # define CLEAR_PERFRAME_TIMER_DATA(Category) PerFrameProfilerStorage::ClearData(Category);
 

@@ -14,7 +14,12 @@ namespace LoadingPhase
 		/** Will be loaded at the start of the program before the engine but after the core modules */
 		Default = 0,
 		/** Will be loaded right after the default modules */
-		PostDefault
+		PostDefault,
+
+		/** Will be loaded before the engine initialisation */
+		PreEngine,
+		/** Will be loaded after the engine initialisation */
+		PostEngine,
 	};
 }
 
