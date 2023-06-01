@@ -4,9 +4,10 @@ EditorModules = { "Editor" }
 project "OpenVoxel"
 	kind "ConsoleApp"
 	language "C++"
+	location (projectFileLocation)
 
-	targetdir ("build/" .. outputdir .. "/%{prj.name}")
-	objdir ("intermediate/" .. outputdir .. "/%{prj.name}")
+	targetdir (buildOutput .. "/%{prj.name}")
+	objdir (intermediateOutput .. "/%{prj.name}")
 
 	-- TODO: Handle other OS (currently windows only)
 	cppdialect "C++20"
@@ -29,16 +30,15 @@ project "OpenVoxel"
 	files
 	{
 		-- Config files
-		".editorconfig",
-		".gitignore",
-		".gitmodules",
-		"premake5.lua",
-		"premake_OpenVoxel.lua",
-		"imgui.ini",
+		"../.editorconfig",
+		"../.gitignore",
+		"../.gitmodules",
+		"../**/**/premake5.lua",
+		"../imgui.ini",
 
 		-- Source files
-		"Source/Runtime/**.h",
-		"Source/Runtime/**.cpp",
+		"Runtime/**.h",
+		"Runtime/**.cpp",
 	}
 
 
@@ -46,13 +46,13 @@ project "OpenVoxel"
 	{
 		-- Third party
 		"%{VULKAN_SDK}/Include",
-		"Source/ThirdParty/imgui/include",
-		"Source/ThirdParty/GLFW/include",
-		"Source/ThirdParty/glm",
-		"Source/ThirdParty/stb_image",
+		"ThirdParty/imgui/include",
+		"ThirdParty/GLFW/include",
+		"ThirdParty/glm",
+		"ThirdParty/stb_image",
 
 		-- Modules
-		table.translate(RuntimeModules, function (moduleName) return ("Source/Runtime/" .. moduleName .. "/Public") end),
+		table.translate(RuntimeModules, function (moduleName) return ("Runtime/" .. moduleName .. "/Public") end),
 	}
 
 	links
@@ -67,14 +67,14 @@ project "OpenVoxel"
 	filter "configurations:Editor*"
 		files
 		{
-			"Source/Editor/**.h",
-			"Source/Editor/**.cpp",
+			"Editor/**.h",
+			"Editor/**.cpp",
 		}
 
 		includedirs
 		{
 			-- Modules
-			table.translate(EditorModules, function (moduleName) return ("Source/Editor/" .. moduleName .. "/Public") end),
+			table.translate(EditorModules, function (moduleName) return ("Editor/" .. moduleName .. "/Public") end),
 		}
 	filter {}
 
