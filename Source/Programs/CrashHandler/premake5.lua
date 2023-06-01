@@ -7,3 +7,7 @@ project "CrashHandler"
 	targetdir (buildOutput .. "/%{prj.name}")
 	objdir (intermediateOutput .. "/%{prj.name}")
 
+	files
+	{
+		"premake5.lua"
+	}

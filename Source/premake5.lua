@@ -33,10 +33,10 @@ project "OpenVoxel"
 		"../.editorconfig",
 		"../.gitignore",
 		"../.gitmodules",
-		"../**/**/premake5.lua",
 		"../imgui.ini",
 
 		-- Source files
+		"premake5.lua",
 		"Runtime/**.h",
 		"Runtime/**.cpp",
 	}
