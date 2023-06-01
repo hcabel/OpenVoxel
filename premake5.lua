@@ -27,15 +27,13 @@ workspace "OpenVoxel"
 
 	startproject "OpenVoxel"
 
-group "Source"
-	group "Source/Dependencies"
-		include "Source/ThirdParty/imgui"
-		include "Source/ThirdParty/GLFW"
-	group "Source"
-
-	include "Source/premake5.lua" -- OpenVoxel
+group "Dependencies"
+	include "Source/ThirdParty/imgui"
+	include "Source/ThirdParty/GLFW"
 group ""
 
+include "Source/premake5.lua" -- OpenVoxel
+
 group "Programs"
-	include "Programs/CrashHandler/premake5.lua" -- Crash Handler
+	include "Source/Programs/CrashHandler/premake5.lua" -- Crash Handler
 group ""
