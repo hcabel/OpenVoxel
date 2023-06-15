@@ -104,18 +104,18 @@ project "OpenVoxel"
 	filter "system:windows"
 		defines
 		{
-			"OV_PLATFORM_WINDOWS"
+			"PLATFORM_WINDOWS"
 		}
 
 	filter "system:linux"
 		defines
 		{
-			"OV_PLATFORM_LINUX"
+			"PLATFORM_LINUX"
 		}
 
 	filter "system:macosx"
 		defines
 		{
-			"OV_PLATFORM_MAC"
+			"PLATFORM_MAC"
 		}
 	filter {}

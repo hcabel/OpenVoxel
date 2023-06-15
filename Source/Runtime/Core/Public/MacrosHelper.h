@@ -26,17 +26,23 @@
 
 /* Platform macros */
 
-#if OV_PLATFORM_WINDOWS
-# define OV_PLATFORM_NAME Windows
-#elif OV_PLATFORM_MAC
-# define OV_PLATFORM_NAME Mac
-#elif OV_PLATFORM_LINUX
-# define OV_PLATFORM_MAME Linux
+#if PLATFORM_WINDOWS
+# define PLATFORM_NAME Windows
+#elif PLATFORM_MAC
+# define PLATFORM_NAME Mac
+#elif PLATFORM_LINUX
+# define PLATFORM_MAME Linux
 #else
-# error OV_PLATFORM_NAME does not detect this operating system
+# error PLATFORM_NAME not defined for this platform
 #endif
 
-#define PLATFORM_HEADER(Header) TO_STRING(JOIN(OV_PLATFORM_NAME/OV_PLATFORM_NAME, Header))
+/**
+ * Platform header will change the include path depending of the current platform.
+ * 
+ * "Windows = Windows/Windows[HeaderName]"
+ * "Linux = Linux/Linux[HeaderName]"
+ */
+#define PLATFORM_HEADER(Header) TO_STRING(JOIN(PLATFORM_NAME/PLATFORM_NAME, Header))
 
 /* Compiler macros */
 
