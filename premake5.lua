@@ -13,6 +13,8 @@ intermediateOutput = intermediateDir .. "/" .. outputdir
 
 projectFileLocation = rootDir .. "/intermediate/ProjectFile"
 
+include "./vendor/Premake5/Extended/workspace_files.lua"
+
 workspace "OpenVoxel"
 	architecture "x64"
 	configurations
@@ -25,9 +27,19 @@ workspace "OpenVoxel"
 		-- "DIST"
 	}
 
+	workspace_files
+	{
+		".editorconfig",
+		".gitignore",
+		".gitmodules",
+		"imgui.ini",
+		"premake5.lua"
+	}
+
 	startproject "OpenVoxel"
 
 group "Dependencies"
+	include "vendor/Premake5"
 	include "Source/ThirdParty/imgui"
 	include "Source/ThirdParty/GLFW"
 group ""
