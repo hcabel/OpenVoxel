@@ -29,14 +29,6 @@ project "OpenVoxel"
 
 	files
 	{
-		-- Config files
-		"../.editorconfig",
-		"../.gitignore",
-		"../.gitmodules",
-		"../imgui.ini",
-
-		-- Source files
-		"premake5.lua",
 		"Runtime/**.h",
 		"Runtime/**.cpp",
 	}
