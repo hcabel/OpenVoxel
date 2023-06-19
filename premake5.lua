@@ -19,7 +19,6 @@ workspace "OpenVoxel"
 		".gitignore",
 		".gitmodules",
 		"imgui.ini",
-		"premake5.lua"
 	}
 
 	startproject "OpenVoxel"
