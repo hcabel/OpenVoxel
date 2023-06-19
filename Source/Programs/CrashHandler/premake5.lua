@@ -9,7 +9,6 @@ project "CrashHandler"
 
 	files
 	{
-		"premake5.lua",
 		"Private/**.cpp",
 		"Private/**.h"
 	}
