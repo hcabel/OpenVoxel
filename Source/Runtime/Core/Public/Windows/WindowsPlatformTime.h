@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Core_API.h"
 #include "Generic/GenericPlatformTime.h"
 
-class WindowsPlatformTime : public GenericPlatformTime
+class CORE_API WindowsPlatformTime : public GenericPlatformTime
 {
 public:
 	WindowsPlatformTime() = delete;

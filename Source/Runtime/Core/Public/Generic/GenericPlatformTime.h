@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Core_API.h"
+
 /**
  * Abstract class for platform time implementation.
  */
-class GenericPlatformTime
+class CORE_API GenericPlatformTime
 {
 public:
 	GenericPlatformTime() = delete;

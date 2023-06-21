@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core_API.h"
 #include "Logging/LoggingType.h"
 
 #include <iostream>
@@ -11,7 +12,7 @@
  * TODO: Add file logging
  * TODO: Add thread safe logging (using a queue probably)
  */
-class Logger final
+class CORE_API Logger final
 {
 public:
 	static void Log(Verbosity::Type verbosity, LogCategory& category, std::string message);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core_API.h"
+
 #include <stdint.h>
 #include <string>
 
@@ -23,11 +25,11 @@ namespace Verbosity
 		VeryVerbose = 6,
 	};
 
-	const char* ToString(Type Verbosity);
-	Type ToType(const std::string_view& verbosity);
+	CORE_API const char* ToString(Type Verbosity);
+	CORE_API Type ToType(const std::string_view& verbosity);
 }
 
-class LogCategory
+class CORE_API LogCategory
 {
 public:
 	LogCategory(std::string &&categoryName)
@@ -39,7 +41,7 @@ public:
 	LogCategory& operator=(const LogCategory&) = delete;
 
 #pragma region Accessors - Get
-	const std::string_view GetName() const { return m_Name;	}
+	inline const std::string_view GetName() const { return m_Name;	}
 #pragma endregion
 
 private:

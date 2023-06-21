@@ -12,7 +12,6 @@
 # define OV_LOG(LogVerbosity, Category, Format, ...) \
 	if (Verbosity::LogVerbosity == Verbosity::Fatal) \
 		assert(false);
-# define OV_LOG_ARRAY(LogVerbosity, Category, Array, Format, ...) OV_LOG(LogVerbosity, Category, Format, __VA_ARGS__)
 
 # define DECLARE_LOG_CATEGORY(CategoryName) EMPTY_MACRO
 # define DEFINE_LOG_CATEGORY(CategoryName) EMPTY_MACRO
@@ -30,7 +29,7 @@
 	FOR_EACH_LOOP(Entry, Array) \
 		OV_LOG(LogVerbosity, Category, Format, Entry, __VA_ARGS__); \
 
-# define DECLARE_LOG_CATEGORY(CategoryName) extern class LogCategory CategoryName;
+# define DECLARE_LOG_CATEGORY(CategoryName) extern LogCategory CategoryName;
 # define DEFINE_LOG_CATEGORY(CategoryName) LogCategory CategoryName(#CategoryName);
 
 #endif // !NO_LOGGING || WITH_LOGGING

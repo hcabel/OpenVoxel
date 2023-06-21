@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core_API.h"
 #include "Logging/LoggingMacros.h"
 
 #include <chrono>
@@ -7,7 +8,7 @@
 
 DECLARE_LOG_CATEGORY(ProfilingLog);
 
-class Timer
+class CORE_API Timer
 {
 public:
 	Timer();
@@ -20,7 +21,7 @@ private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_Start;
 };
 
-class ScopeTimer
+class CORE_API ScopeTimer
 {
 
 public:
@@ -38,7 +39,7 @@ protected:
 	std::function<void(std::chrono::nanoseconds)> m_OnEnded;
 };
 
-class ConsoleScopeTimer : ScopeTimer
+class CORE_API ConsoleScopeTimer : ScopeTimer
 {
 public:
 	ConsoleScopeTimer(const char* timerName)

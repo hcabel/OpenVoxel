@@ -1,10 +1,12 @@
 ﻿#pragma once
 
+#include "Core_API.h"
+
 /**
  * A singleton class that will instanciate one and unique instance and hold on to an object until he is reseted.
  */
 template<typename T>
-class Singleton final
+class CORE_API Singleton final
 {
 private:
 	Singleton()

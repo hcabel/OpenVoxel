@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreModule.h"
+#include "Core_API.h"
 #include "MacrosHelper.h"
 #include <unordered_map>
 #include <vector>
@@ -46,19 +46,18 @@ public:
 /** 
  * The module manager is here to handle all the module.
  */
-namespace ModuleManager
+class CORE_API ModuleManager
 {
-	namespace Private
-	{
-		inline std::unordered_map<LoadingPhase::Type, std::vector<AModule*>> s_Modules;
-	}
-
+public:
 	/** Register a new module to the module list */
-	void RegisterNewModule(AModule *module, LoadingPhase::Type loadingPhase);
+	static void RegisterNewModule(AModule* module, LoadingPhase::Type loadingPhase);
 	/** Load all the registered modules of the specified phase */
-	void LoadModules(LoadingPhase::Type loadingPhase);
+	static void LoadModules(LoadingPhase::Type loadingPhase);
 	/** Unload all the registered modules */
-	void UnloadModules();
-}
+	static void UnloadModules();
+
+private:
+	static std::unordered_map<LoadingPhase::Type, std::vector<AModule*>> s_Modules;
+};
 
 #define REGISTER_MODULE(ModuleClass) inline AModule* JOIN(g_, ModuleClass) = new ModuleClass();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core_API.h"
 #include "Profiling/ProfilingTimer.h"
 
 #include <glm/glm.hpp>
@@ -33,7 +34,7 @@ protected:
 /**
  * This static cast collect/store data from PerFrame timer and store them.
  */
-class PerFrameProfilerStorage final
+class CORE_API PerFrameProfilerStorage final
 {
 public:
 	static void Report(std::string_view categoryName, std::chrono::nanoseconds &timeMicroSeconds);
@@ -53,7 +54,7 @@ private:
  * Create a timer that will track the execution of the current scope.
  * When done this timer will report his data to the PerFrameProfiler.
  */
-class ScopeTimerPerFrame : public ScopeTimer
+class CORE_API ScopeTimerPerFrame : public ScopeTimer
 {
 
 public:
