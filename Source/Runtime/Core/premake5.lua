@@ -21,12 +21,15 @@ project "Core"
 	{
 		"Private",
 		"Public",
+
+		-- ThirdParty
 		"../../ThirdParty/GLFW/include",
 		"../../ThirdParty/glm",
 	}
 
 	links
 	{
+		-- ThirdParty
 		"GLFW",
 	}
 
@@ -36,12 +39,27 @@ project "Core"
 	filter "configurations:*Debug"
 		runtime "Debug"
 		symbols "on"
-
 	filter "configurations:*Release"
 		runtime "Release"
 		optimize "on"
 		symbols "off"
 	filter {}
 
-	defines "PLATFORM_WINDOWS"
-	defines "OV_BUILD_DLL"
+	-- /* DEFINES ************************************************************/
+
+	defines "OV_BUILD_CORE_DLL"
+
+	-- Config specific
+	filter "configurations:Editor*"
+		defines "WITH_EDITOR"
+	filter "configurations:*Debug"
+		defines "OV_DEBUG"
+
+	-- System specific
+	filter "system:windows"
+		defines "PLATFORM_WINDOWS"
+	filter "system:linux"
+		defines "PLATFORM_LINUX"
+	filter "system:macosx"
+		defines "PLATFORM_MAC"
+	filter {}
