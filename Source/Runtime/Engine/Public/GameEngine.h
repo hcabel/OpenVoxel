@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Engine_API.h"
 #include "Logging/LoggingMacros.h"
-#include "EngineModule.h"
 #include "Engine.h"
 
 #undef GLFW_INCLUDE_VULKAN
