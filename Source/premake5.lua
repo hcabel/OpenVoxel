@@ -1,5 +1,5 @@
-RuntimeModules = { "Core", "Engine", "Renderer", "Launch" }
-EditorModules = { "Editor" }
+OV_RuntimeModules = { "Core", "Engine", "Renderer" }
+OV_EditorModules = { "Editor" }
 
 project "OpenVoxel"
 	kind "ConsoleApp"
@@ -11,7 +11,7 @@ project "OpenVoxel"
 
 	-- TODO: Handle other OS (currently windows only)
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 	systemversion "latest"
 
 	filter "configurations:*Debug"
@@ -24,34 +24,38 @@ project "OpenVoxel"
 		symbols "off"
 	filter {}
 
-
 	-- /* RUNTIME ************************************************************/
 
 	files
 	{
-		"Runtime/**.h",
-		"Runtime/**.cpp",
+		"Runtime/Launch/**.h",
+		"Runtime/Launch/**.cpp",
 	}
-
 
 	includedirs
 	{
+		"Runtime/Launch/Public",
+		"Runtime/Launch/Private",
+
 		-- Third party
 		"%{VULKAN_SDK}/Include",
 		"ThirdParty/imgui/include",
 		"ThirdParty/GLFW/include",
 		"ThirdParty/glm",
-		"ThirdParty/stb_image",
 
 		-- Modules
-		table.translate(RuntimeModules, function (moduleName) return ("Runtime/" .. moduleName .. "/Public") end),
+		table.translate(OV_RuntimeModules, function (moduleName) return ("Runtime/" .. moduleName .. "/Public") end),
 	}
 
 	links
 	{
+		-- Third party
 		"%{VULKAN_SDK}/Lib/vulkan-1.lib",
 		"ImGui",
 		"GLFW",
+
+		-- Runtime Modules
+		table.translate(OV_RuntimeModules, function (moduleName) return (moduleName) end),
 	}
 
 	-- /* EDITOR *************************************************************/
@@ -66,48 +70,23 @@ project "OpenVoxel"
 		includedirs
 		{
 			-- Modules
-			table.translate(EditorModules, function (moduleName) return ("Editor/" .. moduleName .. "/Public") end),
+			table.translate(OV_EditorModules, function (moduleName) return ("Editor/" .. moduleName .. "/Public") end),
 		}
 	filter {}
 
 	-- /* DEFINES ************************************************************/
 
-	defines
-	{
-		"OV_BUILD_DLL",
-	}
-
 	-- Config specific
-
 	filter "configurations:Editor*"
-		defines
-		{
-			"WITH_EDITOR"
-		}
-
+		defines "WITH_EDITOR"
 	filter "configurations:*Debug"
-		defines
-		{
-			"OV_DEBUG"
-		}
+		defines "OV_DEBUG"
 
 	-- System specific
-
 	filter "system:windows"
-		defines
-		{
-			"PLATFORM_WINDOWS"
-		}
-
+		defines "PLATFORM_WINDOWS"
 	filter "system:linux"
-		defines
-		{
-			"PLATFORM_LINUX"
-		}
-
+		defines "PLATFORM_LINUX"
 	filter "system:macosx"
-		defines
-		{
-			"PLATFORM_MAC"
-		}
+		defines "PLATFORM_MAC"
 	filter {}
