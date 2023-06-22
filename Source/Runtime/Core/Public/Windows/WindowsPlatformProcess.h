@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core_API.h"
+
 #include <processthreadsapi.h>
 #include <cstdint>
 
@@ -8,7 +10,7 @@
  * 
  * /!\ WINDOWS implementation /!\
  */
-class WindowsPlatformProcess
+class CORE_API WindowsPlatformProcess
 {
 public:
 	/** Return the PID of the currently running process. */

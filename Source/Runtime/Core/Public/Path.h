@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "CoreModule.h"
+#include "Core_API.h"
 
 #include <string>
 
-class Path
+class CORE_API Path
 {
 public:
 	/** The the root directory of the engine */

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Core_API.h"
+
 #include <string_view>
 #include <iostream>
 #include <fstream>
@@ -11,7 +13,7 @@
  * 
  * WINDOW ONLY!
  */
-class WindowsPlatformFile
+class CORE_API WindowsPlatformFile
 {
 private:
 	WindowsPlatformFile() = default;

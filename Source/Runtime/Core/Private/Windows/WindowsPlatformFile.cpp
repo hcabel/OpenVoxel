@@ -5,7 +5,7 @@
 #pragma region API
 WindowsPlatformFile::~WindowsPlatformFile()
 {
-	if (IsOpen());
+	if (IsOpen())
 	{
 		OV_LOG(Warning, CoreLog, "File was not closed before destruction!");
 		Close();
