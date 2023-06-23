@@ -13,12 +13,12 @@ GameEngine::~GameEngine()
 void GameEngine::OnInitialize()
 {
 	CREATE_SCOPE_NAMED_TIMER_CONSOLE(EngineStartup);
-	OV_LOG(Display, GameEngineLog, "Init Engine");
+	OV_LOG(GameEngineLog, Display, "Init Engine");
 }
 
 void GameEngine::EngineLoop()
 {
-	OV_LOG(Display, GameEngineLog, "Engine Running");
+	OV_LOG(GameEngineLog, Display, "Engine Running");
 
 	PlatformTime::Init();
 	while (EngineShouldStop() == false)

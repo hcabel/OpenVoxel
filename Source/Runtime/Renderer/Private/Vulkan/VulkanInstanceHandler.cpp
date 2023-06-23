@@ -33,18 +33,18 @@ void VulkanInstanceHandler::CreateInstance(const char* name, uint32_t fix, uint3
 
 	if (allExtensionsAreSupported() == false || allLayersAreSupported() == false)
 	{
-		OV_LOG(Fatal, LogVulkan, "Vulkan instance \"{:s}\" creation failed", name);
+		OV_LOG(LogVulkan, Fatal, "Vulkan instance \"{:s}\" creation failed", name);
 		return;
 	}
 
 	m_Instance = vk::createInstance(instanceCreateInfo);
 
-	OV_LOG(Verbose, LogVulkan, "Vulkan instance \"{:s}\" created (version: {:d}.{:d}.{:d})",
+	OV_LOG(LogVulkan, Verbose, "Vulkan instance \"{:s}\" created (version: {:d}.{:d}.{:d})",
 		name, VK_API_VERSION_MAJOR(m_Version), VK_API_VERSION_MINOR(m_Version), VK_API_VERSION_PATCH(m_Version));
-	OV_LOG(Verbose, LogVulkan, "Vulkan instance extension enabled:");
-	OV_LOG_ARRAY(Verbose, LogVulkan, m_Extensions, "\t\"{:s}\"");
-	OV_LOG(Verbose, LogVulkan, "Vulkan instance layers enabled:");
-	OV_LOG_ARRAY(Verbose, LogVulkan, m_Layers, "\t\"{:s}\"");
+	OV_LOG(LogVulkan, Verbose, "Vulkan instance extension enabled:");
+	OV_LOG_ARRAY(LogVulkan, Verbose, m_Extensions, "\t\"{:s}\"");
+	OV_LOG(LogVulkan, Verbose, "Vulkan instance layers enabled:");
+	OV_LOG_ARRAY(LogVulkan, Verbose, m_Layers, "\t\"{:s}\"");
 
 	m_IsInstanceCreated = true;
 }
@@ -97,8 +97,8 @@ bool VulkanInstanceHandler::allExtensionsAreSupported()
 
 		if (!found)
 		{
-			OV_LOG_IF(areTheyAllSupported == true, Error, LogVulkan, "Unsupported instance extension list:")
-			OV_LOG(Error, LogVulkan, "\t\"{:s}\"", extension);
+			OV_LOG_IF(areTheyAllSupported == true, LogVulkan, Error, "Unsupported instance extension list:")
+			OV_LOG(LogVulkan, Error, "\t\"{:s}\"", extension);
 			areTheyAllSupported = false;
 		}
 	}
@@ -125,8 +125,8 @@ bool VulkanInstanceHandler::allLayersAreSupported()
 
 		if (!found)
 		{
-			OV_LOG_IF(areTheyAllSupported == true, Error, LogVulkan, "Unsupported instance layer list:")
-			OV_LOG(Error, LogVulkan, "\t\"{:s}\"", layer);
+			OV_LOG_IF(areTheyAllSupported == true, LogVulkan, Error, "Unsupported instance layer list:")
+			OV_LOG(LogVulkan, Error, "\t\"{:s}\"", layer);
 			areTheyAllSupported = false;
 		}
 	}

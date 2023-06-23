@@ -9,5 +9,5 @@ DECLARE_LOG_CATEGORY(LogVulkan);
 #define CHECK_VULKAN_RESULT(result, message) \
 	if (result != vk::Result::eSuccess) \
 	{ \
-		OV_LOG(Error, LogVulkan, "Vulkan Error: {} - {}", message, vk::to_string(result)); \
+		OV_LOG(LogVulkan, Error, "Vulkan Error: {} - {}", message, vk::to_string(result)); \
 	}

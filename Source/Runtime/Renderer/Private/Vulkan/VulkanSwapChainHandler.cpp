@@ -15,10 +15,10 @@ void VulkanSwapChainHandler::CreateSwapChain(vk::PresentModeKHR preferredPresent
 	m_PresentMode = SelectPresentMode(supportProperties.PresentModes, preferredPresentMode);
 	m_Extent = SelectExtent(supportProperties.Capabilities);
 
-	OV_LOG(Verbose, LogVulkan, "Swap chain properties: ");
-	OV_LOG(Verbose, LogVulkan, "\tFormat: {:s} ({:s})", vk::to_string(m_SurfaceFormat.format), vk::to_string(m_SurfaceFormat.colorSpace));
-	OV_LOG(Verbose, LogVulkan, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
-	OV_LOG(Verbose, LogVulkan, "\tExtent: {:d}x{:d}", m_Extent.width, m_Extent.height);
+	OV_LOG(LogVulkan, Verbose, "Swap chain properties: ");
+	OV_LOG(LogVulkan, Verbose, "\tFormat: {:s} ({:s})", vk::to_string(m_SurfaceFormat.format), vk::to_string(m_SurfaceFormat.colorSpace));
+	OV_LOG(LogVulkan, Verbose, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
+	OV_LOG(LogVulkan, Verbose, "\tExtent: {:d}x{:d}", m_Extent.width, m_Extent.height);
 
 	m_ImageCount = std::min(
 		supportProperties.Capabilities.minImageCount + 1,
@@ -48,7 +48,7 @@ void VulkanSwapChainHandler::CreateSwapChain(vk::PresentModeKHR preferredPresent
 	}
 	catch (vk::SystemError& e)
 	{
-		OV_LOG(Fatal, LogVulkan, "Failed to create swap chain: \"{:s}\"", e.what());
+		OV_LOG(LogVulkan, Fatal, "Failed to create swap chain: \"{:s}\"", e.what());
 	}
 
 	/* Create frames */

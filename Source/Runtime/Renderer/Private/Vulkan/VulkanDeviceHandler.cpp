@@ -17,20 +17,20 @@ void VulkanDeviceHandler::CreateDevice(const vk::SurfaceKHR& surface)
 #if WITH_LOGGING
 	// Print device infos:
 	const auto deviceProperties = m_PhysicalDevice.getProperties();
-	OV_LOG(Verbose, LogVulkan, "Selected GPU: \"{:s}\" ({:s})",
+	OV_LOG(LogVulkan, Verbose, "Selected GPU: \"{:s}\" ({:s})",
 		deviceProperties.deviceName.data(), vk::to_string(deviceProperties.deviceType));
 #endif
 
 	if (allExtensionsAreSupported() == false || allLayersAreSupported() == false)
 	{
-		OV_LOG(Fatal, LogVulkan, "Unable to create the device");
+		OV_LOG(LogVulkan, Fatal, "Unable to create the device");
 		return;
 	}
 
-	OV_LOG(Verbose, LogVulkan, "Vulkan device extension enabled:");
-	OV_LOG_ARRAY(Verbose, LogVulkan, m_Extensions, "\t\"{:s}\"");
-	OV_LOG(Verbose, LogVulkan, "Vulkan device layers enabled:");
-	OV_LOG_ARRAY(Verbose, LogVulkan, m_Layers, "\t\"{:s}\"");
+	OV_LOG(LogVulkan, Verbose, "Vulkan device extension enabled:");
+	OV_LOG_ARRAY(LogVulkan, Verbose, m_Extensions, "\t\"{:s}\"");
+	OV_LOG(LogVulkan, Verbose, "Vulkan device layers enabled:");
+	OV_LOG_ARRAY(LogVulkan, Verbose, m_Layers, "\t\"{:s}\"");
 
 	auto famillyIndices = FindQueueFamilyIndices(surface);
 	auto queuesCreateInfo = SetupQueuesCreateInfo(famillyIndices);
@@ -95,7 +95,7 @@ vk::PhysicalDevice VulkanDeviceHandler::FetchSuitablePhysicalDevice() const
 {
 	auto devices = m_VkInstance->Raw().enumeratePhysicalDevices();
 	if (devices.empty())
-		OV_LOG(Fatal, LogVulkan, "No GPU found");
+		OV_LOG(LogVulkan, Fatal, "No GPU found");
 	for (const auto& device : devices)
 	{
 		if (IsDeviceSuitable(device))
@@ -165,8 +165,8 @@ bool VulkanDeviceHandler::allExtensionsAreSupported() const
 
 		if (!found)
 		{
-			OV_LOG_IF(areTheyAllSupported == true, Error, LogVulkan, "Unsupported device extension list:")
-			OV_LOG(Error, LogVulkan, "\t\"{:s}\"", extension);
+			OV_LOG_IF(areTheyAllSupported == true, LogVulkan, Error, "Unsupported device extension list:")
+			OV_LOG(LogVulkan, Error, "\t\"{:s}\"", extension);
 			areTheyAllSupported = false;
 		}
 	}
@@ -193,8 +193,8 @@ bool VulkanDeviceHandler::allLayersAreSupported() const
 
 		if (!found)
 		{
-			OV_LOG_IF(areTheyAllSupported == true, Error, LogVulkan, "Unsupported device layer list:")
-			OV_LOG(Error, LogVulkan, "\t\"{:s}\"", layer);
+			OV_LOG_IF(areTheyAllSupported == true, LogVulkan, Error, "Unsupported device layer list:")
+			OV_LOG(LogVulkan, Error, "\t\"{:s}\"", layer);
 			areTheyAllSupported = false;
 		}
 	}
@@ -238,7 +238,7 @@ std::vector<vk::DeviceQueueCreateInfo> VulkanDeviceHandler::SetupQueuesCreateInf
 		// queueFamilyIndices[VulkanQueueType::Transfer]
 	};
 
-	OV_LOG(VeryVerbose, LogVulkan, "Vulkan Queue families indices's:");
+	OV_LOG(LogVulkan, VeryVerbose, "Vulkan Queue families indices's:");
 
 	float queuePriority = 1.0f;
 	for (uint32_t uniqueQueueFamillyIndex : uniqueQueueFamillyIndices)
@@ -254,7 +254,7 @@ std::vector<vk::DeviceQueueCreateInfo> VulkanDeviceHandler::SetupQueuesCreateInf
 			);
 			queuesCreateInfo.push_back(queueCreateInfo);
 
-			OV_LOG(VeryVerbose, LogVulkan, "\tQueue family {:d} will be used for: {:s} ",
+			OV_LOG(LogVulkan, VeryVerbose, "\tQueue family {:d} will be used for: {:s} ",
 				uniqueQueueFamillyIndex,
 				VulkanQueueType::ToString(
 					uniqueQueueFamillyIndex == queueFamilyIndices[VulkanQueueType::Graphic] ? VulkanQueueType::Graphic :
