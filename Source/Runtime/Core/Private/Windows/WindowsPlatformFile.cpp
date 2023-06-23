@@ -7,7 +7,7 @@ WindowsPlatformFile::~WindowsPlatformFile()
 {
 	if (IsOpen())
 	{
-		OV_LOG(Warning, CoreLog, "File was not closed before destruction!");
+		OV_LOG(CoreLog, Warning, "File was not closed before destruction!");
 		Close();
 	}
 }

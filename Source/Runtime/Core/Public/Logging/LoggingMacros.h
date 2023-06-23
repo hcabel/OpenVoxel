@@ -9,7 +9,7 @@
 
 #if NO_LOGGING
 
-# define OV_LOG(LogVerbosity, Category, Format, ...) \
+# define OV_LOG(Category, LogVerbosity, Format, ...) \
 	if (Verbosity::LogVerbosity == Verbosity::Fatal) \
 		assert(false);
 
@@ -18,16 +18,16 @@
 
 #else // !NO_LOGGING || WITH_LOGGING
 
-# define OV_LOG(LogVerbosity, Category, Format, ...) \
+# define OV_LOG(Category, LogVerbosity, Format, ...) \
 	{ \
 		STATIC_CHECK_TYPE(Verbosity::Type, Verbosity::LogVerbosity); \
 		STATIC_CHECK_TYPE(LogCategory, Category); \
 		Logger::Log(Verbosity::LogVerbosity, Category, std::format(Format, __VA_ARGS__)); \
 	}
 
-# define OV_LOG_ARRAY(LogVerbosity, Category, Array, Format, ...) \
+# define OV_LOG_ARRAY(Category, LogVerbosity, Array, Format, ...) \
 	FOR_EACH_LOOP(Entry, Array) \
-		OV_LOG(LogVerbosity, Category, Format, Entry, __VA_ARGS__); \
+		OV_LOG(Category, LogVerbosity, Format, Entry, __VA_ARGS__); \
 
 # define DECLARE_LOG_CATEGORY(CategoryName) extern LogCategory CategoryName;
 # define DEFINE_LOG_CATEGORY(CategoryName) LogCategory CategoryName(#CategoryName);
@@ -37,6 +37,6 @@
 /* MACRO THAT DOES NOT CHANGE WHEN LOGGING IS DISABLED */
 
 // Log if condition is true
-# define OV_LOG_IF(Condition, LogVerbosity, Category, Format, ...) \
+# define OV_LOG_IF(Condition, Category, LogVerbosity, Format, ...) \
 	if (Condition) \
-		OV_LOG(LogVerbosity, Category, Format, __VA_ARGS__)
+		OV_LOG(Category, LogVerbosity, Format, __VA_ARGS__)

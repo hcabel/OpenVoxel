@@ -15,16 +15,16 @@ namespace VulkanDebugMessenger
 		switch (messageSeverity)
 		{
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-			OV_LOG(VeryVerbose, LogVulkanInternal, "{:s}", pCallbackData->pMessage);
+			OV_LOG(LogVulkanInternal, VeryVerbose, "{:s}", pCallbackData->pMessage);
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-			OV_LOG(VeryVerbose, LogVulkanInternal, "{:s}", pCallbackData->pMessage);
+			OV_LOG(LogVulkanInternal, VeryVerbose, "{:s}", pCallbackData->pMessage);
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-			OV_LOG(Warning, LogVulkanInternal, "{:s}", pCallbackData->pMessage);
+			OV_LOG(LogVulkanInternal, Warning, "{:s}", pCallbackData->pMessage);
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-			OV_LOG(Error, LogVulkanInternal, "{:s}", pCallbackData->pMessage);
+			OV_LOG(LogVulkanInternal, Error, "{:s}", pCallbackData->pMessage);
 			break;
 		}
 		return (VK_FALSE);

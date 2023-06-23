@@ -126,7 +126,7 @@ vk::ShaderModule VulkanRayTracingPipeline::CreateShaderModule(const char* path) 
 	std::ifstream shaderFile(path, std::ios::ate | std::ios::binary);
 	if (!shaderFile.is_open())
 	{
-		OV_LOG(Fatal, LogVulkan, "Unable to load shader \"{:s}\"", path);
+		OV_LOG(LogVulkan, Fatal, "Unable to load shader \"{:s}\"", path);
 		return {};
 	}
 
