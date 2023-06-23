@@ -2,6 +2,7 @@
 
 #include "Core_API.h"
 #include "MacrosHelper.h"
+
 #include <unordered_map>
 #include <vector>
 
@@ -43,7 +44,7 @@ public:
 	virtual void ShutdownModule() = 0;
 };
 
-/** 
+/**
  * The module manager is here to handle all the module.
  */
 class CORE_API ModuleManager

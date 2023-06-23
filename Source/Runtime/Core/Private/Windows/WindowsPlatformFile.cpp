@@ -1,6 +1,6 @@
 ﻿#include "Windows/WindowsPlatformFile.h"
 #include "Logging/LoggingMacros.h"
-#include "CoreModule.h"
+#include "CoreGlobals.h"
 
 #pragma region API
 WindowsPlatformFile::~WindowsPlatformFile()
