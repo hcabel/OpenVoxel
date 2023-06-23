@@ -38,7 +38,7 @@
 
 /**
  * Platform header will change the include path depending of the current platform.
- * 
+ *
  * "Windows = Windows/Windows[HeaderName]"
  * "Linux = Linux/Linux[HeaderName]"
  */

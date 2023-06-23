@@ -10,7 +10,7 @@
 
 /**
  * A class that provides file I/O functionality for the current platform.
- * 
+ *
  * WINDOW ONLY!
  */
 class CORE_API WindowsPlatformFile
@@ -52,7 +52,7 @@ public:
 public:
 	/**
 	 * Copy the platform file to the path destination.
-	 * 
+	 *
 	 * \param src The source file to copy
 	 * \param path The destination path to copy the file to. (without the file name and extension)
 	 */
@@ -60,7 +60,7 @@ public:
 	/**
 	 * Open file or create it if doesn't exist.
 	 * \note All the parent directories are created automatically.
-	 * 
+	 *
 	 * \param fullPath The full path to the file to create. (including the file name and extension)
 	 * \return the handle of the new file.
 	 */
@@ -68,7 +68,7 @@ public:
 	/**
 	 * Create a directory at the specified path. (including all the parent directories)
 	 * \note that when creating a file the parent directory are created automatically.
-	 * 
+	 *
 	 * \param path The path to the directory to create.
 	 * \return true if the directory was created, false otherwise.
 	 */
