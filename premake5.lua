@@ -1,3 +1,5 @@
+require "vscode"
+
 include "./vendor/Premake5/GlobalVariable.lua"
 include "./vendor/Premake5/Extended/workspace_files.lua"
 
