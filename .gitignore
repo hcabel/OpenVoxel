@@ -40,3 +40,7 @@ bin-int/
 .vs/
 *.sln
 *.vcxproj*
+
+# vscode
+.vscode
+.code-workspace
