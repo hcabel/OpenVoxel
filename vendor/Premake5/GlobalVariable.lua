@@ -1,19 +1,20 @@
 ﻿VULKAN_SDK = os.getenv("VULKAN_SDK")
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+OutputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-rootDir = os.getcwd()
+RootDir = os.getcwd()
 
--- if rootDir end with "vendor/Premake5", remove it
+-- if RootDir end with "vendor/Premake5", remove it
 -- this mean that the solution is generated with the build action
-if string.find(rootDir, "vendor/Premake5") then
-	rootDir = string.gsub(rootDir, "vendor/Premake5", "")
+if string.find(RootDir, "/vendor/Premake5") then
+	RootDir = string.gsub(RootDir, "/vendor/Premake5", "")
 end
 
-buildDir = rootDir .. "/build"
-intermediateDir = rootDir .. "/intermediate"
+BuildDir = RootDir .. "/build"
+IntermediateDir = RootDir .. "/intermediate"
 
-buildOutput = buildDir .. "/" .. outputdir
-intermediateOutput = intermediateDir .. "/" .. outputdir
+BuildOutput = BuildDir .. "/" .. OutputDir
+IntermediateOutput = IntermediateDir .. "/" .. OutputDir
 
-projectFileLocation = rootDir .. "/intermediate/ProjectFile"
+ProjectFileLocationOutput = RootDir .. "/intermediate/ProjectFile"
+
