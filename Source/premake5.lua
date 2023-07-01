@@ -1,30 +1,17 @@
+include "../vendor/Premake5/Utils.lua"
+
 OV_RuntimeModules = { "Core", "Engine", "Renderer" }
 OV_EditorModules = { "Editor" }
 
 project "OpenVoxel"
 	kind "ConsoleApp"
-	language "C++"
-	location (projectFileLocation)
 
-	targetdir (buildOutput .. "/%{prj.name}")
-	objdir (intermediateOutput .. "/%{prj.name}")
+	UseProjectDefaultConfig()
 
-	-- TODO: Handle other OS (currently windows only)
-	cppdialect "C++20"
 	staticruntime "off"
 	systemversion "latest"
 
-	filter "configurations:*Debug"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:*Release"
-		runtime "Release"
-		optimize "on"
-		symbols "off"
-	filter {}
-
-	-- /* RUNTIME ************************************************************/
+	-- /* RUNTIME & EDITOR ****************************************************/
 
 	files
 	{
@@ -58,6 +45,10 @@ project "OpenVoxel"
 		table.translate(OV_RuntimeModules, function (moduleName) return (moduleName) end),
 	}
 
+	postbuildcommands {
+		table.translate(OV_RuntimeModules, function (moduleName) return ('{COPY} "' .. ModuleTargetOutput .. '/' .. moduleName .. '.dll" "%{cfg.targetdir}"') end),
+	}
+
 	-- /* EDITOR *************************************************************/
 
 	filter "configurations:Editor*"
@@ -72,21 +63,8 @@ project "OpenVoxel"
 			-- Modules
 			table.translate(OV_EditorModules, function (moduleName) return ("Editor/" .. moduleName .. "/Public") end),
 		}
-	filter {}
 
-	-- /* DEFINES ************************************************************/
-
-	-- Config specific
-	filter "configurations:Editor*"
-		defines "WITH_EDITOR"
-	filter "configurations:*Debug"
-		defines "OV_DEBUG"
-
-	-- System specific
-	filter "system:windows"
-		defines "PLATFORM_WINDOWS"
-	filter "system:linux"
-		defines "PLATFORM_LINUX"
-	filter "system:macosx"
-		defines "PLATFORM_MAC"
+		postbuildcommands {
+			table.translate(OV_EditorModules, function (moduleName) return ('{COPY} "' .. ModuleTargetOutput .. '/' .. moduleName .. '.dll" "%{cfg.targetdir}"') end),
+		}
 	filter {}
