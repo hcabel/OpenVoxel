@@ -1,9 +1,9 @@
-include "GlobalVariable.lua"
+include "Utils.lua"
 
 project "Premake"
 	kind "Utility"
 	
-	location (projectFileLocation)
+	UseProjectDefaultConfig()
 
 	files
 	{
