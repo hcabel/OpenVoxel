@@ -21,8 +21,13 @@
 /* Check */
 
 #define CHECK(x) assert(x)
+// Check if a variable is of a specific type
 #define STATIC_CHECK_TYPE(Type, Variable) static_assert(std::is_same<Type, decltype(Variable)>::value, #Variable " must be a " #Type)
+// Check if a variable is of a specific type and print a custom message
 #define STATIC_CHECKF_TYPE(Type, Variable, Format, ...) static_assert(std::is_same<Type, decltype(Variable)>::value, std::format(Format, __VA_ARGS__))
+
+// Check if a Type is based on another Type
+#define STATIC_CHECK_BASE_OF(Base, Derived) static_assert(std::is_base_of<Base, Derived>::value, #Derived " must inherit from " #Base)
 
 /* Platform macros */
 

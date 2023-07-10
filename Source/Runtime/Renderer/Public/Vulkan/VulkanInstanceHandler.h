@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RendererModule.h"
+#include "Renderer_API.h"
 #include "Vulkan/VulkanUtils.h"
 
 #include <vulkan/vulkan.hpp>
@@ -17,7 +17,7 @@ public:
 	VulkanInstanceHandler& operator=(const VulkanInstanceHandler& rhs) = delete;
 	VulkanInstanceHandler& operator=(VulkanInstanceHandler&& rhs) noexcept = delete;
 
- 	operator vk::Instance() const { return Raw(); }
+	operator vk::Instance() const { return Raw(); }
 	operator VkInstance() const { return RawC(); }
 
 public:

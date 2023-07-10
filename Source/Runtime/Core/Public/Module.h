@@ -61,4 +61,13 @@ private:
 	static std::unordered_map<LoadingPhase::Type, std::vector<AModule*>> s_Modules;
 };
 
-#define REGISTER_MODULE(ModuleClass) inline AModule* JOIN(g_, ModuleClass) = new ModuleClass();
+// Macro to declare a module has an global extern variable
+// Use this macro in the header file of the module
+#define DECLARE_MODULE(ModuleClass) \
+	extern AModule* g_##ModuleClass;
+
+// Macro to define an extern variable for a module
+// Use this macro in the cpp file of the module
+#define DEFINE_MODULE(ModuleClass) \
+	AModule* g_##ModuleClass = new ModuleClass(); \
+	STATIC_CHECK_BASE_OF(AModule, ModuleClass);
