@@ -66,8 +66,6 @@ private:
 #define DECLARE_MODULE(ModuleClass) \
 	extern AModule* g_##ModuleClass;
 
-#include <iostream>
-
 // Macro to define an extern variable for a module
 // Use this macro in the cpp file of the module
 #define DEFINE_MODULE(ModuleClass) \
