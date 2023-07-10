@@ -19,4 +19,4 @@ private:
 	static GLFWwindow* s_Window;
 };
 
-REGISTER_MODULE(RendererModule);
+DECLARE_MODULE(RendererModule);

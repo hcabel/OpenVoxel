@@ -2,6 +2,7 @@
 #include "Profiling/ProfilingMacros.h"
 #include "HAL/PlatformTime.h"
 #include "Renderer.h"
+#include "RendererModule.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
