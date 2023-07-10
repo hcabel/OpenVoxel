@@ -11,16 +11,16 @@ namespace LoadingPhase
 	enum Type : uint8_t
 	{
 		/** Will be loaded just before the default modules */
-		PreDefault,
+		PreDefault = 1,
 		/** Will be loaded at the start of the program before the engine but after the core modules */
 		Default = 0,
 		/** Will be loaded right after the default modules */
-		PostDefault,
+		PostDefault = 2,
 
-		/** Will be loaded before the engine initialisation */
-		PreEngine,
-		/** Will be loaded after the engine initialisation */
-		PostEngine,
+		/** Will be loaded before the engine initialization */
+		PreEngine = 3,
+		/** Will be loaded after the engine initialization */
+		PostEngine = 4,
 	};
 }
 
@@ -66,8 +66,16 @@ private:
 #define DECLARE_MODULE(ModuleClass) \
 	extern AModule* g_##ModuleClass;
 
+#include <iostream>
+
+class ModuleNamePrinter
+{
+public:
+	ModuleNamePrinter(const char* moduleName) { std::cout << "Loading module " << moduleName << std::endl; }
+};
 // Macro to define an extern variable for a module
 // Use this macro in the cpp file of the module
 #define DEFINE_MODULE(ModuleClass) \
 	AModule* g_##ModuleClass = new ModuleClass(); \
+	auto* g_##ModuleClass##_Printer = new ModuleNamePrinter(#ModuleClass); \
 	STATIC_CHECK_BASE_OF(AModule, ModuleClass);
