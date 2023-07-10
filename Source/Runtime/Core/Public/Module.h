@@ -68,14 +68,8 @@ private:
 
 #include <iostream>
 
-class ModuleNamePrinter
-{
-public:
-	ModuleNamePrinter(const char* moduleName) { std::cout << "Loading module " << moduleName << std::endl; }
-};
 // Macro to define an extern variable for a module
 // Use this macro in the cpp file of the module
 #define DEFINE_MODULE(ModuleClass) \
 	AModule* g_##ModuleClass = new ModuleClass(); \
-	auto* g_##ModuleClass##_Printer = new ModuleNamePrinter(#ModuleClass); \
 	STATIC_CHECK_BASE_OF(AModule, ModuleClass);
