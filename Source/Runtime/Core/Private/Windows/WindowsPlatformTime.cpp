@@ -9,7 +9,10 @@ float WindowsPlatformTime::s_TimeStep = 0.0f;
 
 float WindowsPlatformTime::GetTime()
 {
-	return (static_cast<float>(glfwGetTime()));
+	float time = static_cast<float>(glfwGetTime());
+	if (time == 0.0f)
+		glfwInit();
+	return (time);
 }
 
 float WindowsPlatformTime::GetTimeStep()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer_API.h"
+#include "RendererModule.h"
 #include "Vulkan/VulkanInstanceHandler.h"
 #include "Vulkan/VulkanDeviceHandler.h"
 #include "Vulkan/VulkanSwapChainHandler.h"
