@@ -47,6 +47,11 @@ public:
 	/** Render a new frame on the window */
 	void RenderNewFrame();
 
+	/** Called every frame */
+	void Tick();
+
+	__forceinline bool IsWindowClosed() const { return (glfwWindowShouldClose(RendererModule::GetWindow()) == GLFW_TRUE); }
+
 private:
 	/** Create, initialize and setup the vulkan instance */
 	void InitVulkanInstance();
