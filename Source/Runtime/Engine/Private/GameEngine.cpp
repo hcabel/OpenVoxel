@@ -41,13 +41,9 @@ void GameEngine::Tick(float timeStep)
 {
 	CREATE_SCOPE_NAMED_TIMER_CONSOLE(GameEngineTick);
 
-	glfwPollEvents();
+	Renderer::Get()->Tick();
 
-	const uint16_t fpsCount = (uint16_t)std::round(1.0f / PlatformTime::GetTimeStep());
-	GLFWwindow* glfwWindow = RendererModule::GetWindow();
-	glfwSetWindowTitle(glfwWindow, std::format("OpenVoxel - {:.2f}ms = {:d}fps", PlatformTime::GetTimeStep() * 100.0f, fpsCount).c_str());
-
-	Stop();
+	// Stop();
 }
 
 bool GameEngine::EngineShouldStop()
@@ -55,6 +51,6 @@ bool GameEngine::EngineShouldStop()
 	GLFWwindow* glfwWindow = RendererModule::GetWindow();
 	return (
 		m_State == EngineState::Type::Stopping
-		|| glfwWindowShouldClose(glfwWindow)
+		|| Renderer::Get()->IsWindowClosed()
 	);
 }

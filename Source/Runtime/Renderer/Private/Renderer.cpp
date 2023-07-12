@@ -252,6 +252,12 @@ void Renderer::RenderNewFrame()
 	m_VkSwapChain.PresentFrame(m_CurrentFrameIndex);
 }
 
+void Renderer::Tick()
+{
+	glfwPollEvents();
+
+}
+
 void Renderer::InitVulkanInstance()
 {
 	// Add extensions that are required for the use of GLFW
