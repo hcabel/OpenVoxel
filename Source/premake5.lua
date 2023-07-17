@@ -52,16 +52,15 @@ project "OpenVoxel"
 	-- /* EDITOR *************************************************************/
 
 	filter "configurations:Editor*"
-		files
-		{
-			"Editor/**.h",
-			"Editor/**.cpp",
-		}
-
 		includedirs
 		{
 			-- Modules
 			table.translate(OV_EditorModules, function (moduleName) return ("Editor/" .. moduleName .. "/Public") end),
+		}
+
+		links
+		{
+			table.translate(OV_EditorModules, function (moduleName) return (moduleName) end),
 		}
 
 		postbuildcommands {
