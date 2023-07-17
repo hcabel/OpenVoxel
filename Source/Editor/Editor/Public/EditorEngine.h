@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Editor_API.h"
 #include "Engine.h"
 
-class EditorEngine : public Engine
+class EDITOR_API EditorEngine : public Engine
 {
 
 public:

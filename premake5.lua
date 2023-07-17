@@ -32,9 +32,13 @@ group "Engine"
 	include "Source/premake5.lua" -- OpenVoxel
 
 	-- Include all modules
-	group "Engine/Modules"
+	group "Engine/Modules/Runtime"
 		for _, moduleName in ipairs(OV_RuntimeModules) do
 			include ("Source/Runtime/" .. moduleName .. "/premake5.lua")
+		end
+	group "Engine/Modules/Editor"
+		for _, moduleName in ipairs(OV_EditorModules) do
+			include ("Source/Editor/" .. moduleName .. "/premake5.lua")
 		end
 	group ""
 group ""
