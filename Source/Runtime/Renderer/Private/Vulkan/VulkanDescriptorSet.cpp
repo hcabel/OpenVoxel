@@ -8,15 +8,17 @@ void VulkanDescriptorSet::CreateDescriptorSet(const vk::ImageView& raytracingIma
 {
 	std::vector<vk::DescriptorSetLayoutBinding> layoutBinding;
 
+	// Which shader got access to the AS (raygen)
 	layoutBinding.push_back(
 		vk::DescriptorSetLayoutBinding(
 			0,
 			vk::DescriptorType::eAccelerationStructureKHR,
 			1,
-			vk::ShaderStageFlagBits::eRaygenKHR | vk::ShaderStageFlagBits::eClosestHitKHR
+			vk::ShaderStageFlagBits::eRaygenKHR
 		)
 	);
 
+	// Which shader got access to the image (raygen), meaning only raygen can write to the image
 	layoutBinding.push_back(
 		vk::DescriptorSetLayoutBinding(
 			1,

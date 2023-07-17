@@ -56,8 +56,7 @@ Renderer::Renderer(GLFWwindow* window)
 			vk::PipelineBindPoint::eRayTracingKHR,
 			m_Pipeline.GetPipelineLayout(),
 			0,
-			1,
-			&m_DescriptorSet.GetDescriptorSet(),
+			1, &m_DescriptorSet.GetDescriptorSet(),
 			0,
 			nullptr
 		);

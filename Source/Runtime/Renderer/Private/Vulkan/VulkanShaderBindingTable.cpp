@@ -16,9 +16,9 @@ void VulkanShaderBindingTable::CreateShaderBindingTable()
 	uint32_t baseAlignment = rtProperties.shaderGroupBaseAlignment;
 	uint32_t handleSizeAligned = align_up(handleSize, rtProperties.shaderGroupHandleAlignment);
 
-	uint32_t hitShaderCount = 1;
-	uint32_t missShaderCount = 1;
-	uint32_t handleCount = 1 + hitShaderCount + missShaderCount;
+	constexpr uint32_t hitShaderCount = 1;
+	constexpr uint32_t missShaderCount = 1;
+	constexpr uint32_t handleCount = 1 /* ray gen */ + hitShaderCount + missShaderCount;
 
 	m_RaygenShaderBindingTable.stride = align_up(handleSizeAligned, baseAlignment);
 	m_RaygenShaderBindingTable.size = m_RaygenShaderBindingTable.stride;
@@ -71,8 +71,8 @@ void VulkanShaderBindingTable::CreateShaderBindingTable()
 
 	vk::DeviceAddress sbtDeviceAddress = m_VkDevice->Raw().getBufferAddress({ m_SbtBuffer });
 	m_RaygenShaderBindingTable.deviceAddress = sbtDeviceAddress;
-	m_HitShaderBindingTable.deviceAddress = sbtDeviceAddress + m_RaygenShaderBindingTable.size;
-	m_MissShaderBindingTable.deviceAddress = sbtDeviceAddress + m_RaygenShaderBindingTable.size + m_HitShaderBindingTable.size;
+	m_MissShaderBindingTable.deviceAddress = sbtDeviceAddress + m_RaygenShaderBindingTable.size;
+	m_HitShaderBindingTable.deviceAddress = sbtDeviceAddress + m_RaygenShaderBindingTable.size + m_MissShaderBindingTable.size;
 
 	void* data;
 	m_VkDevice->Raw().mapMemory(m_SbtBufferMemory, 0, sbtSize, vk::MemoryMapFlags(), &data);
@@ -82,7 +82,7 @@ void VulkanShaderBindingTable::CreateShaderBindingTable()
 	auto* pSBTBuffer = reinterpret_cast<uint8_t*>(data);
 
 	uint8_t* pData{ nullptr };
-	uint32_t handleIndex{ 0 };
+	uint32_t handleIndex = 0;
 	pData = pSBTBuffer;
 
 	// Ray gen
@@ -90,20 +90,19 @@ void VulkanShaderBindingTable::CreateShaderBindingTable()
 	handleIndex++;
 
 	// Hit
-	pData = pSBTBuffer + m_RaygenShaderBindingTable.size + m_MissShaderBindingTable.size;
-	for (uint32_t c = 0; c < hitShaderCount; c++)
-	{
-		memcpy(pData, getHandle(handleIndex++), handleSize);
-		pData += m_HitShaderBindingTable.stride;
-	}
+	pData =
+		pSBTBuffer /* start */
+		+ m_RaygenShaderBindingTable.size /* raygen */;
+	memcpy(pData, getHandle(handleIndex), handleSize);
+	handleIndex++;
+
 	// Miss
-	pData = pSBTBuffer + m_RaygenShaderBindingTable.size;
-	for (uint32_t c = 0; c < missShaderCount; c++)
-	{
-		memcpy(pData, getHandle(handleIndex), handleSize);
-		handleIndex++;
-		pData += m_MissShaderBindingTable.stride;
-	}
+	pData =
+		pSBTBuffer /* Start */
+		+ m_RaygenShaderBindingTable.size /* raygen */
+		+ m_MissShaderBindingTable.size; /* Hit shaders */
+	memcpy(pData, getHandle(handleIndex), handleSize);
+	handleIndex++;
 
 	m_VkDevice->Raw().unmapMemory(m_SbtBufferMemory);
 }

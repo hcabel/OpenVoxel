@@ -1,10 +1,20 @@
 #version 460
 #extension GL_EXT_ray_tracing : require
 
-layout(location = 0) rayPayloadInEXT vec3 color;
+struct RayPayload
+{
+	vec3 color;
+	float distanceAlongTheRay;
+	bool didHit;
+};
+
+layout(location = 0) rayPayloadInEXT RayPayload payload;
 
 void main()
 {
-	color = vec3(0.0, 0.0, 1.0);
+	// calculate the distance of hit
+	payload.distanceAlongTheRay = gl_HitTEXT;
+	payload.color = vec3(1.0, 1.0, 1.0);
+	payload.didHit = true;
 }
 
