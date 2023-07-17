@@ -26,10 +26,10 @@ public:
 private:
 
 public:
-	vk::StridedDeviceAddressRegionKHR GetRaygenShaderBindingTable() const { return m_RaygenShaderBindingTable; }
-	vk::StridedDeviceAddressRegionKHR GetMissShaderBindingTable() const { return m_MissShaderBindingTable; }
-	vk::StridedDeviceAddressRegionKHR GetHitShaderBindingTable() const { return m_HitShaderBindingTable; }
-	vk::StridedDeviceAddressRegionKHR GetCallableShaderBindingTable() const { return m_CallableShaderBindingTable; }
+	__forceinline vk::StridedDeviceAddressRegionKHR GetRaygenShaderBindingTable() const { return m_RaygenShaderBindingTable; }
+	__forceinline vk::StridedDeviceAddressRegionKHR GetMissShaderBindingTable() const { return m_MissShaderBindingTable; }
+	__forceinline vk::StridedDeviceAddressRegionKHR GetHitShaderBindingTable() const { return m_HitShaderBindingTable; }
+	__forceinline vk::StridedDeviceAddressRegionKHR GetCallableShaderBindingTable() const { return m_CallableShaderBindingTable; }
 
 	void SetVulkanDevice(const VulkanDeviceHandler* vkDevice) { m_VkDevice = vkDevice; }
 	void SetVulkanRayTracingPipeline(const VulkanRayTracingPipeline* vkPipeline) { m_VkPipeline = vkPipeline; }

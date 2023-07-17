@@ -64,17 +64,8 @@ void VulkanRayTracingPipeline::CreateRayTracingPipeline(const VulkanDescriptorSe
 	m_ShaderGroups.clear();
 	m_ShaderGroups.push_back(
 		vk::RayTracingShaderGroupCreateInfoKHR(
-			vk::RayTracingShaderGroupTypeKHR::eProceduralHitGroup,
-			VK_SHADER_UNUSED_KHR,
-			0,
-			VK_SHADER_UNUSED_KHR,
-			3
-		)
-	);
-	m_ShaderGroups.push_back(
-		vk::RayTracingShaderGroupCreateInfoKHR(
 			vk::RayTracingShaderGroupTypeKHR::eGeneral,
-			1,
+			0,
 			VK_SHADER_UNUSED_KHR,
 			VK_SHADER_UNUSED_KHR,
 			VK_SHADER_UNUSED_KHR
@@ -89,12 +80,21 @@ void VulkanRayTracingPipeline::CreateRayTracingPipeline(const VulkanDescriptorSe
 			VK_SHADER_UNUSED_KHR
 		)
 	);
+	m_ShaderGroups.push_back(
+		vk::RayTracingShaderGroupCreateInfoKHR(
+			vk::RayTracingShaderGroupTypeKHR::eProceduralHitGroup,
+			VK_SHADER_UNUSED_KHR,
+			1,
+			VK_SHADER_UNUSED_KHR,
+			3
+		)
+	);
 
 	vk::RayTracingPipelineCreateInfoKHR pipelineCreateInfo(
 		vk::PipelineCreateFlags(),
 		shaderStages.size(), shaderStages.data(),
 		m_ShaderGroups.size(), m_ShaderGroups.data(),
-		1,
+		10,
 		nullptr,
 		nullptr,
 		nullptr,

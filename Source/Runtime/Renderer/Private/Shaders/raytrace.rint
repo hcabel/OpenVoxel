@@ -32,6 +32,10 @@ void main()
 	ray.origin    = gl_WorldRayOriginEXT;
 	ray.direction = gl_WorldRayDirectionEXT;
 
+	// TODO: find a way to aproximate the aabb calculation
+	// The thing is that we only need to know the distance of the ray to the aabb
+	// My guess is that this distance is used in the ray traversal loop to know if it's the clossest hit or not.
+	// Since we only have cube we might be able to use the lenght of the ray to the origin (maybe)
 	Aabb aabb;
 	vec3 aabbCenter = vec3(0.0, 0.0, 0.0);
 	aabb.minimum = aabbCenter - vec3(0.5);
@@ -39,6 +43,6 @@ void main()
 	float tHit = hitAabb(aabb, ray);
 
 	if(tHit > 0)
-		reportIntersectionEXT(tHit, 1);
+		reportIntersectionEXT(tHit, 0);
 }
 
