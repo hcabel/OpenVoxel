@@ -3,8 +3,7 @@
 #include "Core_API.h"
 #include "MacrosHelper.h"
 
-#include <unordered_map>
-#include <vector>
+#include <inttypes.h>
 
 namespace LoadingPhase
 {
@@ -25,17 +24,16 @@ namespace LoadingPhase
 }
 
 /**
- * AModule is the base class for every module.
+ * Module is the base class for every module.
  */
-class CORE_API AModule
+class CORE_API Module
 {
 
 public:
-	AModule(LoadingPhase::Type loadingPhase = LoadingPhase::Default);
-	~AModule() = default;
+	Module() = default;
 
-	AModule(const AModule&) = delete;
-	AModule& operator=(const AModule&) = delete;
+	Module(const Module&) = delete;
+	Module& operator=(const Module&) = delete;
 
 public:
 	/** Called when the module is loaded */
@@ -44,30 +42,10 @@ public:
 	virtual void ShutdownModule() = 0;
 };
 
-/**
- * The module manager is here to handle all the module.
- */
-class CORE_API ModuleManager
-{
-public:
-	/** Register a new module to the module list */
-	static void RegisterNewModule(AModule* module, LoadingPhase::Type loadingPhase);
-	/** Load all the registered modules of the specified phase */
-	static void LoadModules(LoadingPhase::Type loadingPhase);
-	/** Unload all the registered modules */
-	static void UnloadModules();
-
-private:
-	static std::unordered_map<LoadingPhase::Type, std::vector<AModule*>> s_Modules;
-};
-
-// Macro to declare a module has an global extern variable
-// Use this macro in the header file of the module
-#define DECLARE_MODULE(ModuleClass) \
-	extern AModule* g_##ModuleClass;
-
-// Macro to define an extern variable for a module
-// Use this macro in the cpp file of the module
-#define DEFINE_MODULE(ModuleClass) \
-	AModule* g_##ModuleClass = new ModuleClass(); \
-	STATIC_CHECK_BASE_OF(AModule, ModuleClass);
+// This macro is used to implement the module
+// By implementing the module, it allow the module manager to load it
+#define IMPLEMENT_MODULE(ModuleClass) \
+	extern "C" OV_DLL_EXPORT Module* CreateModule() \
+	{ \
+		return new ModuleClass(); \
+	}

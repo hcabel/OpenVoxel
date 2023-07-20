@@ -7,6 +7,16 @@
 class CORE_API Path
 {
 public:
-	/** The the root directory of the engine */
+	/** return The the root directory of the engine */
 	static std::string GetEngineRootDirectoryPath();
+	/** return the path where all the module DLL are stored */
+	static std::string GetModuleDirectoryPath();
+
+private:
+	struct DataCache
+	{
+		std::string EngineRootDirectory;
+		std::string ModuleDirectory;
+	};
+	static DataCache s_Data;
 };

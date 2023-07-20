@@ -5,7 +5,7 @@
 
 struct GLFWwindow;
 
-class RENDERER_API RendererModule : public AModule
+class RENDERER_API RendererModule : public Module
 {
 
 public:
@@ -18,5 +18,3 @@ public:
 private:
 	static GLFWwindow* s_Window;
 };
-
-RENDERER_API DECLARE_MODULE(RendererModule);

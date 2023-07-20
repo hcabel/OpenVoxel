@@ -74,6 +74,8 @@ public:
 	 */
 	inline static bool CreateDirectory(std::string_view path) { return (std::filesystem::create_directories(path)); }
 	inline static bool CreateDirectory(std::filesystem::path path) { return (std::filesystem::create_directories(path)); }
+	/** Check whether or not a file exist at a given path */
+	inline static bool Exists(std::string_view path) { return (std::filesystem::exists(path)); }
 #pragma endregion
 
 protected:

@@ -10,8 +10,10 @@
 class CORE_API WindowsPlatformFileSystem
 {
 public:
-	/** Find Engire root directory Path */
+	/** Find Engine root directory Path */
 	static std::string MakeEngineRootDirectoryPath();
+	/** Find the path where all the module are stored */
+	static std::string MakeModuleDirectoryPath();
 };
 
 typedef WindowsPlatformFileSystem PlatformFileSystem;
