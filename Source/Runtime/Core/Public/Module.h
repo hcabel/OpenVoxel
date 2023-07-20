@@ -3,8 +3,7 @@
 #include "Core_API.h"
 #include "MacrosHelper.h"
 
-#include <unordered_map>
-#include <vector>
+#include <inttypes.h>
 
 namespace LoadingPhase
 {
@@ -31,8 +30,7 @@ class CORE_API Module
 {
 
 public:
-	Module(LoadingPhase::Type loadingPhase = LoadingPhase::Default);
-	~Module() = default;
+	Module() = default;
 
 	Module(const Module&) = delete;
 	Module& operator=(const Module&) = delete;
@@ -42,23 +40,6 @@ public:
 	virtual void StartupModule() = 0;
 	/** Called when unloading the module */
 	virtual void ShutdownModule() = 0;
-};
-
-/**
- * The module manager is here to handle all the module.
- */
-class CORE_API ModuleManager
-{
-public:
-	/** Register a new module to the module list */
-	static void RegisterNewModule(Module* module, LoadingPhase::Type loadingPhase);
-	/** Load all the registered modules of the specified phase */
-	static void LoadModules(LoadingPhase::Type loadingPhase);
-	/** Unload all the registered modules */
-	static void UnloadModules();
-
-private:
-	static std::unordered_map<LoadingPhase::Type, std::vector<Module*>> s_Modules;
 };
 
 // Macro to declare a module has an global extern variable
