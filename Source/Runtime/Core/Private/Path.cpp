@@ -1,4 +1,4 @@
-#include "Path.h"
+﻿#include "Path.h"
 
 #include "Singleton.h"
 #include "HAL/PlatformFileSystem.h"
@@ -17,3 +17,15 @@ std::string Path::GetEngineRootDirectoryPath()
 	return (rootDirectory);
 }
 
+std::string Path::GetModuleDirectoryPath()
+{
+	// Get the module directory from in cache
+	std::string& moduleDirectory = s_Data.EngineRootDirectory;
+	if (moduleDirectory.empty())
+	{
+		// if cache is empty, create the module directory path
+		moduleDirectory = PlatformFileSystem::MakeModuleDirectoryPath();
+	}
+	return (moduleDirectory);
+
+}
