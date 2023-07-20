@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Core_API.h"
 
@@ -7,6 +7,14 @@
 class CORE_API Path
 {
 public:
-	/** The the root directory of the engine */
+	/** return The the root directory of the engine */
 	static std::string GetEngineRootDirectoryPath();
+
+private:
+	struct DataCache
+	{
+		std::string EngineRootDirectory;
+		std::string ModuleDirectory;
+	};
+	static DataCache s_Data;
 };
