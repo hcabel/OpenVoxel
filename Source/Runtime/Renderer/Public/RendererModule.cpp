@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-RENDERER_API DEFINE_MODULE(RendererModule);
+IMPLEMENT_MODULE(RendererModule);
 
 GLFWwindow* RendererModule::s_Window = nullptr;
 

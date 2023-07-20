@@ -42,13 +42,10 @@ public:
 	virtual void ShutdownModule() = 0;
 };
 
-// Macro to declare a module has an global extern variable
-// Use this macro in the header file of the module
-#define DECLARE_MODULE(ModuleClass) \
-	extern Module* g_##ModuleClass;
-
-// Macro to define an extern variable for a module
-// Use this macro in the cpp file of the module
-#define DEFINE_MODULE(ModuleClass) \
-	Module* g_##ModuleClass = new ModuleClass(); \
-	STATIC_CHECK_BASE_OF(Module, ModuleClass);
+// This macro is used to implement the module
+// By implementing the module, it allow the module manager to load it
+#define IMPLEMENT_MODULE(ModuleClass) \
+	extern "C" OV_DLL_EXPORT Module* CreateModule() \
+	{ \
+		return new ModuleClass(); \
+	}

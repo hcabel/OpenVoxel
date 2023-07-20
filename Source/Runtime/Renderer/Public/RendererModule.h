@@ -18,5 +18,3 @@ public:
 private:
 	static GLFWwindow* s_Window;
 };
-
-RENDERER_API DECLARE_MODULE(RendererModule);
