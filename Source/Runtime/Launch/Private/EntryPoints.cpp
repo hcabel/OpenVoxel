@@ -1,5 +1,5 @@
 #include "GameEngine.h"
-#include "Module.h"
+#include "OVModuleManager.h"
 
 #ifdef WITH_EDITOR
 # include "EditorEngine.h"
@@ -9,9 +9,7 @@
 
 int main(int argc, char** argv)
 {
-	ModuleManager::LoadModules(LoadingPhase::PreDefault);
-	ModuleManager::LoadModules(LoadingPhase::Default);
-	ModuleManager::LoadModules(LoadingPhase::PostDefault);
+	OVModuleManager::LoadModule("Renderer");
 
 #ifdef WITH_EDITOR
 	g_Engine = new EditorEngine();
@@ -19,9 +17,7 @@ int main(int argc, char** argv)
 	g_Engine = new GameEngine();
 #endif
 
-	ModuleManager::LoadModules(LoadingPhase::PreEngine);
 	g_Engine->Initialize();
-	ModuleManager::LoadModules(LoadingPhase::PostEngine);
 
 	g_Engine->Start();
 
