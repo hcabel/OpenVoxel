@@ -37,15 +37,15 @@ public:
 	operator vk::PipelineLayout() const { return GetPipelineLayout(); }
 
 public:
-	void CreateRayTracingPipeline(const vk::DescriptorSetLayout& vkDescriptorLayout);
+	void CreateRayTracingPipeline(const vk::DescriptorSetLayout& vkDescriptorLayout, const vk::PipelineCache& pipelineCache = VK_NULL_HANDLE);
 	void DestroyRayTracingPipeline();
 
 private:
 	vk::ShaderModule CreateShaderModule(const char* path) const;
 
 public:
-	vk::Pipeline Raw() const { return m_Pipeline; }
-	vk::PipelineLayout GetPipelineLayout() const { return m_PipelineLayout; }
+	__forceinline vk::Pipeline Raw() const { return m_Pipeline; }
+	__forceinline vk::PipelineLayout GetPipelineLayout() const { return m_PipelineLayout; }
 
 	uint32_t GetShaderGroupCount() const { return static_cast<uint32_t>(m_ShaderGroups.size()); }
 

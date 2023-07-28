@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-void VulkanRayTracingPipeline::CreateRayTracingPipeline(const vk::DescriptorSetLayout& vkDescriptorLayout)
+void VulkanRayTracingPipeline::CreateRayTracingPipeline(const vk::DescriptorSetLayout& vkDescriptorLayout, const vk::PipelineCache& pipelineCache)
 {
 	// Pipeline Layout
 
@@ -102,7 +102,7 @@ void VulkanRayTracingPipeline::CreateRayTracingPipeline(const vk::DescriptorSetL
 		0
 	);
 
-	m_Pipeline = m_VkDevice->Raw().createRayTracingPipelineKHR(VK_NULL_HANDLE, VK_NULL_HANDLE, pipelineCreateInfo, nullptr, *m_Dldi).value;
+	m_Pipeline = m_VkDevice->Raw().createRayTracingPipelineKHR(VK_NULL_HANDLE, pipelineCache, pipelineCreateInfo, nullptr, *m_Dldi).value;
 }
 
 void VulkanRayTracingPipeline::DestroyRayTracingPipeline()

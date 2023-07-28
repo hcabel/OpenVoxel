@@ -1,6 +1,6 @@
 ﻿include "../../../vendor/Premake5/Utils.lua"
 
-project "Editor"
+project "UI"
 	UseModuleDefaultConfig()
 
 	files
@@ -18,12 +18,11 @@ project "Editor"
 		"../../ThirdParty/glm",
 		"../../ThirdParty/GLFW/include",
 		"%{VULKAN_SDK}/Include",
+		"../../ThirdParty/imgui",
 
 		-- Modules
 		"../../../Source/Runtime/Core/Public",
-		"../../../Source/Runtime/Engine/Public",
 		"../../../Source/Runtime/Renderer/Public",
-		"../../../Source/Editor/UI/Public",
 	}
 
 	links
@@ -31,12 +30,11 @@ project "Editor"
 		-- ThirdParty
 		"GLFW",
 		"%{VULKAN_SDK}/Lib/vulkan-1.lib",
-
+		"ImGui",
+		
 		-- Modules
 		"Core",
-		"Engine",
 		"Renderer",
-		"UI",
 	}
 
-	defines "OV_BUILD_EDITOR_DLL"
+	defines "OV_BUILD_UI_DLL"

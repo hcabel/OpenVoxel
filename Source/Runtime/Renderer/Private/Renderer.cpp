@@ -31,9 +31,11 @@ Renderer::Renderer(GLFWwindow* window)
 	m_AccelerationStructure.SetDispatchLoaderDynamic(&m_Dldi);
 	m_AccelerationStructure.CreateAccelerationStructure(randomFrame.CommandBuffer);
 
+	m_PipelineCache = m_VkDevice.Raw().createPipelineCache(vk::PipelineCacheCreateInfo());
+
 	m_Pipeline.SetVulkanDevice(&m_VkDevice);
 	m_Pipeline.SetDispatchLoaderDynamic(&m_Dldi);
-	m_Pipeline.CreateRayTracingPipeline(randomFrame.DescriptorSetLayout);
+	m_Pipeline.CreateRayTracingPipeline(randomFrame.DescriptorSetLayout, m_PipelineCache);
 
 	m_ShaderBindingTable.SetVulkanDevice(&m_VkDevice);
 	m_ShaderBindingTable.SetVulkanRayTracingPipeline(&m_Pipeline);
@@ -120,6 +122,7 @@ Renderer::~Renderer()
 	m_ShaderBindingTable.DestroyShaderBindingTable();
 	m_AccelerationStructure.DestroyAccelerationStructure();
 
+	m_VkDevice.Raw().destroyPipelineCache(m_PipelineCache);
 	m_Pipeline.DestroyRayTracingPipeline();
 
 	m_VkSwapChain.DestroySwapChain();
@@ -293,7 +296,7 @@ void Renderer::TraceRays(const vk::CommandBuffer& cmdBuffer)
 
 void Renderer::PresentBarrier(const vk::CommandBuffer cmdBuffer, const vk::Image& image, vk::AccessFlagBits previousAccessFlag, vk::ImageLayout previousImageLayout)
 {
-	vk::ImageMemoryBarrier swapchainPresentMemoryBarrier2(
+	vk::ImageMemoryBarrier presentBarrier(
 		previousAccessFlag,
 		vk::AccessFlagBits::eMemoryRead,
 		previousImageLayout,
@@ -314,6 +317,6 @@ void Renderer::PresentBarrier(const vk::CommandBuffer cmdBuffer, const vk::Image
 		vk::DependencyFlags(),
 		0, nullptr,
 		0, nullptr,
-		1, &swapchainPresentMemoryBarrier2
+		1, &presentBarrier
 	);
 }

@@ -52,6 +52,10 @@ public:
 
 	__forceinline bool IsWindowClosed() const { return (glfwWindowShouldClose(RendererModule::GetWindow()) == GLFW_TRUE); }
 
+public:
+	__forceinline const VulkanSwapChainFrame& GetCurrentFrame() const { return m_VkSwapChain.GetFrame(m_CurrentFrameIndex); }
+	__forceinline uint8_t GetCurrentFrameIndex() const { return m_CurrentFrameIndex; }
+
 private:
 	/** Create, initialize and setup the vulkan instance */
 	void InitVulkanInstance();
@@ -80,6 +84,7 @@ private:
 	VulkanRayTracingPipeline m_Pipeline;
 	VulkanAccelerationStructure m_AccelerationStructure;
 	VulkanShaderBindingTable m_ShaderBindingTable;
+	vk::PipelineCache m_PipelineCache;
 
 	vk::DispatchLoaderDynamic m_Dldi;
 
@@ -88,4 +93,9 @@ private:
 	vk::Image m_RayTracingImage;
 	vk::DeviceMemory m_RayTracingImageMemory;
 	vk::ImageView m_RayTracingImageView;
+
+#ifdef WITH_EDITOR
+	friend class UI;
+#endif // WITH_EDITOR
+
 };
