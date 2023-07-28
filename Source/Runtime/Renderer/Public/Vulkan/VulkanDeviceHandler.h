@@ -55,8 +55,9 @@ public:
 	VulkanDeviceHandler operator=(const VulkanDeviceHandler& rhs) = delete;
 	VulkanDeviceHandler operator=(VulkanDeviceHandler&& rhs) noexcept = delete;
 
-	operator vk::Device() const { return Raw(); }
-	operator vk::PhysicalDevice() const { return GetPhysicalDevice(); }
+	__forceinline operator vk::Device() const { return Raw(); }
+	__forceinline operator VkDevice() const { return Raw(); }
+	__forceinline operator vk::PhysicalDevice() const { return GetPhysicalDevice(); }
 
 public:
 	/**
@@ -102,17 +103,17 @@ public:
 	/** Set the physical device (GPU) to use */
 	void SetPhysicalDevice(vk::PhysicalDevice physicalDevice) { m_PhysicalDevice = physicalDevice; }
 
-	const vk::Device& Raw() const { return (m_Device); }
+	__forceinline const vk::Device& Raw() const { return (m_Device); }
 	/** Get Physical device raw class (C++ API) */
-	const vk::PhysicalDevice& GetPhysicalDevice() const { return (m_PhysicalDevice); }
+	__forceinline const vk::PhysicalDevice& GetPhysicalDevice() const { return (m_PhysicalDevice); }
 	/** Get the queue of the specified type */
-	const VulkanQueue& GetQueue(VulkanQueueType::Type type) const { return (m_Queues[type]); }
+	__forceinline const VulkanQueue& GetQueue(VulkanQueueType::Type type) const { return (m_Queues[type]); }
 	/** Get all the queues */
-	const std::array<VulkanQueue, VulkanQueueType::COUNT>& GetQueues() const { return (m_Queues); }
+	__forceinline const std::array<VulkanQueue, VulkanQueueType::COUNT>& GetQueues() const { return (m_Queues); }
 
-	const vk::PhysicalDeviceProperties& GetPhysicalDeviceProperties() const { return (m_PhysicalDeviceProperties); }
-	const vk::PhysicalDeviceProperties2& GetPhysicalDeviceProperties2() const { return (m_PhysicalDeviceProperties2); }
-	const vk::PhysicalDeviceRayTracingPipelinePropertiesKHR& GetRaytracingProperties() const { return (m_RaytracingProperties); }
+	__forceinline const vk::PhysicalDeviceProperties& GetPhysicalDeviceProperties() const { return (m_PhysicalDeviceProperties); }
+	__forceinline const vk::PhysicalDeviceProperties2& GetPhysicalDeviceProperties2() const { return (m_PhysicalDeviceProperties2); }
+	__forceinline const vk::PhysicalDeviceRayTracingPipelinePropertiesKHR& GetRaytracingProperties() const { return (m_RaytracingProperties); }
 
 	vk::PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties() const { return (m_PhysicalDevice.getMemoryProperties()); }
 

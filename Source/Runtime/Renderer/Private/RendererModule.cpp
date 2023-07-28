@@ -21,5 +21,7 @@ void RendererModule::StartupModule()
 void RendererModule::ShutdownModule()
 {
 	Renderer::Shutdown();
-	s_Window = nullptr;
+
+	glfwDestroyWindow(s_Window);
+	glfwTerminate();
 }
