@@ -1,14 +1,13 @@
 #include "Vulkan/VulkanRayTracingPipeline.h"
 #include "Vulkan/VulkanDeviceHandler.h"
-#include "Vulkan/VulkanDescriptorSet.h"
 
 #include <fstream>
 
-void VulkanRayTracingPipeline::CreateRayTracingPipeline(const VulkanDescriptorSet& vkDescriptor)
+void VulkanRayTracingPipeline::CreateRayTracingPipeline(const vk::DescriptorSetLayout& vkDescriptorLayout)
 {
 	// Pipeline Layout
 
-	vk::DescriptorSetLayout descriptorSetLayouts = vkDescriptor.GetDescriptorSetLayout();
+	vk::DescriptorSetLayout descriptorSetLayouts = vkDescriptorLayout;
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo(
 		vk::PipelineLayoutCreateFlags(),
 		1, &descriptorSetLayouts,

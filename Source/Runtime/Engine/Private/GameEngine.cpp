@@ -26,12 +26,12 @@ void GameEngine::EngineLoop()
 	{
 		CLEAR_ALL_PERFRAME_TIMER_DATA();
 
-		Renderer::Get()->PrepareNewFrame();
+		Renderer::Get().PrepareNewFrame();
 
 		float timeStep = PlatformTime::GetTimeStep();
 		Tick(timeStep);
 
-		Renderer::Get()->RenderNewFrame();
+		Renderer::Get().RenderNewFrame();
 
 		PlatformTime::CalculateNewTiming();
 	}
@@ -41,7 +41,7 @@ void GameEngine::Tick(float timeStep)
 {
 	CREATE_SCOPE_NAMED_TIMER_CONSOLE(GameEngineTick);
 
-	Renderer::Get()->Tick();
+	Renderer::Get().Tick();
 
 	// Stop();
 }
@@ -51,6 +51,6 @@ bool GameEngine::EngineShouldStop()
 	GLFWwindow* glfwWindow = RendererModule::GetWindow();
 	return (
 		m_State == EngineState::Type::Stopping
-		|| Renderer::Get()->IsWindowClosed()
+		|| Renderer::Get().IsWindowClosed()
 	);
 }
