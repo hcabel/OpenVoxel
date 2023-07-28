@@ -7,7 +7,6 @@
 #include <vector>
 
 class VulkanDeviceHandler;
-class VulkanDescriptorSet;
 
 namespace RayTracingShaderType
 {
@@ -38,7 +37,7 @@ public:
 	operator vk::PipelineLayout() const { return GetPipelineLayout(); }
 
 public:
-	void CreateRayTracingPipeline(const VulkanDescriptorSet& vkDescriptor);
+	void CreateRayTracingPipeline(const vk::DescriptorSetLayout& vkDescriptorLayout);
 	void DestroyRayTracingPipeline();
 
 private:

@@ -17,7 +17,10 @@ struct VulkanSwapChainSupportProperties
 struct VulkanSwapChainFrame
 {
 	vk::Image Image;
+	vk::ImageView ImageView;
 	vk::CommandBuffer CommandBuffer;
+	vk::DescriptorSetLayout DescriptorSetLayout;
+	vk::DescriptorSet DescriptorSet;
 	vk::Fence RenderedFence;
 	vk::Semaphore RenderedSemaphore;
 	vk::Semaphore AcquiredSemaphore;
@@ -99,6 +102,8 @@ public:
 	vk::Extent2D GetExtent() const { return m_Extent; }
 	/** Get the swap chain image format */
 	vk::Format GetFormat() const { return m_SurfaceFormat.format; }
+	/** Get the number of image that the swap chain use */
+	uint32_t GetImageCount() const { return m_ImageCount; }
 
 	/** Connect the swap chain to a device */
 	void SetVulkanDevice(const VulkanDeviceHandler* vkDevice) { m_VkDevice = vkDevice; }
@@ -132,4 +137,6 @@ private:
 	vk::PresentModeKHR m_PresentMode = vk::PresentModeKHR::eFifo;
 	/** All the frame in the swap chain */
 	std::vector<VulkanSwapChainFrame> m_Frames;
+	/** Descriptor pool for all the descriptor set in each frame */
+	vk::DescriptorPool m_DescriptorPool;
 };

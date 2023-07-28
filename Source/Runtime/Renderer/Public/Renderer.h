@@ -8,7 +8,6 @@
 #include "Vulkan/VulkanRayTracingPipeline.h"
 #include "Vulkan/VulkanAccelerationStructure.h"
 #include "Vulkan/VulkanShaderBindingTable.h"
-#include "Vulkan/VulkanDescriptorSet.h"
 
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
@@ -36,9 +35,9 @@ public:
 	 * \param window (optional) The window to use to setup the renderer for the first time
 	 * \return The renderer singleton
 	 */
-	_NODISCARD static Renderer* Get();
+	_NODISCARD __forceinline static Renderer& Get();
 	/** function to explicitly initialize the singleton */
-	static Renderer* Initialize(GLFWwindow* window);
+	__forceinline static Renderer& Initialize(GLFWwindow* window);
 	/** Cleanup the renderer to make sure the engine exit properly */
 	static void Shutdown();
 
@@ -62,8 +61,13 @@ private:
 	void InitVulkanDevice();
 	/** Create, initialize and setup the vulkan swap chain */
 	void InitSwapChain();
-	/** Create, initialize and setup a vulkan ray tracing image that will be use to store ray tracing color result */
-	void CreateRayTracingImage(const vk::CommandBuffer& commandBuffer);
+
+	/** Record a memory barrier that will put the image in mode that allow shader to write onto it */
+	void ShaderWriteBarrier(const vk::CommandBuffer& cmdBuffer, const vk::Image& image, vk::AccessFlagBits previousAccessFlag, vk::ImageLayout previousImageLayout);
+	/** Record a memory barrier that will put the image in mode that all the image to be drawn on screen */
+	void PresentBarrier(const vk::CommandBuffer cmdBuffer, const vk::Image& image, vk::AccessFlagBits previousAccessFlag, vk::ImageLayout previousImageLayout);
+	/** Record the TraceRayKHR function with the shader binded to it */
+	void TraceRays(const vk::CommandBuffer& cmdBuffer);
 
 private:
 	static Renderer* s_Instance;
@@ -76,7 +80,6 @@ private:
 	VulkanRayTracingPipeline m_Pipeline;
 	VulkanAccelerationStructure m_AccelerationStructure;
 	VulkanShaderBindingTable m_ShaderBindingTable;
-	VulkanDescriptorSet m_DescriptorSet;
 
 	vk::DispatchLoaderDynamic m_Dldi;
 

@@ -26,169 +26,88 @@ Renderer::Renderer(GLFWwindow* window)
 
 	InitSwapChain();
 
-	CreateRayTracingImage(m_VkSwapChain.GetFrames().back().CommandBuffer);
-
+	auto randomFrame = m_VkSwapChain.GetFrames().back();
 	m_AccelerationStructure.SetVulkanDevice(&m_VkDevice);
 	m_AccelerationStructure.SetDispatchLoaderDynamic(&m_Dldi);
-	m_AccelerationStructure.CreateAccelerationStructure(m_VkSwapChain.GetFrames().back().CommandBuffer);
-
-	m_DescriptorSet.SetVulkanDevice(&m_VkDevice);
-	m_DescriptorSet.SetVulkanAccelerationStructure(&m_AccelerationStructure);
-	m_DescriptorSet.CreateDescriptorSet(m_RayTracingImageView);
+	m_AccelerationStructure.CreateAccelerationStructure(randomFrame.CommandBuffer);
 
 	m_Pipeline.SetVulkanDevice(&m_VkDevice);
 	m_Pipeline.SetDispatchLoaderDynamic(&m_Dldi);
-	m_Pipeline.CreateRayTracingPipeline(m_DescriptorSet);
+	m_Pipeline.CreateRayTracingPipeline(randomFrame.DescriptorSetLayout);
 
 	m_ShaderBindingTable.SetVulkanDevice(&m_VkDevice);
 	m_ShaderBindingTable.SetVulkanRayTracingPipeline(&m_Pipeline);
 	m_ShaderBindingTable.SetDispatchLoaderDynamic(&m_Dldi);
 	m_ShaderBindingTable.CreateShaderBindingTable();
 
+	// Record each command buffer and set their descriptor set
 	for (auto& frame : m_VkSwapChain.GetFrames())
 	{
-		frame.CommandBuffer.reset();
-		frame.CommandBuffer.begin({ vk::CommandBufferUsageFlagBits::eSimultaneousUse });
+		std::vector<vk::WriteDescriptorSet> descriptorWrites;
 
-		frame.CommandBuffer.bindPipeline(vk::PipelineBindPoint::eRayTracingKHR, m_Pipeline);
+		// Get TLAS and write it on the descriptor set (layout location 0)
+		vk::AccelerationStructureKHR accelerationStructure = m_AccelerationStructure.GetTlas();
+		vk::WriteDescriptorSetAccelerationStructureKHR accelerationStructureInfo(
+			1, &accelerationStructure
+		);
+		descriptorWrites.push_back(
+			vk::WriteDescriptorSet(
+				frame.DescriptorSet,
+				0,
+				0,
+				1, vk::DescriptorType::eAccelerationStructureKHR,
+				nullptr,
+				nullptr,
+				nullptr,
+				&accelerationStructureInfo
+			)
+		);
 
-		frame.CommandBuffer.bindDescriptorSets(
-			vk::PipelineBindPoint::eRayTracingKHR,
-			m_Pipeline.GetPipelineLayout(),
-			0,
-			1, &m_DescriptorSet.GetDescriptorSet(),
+		// Write the current image view on the descriptor set (layout location 1)
+		vk::DescriptorImageInfo imageInfo(
+			vk::Sampler(),
+			frame.ImageView,
+			vk::ImageLayout::eGeneral
+		);
+		descriptorWrites.push_back(
+			vk::WriteDescriptorSet(
+				frame.DescriptorSet,
+				1,
+				0,
+				1, vk::DescriptorType::eStorageImage,
+				&imageInfo,
+				nullptr,
+				nullptr
+			)
+		);
+
+		// Push all the update to the descriptor set (so it's actually updated)
+		m_VkDevice.Raw().updateDescriptorSets(
+			descriptorWrites.size(), descriptorWrites.data(),
 			0,
 			nullptr
 		);
 
-		auto rgen = m_ShaderBindingTable.GetRaygenShaderBindingTable();
-		auto rmiss = m_ShaderBindingTable.GetMissShaderBindingTable();
-		auto rchit = m_ShaderBindingTable.GetHitShaderBindingTable();
-		auto rcall = m_ShaderBindingTable.GetCallableShaderBindingTable();
-		frame.CommandBuffer.traceRaysKHR(
-			rgen, rmiss, rchit, rcall,
-			m_VkSwapChain.GetExtent().width,
-			m_VkSwapChain.GetExtent().height,
-			1,
-			m_Dldi
+		// Buffer
+		frame.CommandBuffer.reset();
+		frame.CommandBuffer.begin({ vk::CommandBufferUsageFlagBits::eSimultaneousUse });
+
+		// Bind raytracing pipeline
+		frame.CommandBuffer.bindPipeline(vk::PipelineBindPoint::eRayTracingKHR, m_Pipeline);
+
+		// Bind the descriptor set (allow shader to access the data stored in the descriptor set)
+		frame.CommandBuffer.bindDescriptorSets(
+			vk::PipelineBindPoint::eRayTracingKHR,
+			m_Pipeline.GetPipelineLayout(),
+			0,
+			1, &frame.DescriptorSet,
+			0,
+			nullptr
 		);
 
-		vk::ImageMemoryBarrier swapchainCopyMemoryBarrier(
-			vk::AccessFlagBits::eNone,
-			vk::AccessFlagBits::eTransferWrite,
-			vk::ImageLayout::eUndefined,
-			vk::ImageLayout::eTransferDstOptimal,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			frame.Image,
-			vk::ImageSubresourceRange(
-				vk::ImageAspectFlagBits::eColor,
-				0, 1,
-				0, 1
-			)
-		);
-		frame.CommandBuffer.pipelineBarrier(
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::DependencyFlags(),
-			0, nullptr,
-			0, nullptr,
-			1, &swapchainCopyMemoryBarrier
-		);
-
-		vk::ImageMemoryBarrier rayTraceCopyMemoryBarrier(
-			vk::AccessFlagBits::eNone,
-			vk::AccessFlagBits::eTransferRead,
-			vk::ImageLayout::eGeneral,
-			vk::ImageLayout::eTransferSrcOptimal,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			m_RayTracingImage,
-			vk::ImageSubresourceRange(
-				vk::ImageAspectFlagBits::eColor,
-				0, 1,
-				0, 1
-			)
-		);
-		frame.CommandBuffer.pipelineBarrier(
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::DependencyFlags(),
-			0, nullptr,
-			0, nullptr,
-			1, &rayTraceCopyMemoryBarrier
-		);
-
-		vk::ImageCopy imageCopy(
-			vk::ImageSubresourceLayers(
-				vk::ImageAspectFlagBits::eColor,
-				0, 0, 1
-			),
-			vk::Offset3D(0, 0, 0),
-			vk::ImageSubresourceLayers(
-				vk::ImageAspectFlagBits::eColor,
-				0, 0, 1
-			),
-			vk::Offset3D(0, 0, 0),
-			vk::Extent3D(
-				m_VkSwapChain.GetExtent().width,
-				m_VkSwapChain.GetExtent().height,
-				1
-			)
-		);
-		frame.CommandBuffer.copyImage(
-			m_RayTracingImage,
-			vk::ImageLayout::eTransferSrcOptimal,
-			frame.Image,
-			vk::ImageLayout::eTransferDstOptimal,
-			1, &imageCopy
-		);
-
-		vk::ImageMemoryBarrier swapchainPresentMemoryBarrier(
-			vk::AccessFlagBits::eTransferWrite,
-			vk::AccessFlagBits::eNone,
-			vk::ImageLayout::eTransferDstOptimal,
-			vk::ImageLayout::ePresentSrcKHR,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			frame.Image,
-			vk::ImageSubresourceRange(
-				vk::ImageAspectFlagBits::eColor,
-				0, 1,
-				0, 1
-			)
-		);
-		frame.CommandBuffer.pipelineBarrier(
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::DependencyFlags(),
-			0, nullptr,
-			0, nullptr,
-			1, &swapchainPresentMemoryBarrier
-		);
-
-		vk::ImageMemoryBarrier rayTraceGeneralMemoryBarrier(
-			vk::AccessFlagBits::eTransferRead,
-			vk::AccessFlagBits::eNone,
-			vk::ImageLayout::eTransferSrcOptimal,
-			vk::ImageLayout::eGeneral,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-			m_RayTracingImage,
-			vk::ImageSubresourceRange(
-				vk::ImageAspectFlagBits::eColor,
-				0, 1,
-				0, 1
-			)
-		);
-		frame.CommandBuffer.pipelineBarrier(
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::PipelineStageFlagBits::eAllCommands,
-			vk::DependencyFlags(),
-			0, nullptr,
-			0, nullptr,
-			1, &rayTraceGeneralMemoryBarrier
-		);
+		ShaderWriteBarrier(frame.CommandBuffer, frame.Image, vk::AccessFlagBits::eMemoryRead, vk::ImageLayout::eUndefined);
+		TraceRays(frame.CommandBuffer);
+		PresentBarrier(frame.CommandBuffer, frame.Image, vk::AccessFlagBits::eShaderWrite, vk::ImageLayout::eGeneral);
 
 		frame.CommandBuffer.end();
 	}
@@ -202,8 +121,6 @@ Renderer::~Renderer()
 	m_AccelerationStructure.DestroyAccelerationStructure();
 
 	m_Pipeline.DestroyRayTracingPipeline();
-
-	m_DescriptorSet.DestroyDescriptorSet();
 
 	m_VkSwapChain.DestroySwapChain();
 
@@ -221,22 +138,19 @@ Renderer::~Renderer()
 	m_VkInstance.DestroyInstance();
 }
 
-Renderer* Renderer::Get()
+Renderer& Renderer::Get()
 {
-	CHECK(s_Instance, "Renderer has never been initialized before, you need to call Renderer::Initialize() first");
-	return (s_Instance);
+	return (*s_Instance);
 }
 
-Renderer* Renderer::Initialize(GLFWwindow* window)
+Renderer& Renderer::Initialize(GLFWwindow* window)
 {
-	CHECK(!s_Instance, "Renderer has already been initialized before");
 	s_Instance = new Renderer(window);
-	return (s_Instance);
+	return (*s_Instance);
 }
 
 void Renderer::Shutdown()
 {
-	CHECK(s_Instance, "Renderer has never been initialized before, you need to call Renderer::Initialize() first");
 	delete s_Instance;
 	s_Instance = nullptr;
 }
@@ -248,10 +162,8 @@ void Renderer::PrepareNewFrame()
 
 void Renderer::RenderNewFrame()
 {
-	const VulkanSwapChainFrame frame = m_VkSwapChain.GetFrame(m_CurrentFrameIndex);
-
-	m_VkSwapChain.SubmitWork(m_CurrentFrameIndex);
-	m_VkSwapChain.PresentFrame(m_CurrentFrameIndex);
+	m_VkSwapChain.SubmitWork(GetCurrentFrameIndex());
+	m_VkSwapChain.PresentFrame(GetCurrentFrameIndex());
 }
 
 void Renderer::Tick()
@@ -335,97 +247,73 @@ void Renderer::InitSwapChain()
 	m_VkSwapChain.SetSurface(&m_Surface);
 	m_VkSwapChain.SetCommandPool(&m_CommandPool);
 
-	m_VkSwapChain.CreateSwapChain(vk::PresentModeKHR::eMailbox);
+	m_VkSwapChain.CreateSwapChain(vk::PresentModeKHR::eFifo);
 }
 
-void Renderer::CreateRayTracingImage(const vk::CommandBuffer& commandBuffer)
+void Renderer::ShaderWriteBarrier(const vk::CommandBuffer& cmdBuffer, const vk::Image& image, vk::AccessFlagBits previousAccessFlag, vk::ImageLayout previousImageLayout)
 {
-	vk::ImageCreateInfo rayTracingImageInfo(
-
-		vk::ImageCreateFlags(),
-		vk::ImageType::e2D,
-		m_VkSwapChain.GetFormat(),
-		vk::Extent3D(
-			m_VkSwapChain.GetExtent().width,
-			m_VkSwapChain.GetExtent().height,
-			1
-		),
-		1,
-		1,
-		vk::SampleCountFlagBits::e1,
-		vk::ImageTiling::eOptimal,
-		vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eStorage,
-		vk::SharingMode::eExclusive,
-		1, &m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-		vk::ImageLayout::eUndefined
-	);
-
-	m_RayTracingImage = m_VkDevice.Raw().createImage(rayTracingImageInfo);
-
-	VulkanMemoryRequirementsExtended rayTracingImageMemoryRequirements = m_VkDevice.FindMemoryRequirement(m_RayTracingImage, vk::MemoryPropertyFlagBits::eDeviceLocal);
-
-	vk::MemoryAllocateInfo rayTracingImageMemoryAllocateInfo(
-		rayTracingImageMemoryRequirements.size,
-		rayTracingImageMemoryRequirements.MemoryTypeIndex
-	);
-
-	m_RayTracingImageMemory = m_VkDevice.Raw().allocateMemory(rayTracingImageMemoryAllocateInfo);
-
-	vk::ImageViewCreateInfo rayTracingImageViewInfo(
-		vk::ImageViewCreateFlags(),
-		m_RayTracingImage,
-		vk::ImageViewType::e2D,
-		m_VkSwapChain.GetFormat(),
-		vk::ComponentMapping(),
-		vk::ImageSubresourceRange(
-			vk::ImageAspectFlagBits::eColor,
-			0, 1,
-			0, 1
-		)
-	);
-
-	m_VkDevice.Raw().bindImageMemory(m_RayTracingImage, m_RayTracingImageMemory, 0);
-
-	m_RayTracingImageView = m_VkDevice.Raw().createImageView(rayTracingImageViewInfo);
-
-	commandBuffer.reset();
-	commandBuffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
-
-	vk::ImageMemoryBarrier rayTraceGeneralMemoryBarrier(
-		vk::AccessFlagBits::eNone,
-		vk::AccessFlagBits::eNone,
-		vk::ImageLayout::eUndefined,
+	vk::ImageMemoryBarrier shaderWriteBarrier(
+		previousAccessFlag,
+		vk::AccessFlagBits::eShaderWrite,
+		previousImageLayout,
 		vk::ImageLayout::eGeneral,
 		m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
 		m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
-		m_RayTracingImage,
+		image,
 		vk::ImageSubresourceRange(
 			vk::ImageAspectFlagBits::eColor,
 			0, 1,
 			0, 1
 		)
 	);
-	commandBuffer.pipelineBarrier(
-		vk::PipelineStageFlagBits::eAllCommands,
-		vk::PipelineStageFlagBits::eAllCommands,
+	cmdBuffer.pipelineBarrier(
+		vk::PipelineStageFlagBits::eTopOfPipe,
+		vk::PipelineStageFlagBits::eRayTracingShaderKHR,
 		vk::DependencyFlags(),
 		0, nullptr,
 		0, nullptr,
-		1, &rayTraceGeneralMemoryBarrier
+		1, &shaderWriteBarrier
+	);
+}
+
+void Renderer::TraceRays(const vk::CommandBuffer& cmdBuffer)
+{
+	auto rgen = m_ShaderBindingTable.GetRaygenShaderBindingTable();
+	auto rmiss = m_ShaderBindingTable.GetMissShaderBindingTable();
+	auto rchit = m_ShaderBindingTable.GetHitShaderBindingTable();
+	auto rcall = m_ShaderBindingTable.GetCallableShaderBindingTable();
+	cmdBuffer.traceRaysKHR(
+		rgen, rmiss, rchit, rcall,
+		m_VkSwapChain.GetExtent().width,
+		m_VkSwapChain.GetExtent().height,
+		1,
+		m_Dldi
+	);
+}
+
+void Renderer::PresentBarrier(const vk::CommandBuffer cmdBuffer, const vk::Image& image, vk::AccessFlagBits previousAccessFlag, vk::ImageLayout previousImageLayout)
+{
+	vk::ImageMemoryBarrier swapchainPresentMemoryBarrier2(
+		previousAccessFlag,
+		vk::AccessFlagBits::eMemoryRead,
+		previousImageLayout,
+		vk::ImageLayout::ePresentSrcKHR,
+		m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
+		m_VkDevice.GetQueue(VulkanQueueType::Graphic).FamilyIndex,
+		image,
+		vk::ImageSubresourceRange(
+			vk::ImageAspectFlagBits::eColor,
+			0, 1,
+			0, 1
+		)
 	);
 
-	commandBuffer.end();
-
-	vk::Fence fence = m_VkDevice.Raw().createFence(vk::FenceCreateInfo());
-
-	vk::SubmitInfo submitInfo(
+	cmdBuffer.pipelineBarrier(
+		vk::PipelineStageFlagBits::eRayTracingShaderKHR,
+		vk::PipelineStageFlagBits::eBottomOfPipe, // No specific stage needs to start after the transition
+		vk::DependencyFlags(),
 		0, nullptr,
-		nullptr,
-		1, &commandBuffer,
-		0, nullptr
+		0, nullptr,
+		1, &swapchainPresentMemoryBarrier2
 	);
-	m_VkDevice.GetQueue(VulkanQueueType::Graphic).submit(1, &submitInfo, fence);
-
-	m_VkDevice.Raw().waitForFences(1, &fence, VK_TRUE, UINT64_MAX);
-	m_VkDevice.Raw().destroyFence(fence);
 }
