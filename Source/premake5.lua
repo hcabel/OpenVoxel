@@ -1,7 +1,7 @@
 include "../vendor/Premake5/Utils.lua"
 
 OV_RuntimeModules = { "Core", "Engine", "Renderer" }
-OV_EditorModules = { "Editor" }
+OV_EditorModules = { "Editor", "UI" }
 
 project "OpenVoxel"
 	kind "ConsoleApp"
