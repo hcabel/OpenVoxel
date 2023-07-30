@@ -2,7 +2,7 @@ include "./vendor/Premake5/GlobalVariable.lua"
 include "./vendor/Premake5/Extended/workspace_files.lua" -- Allow files to be added to the workspace
 
 workspace "OpenVoxel"
-	architecture "x64"
+	architecture "x86_64"
 	configurations
 	{
 		"Runtime - Debug",
