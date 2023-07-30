@@ -3,40 +3,42 @@
 project "Editor"
 	UseModuleDefaultConfig()
 
-	files
-	{
-		"**.h",
-		"**.cpp"
-	}
+	filter "configurations:Editor*"
+		files
+		{
+			"**.h",
+			"**.cpp"
+		}
 
-	includedirs
-	{
-		"Private",
-		"Public",
+		includedirs
+		{
+			"Private",
+			"Public",
 
-		-- ThirdParty
-		"../../ThirdParty/glm",
-		"../../ThirdParty/GLFW/include",
-		"%{VULKAN_SDK}/Include",
+			-- ThirdParty
+			"../../ThirdParty/glm",
+			"../../ThirdParty/GLFW/include",
+			"%{VULKAN_SDK}/Include",
 
-		-- Modules
-		"../../../Source/Runtime/Core/Public",
-		"../../../Source/Runtime/Engine/Public",
-		"../../../Source/Runtime/Renderer/Public",
-		"../../../Source/Editor/UI/Public",
-	}
+			-- Modules
+			"../../../Source/Runtime/Core/Public",
+			"../../../Source/Runtime/Engine/Public",
+			"../../../Source/Runtime/Renderer/Public",
+			"../../../Source/Editor/UI/Public",
+		}
 
-	links
-	{
-		-- ThirdParty
-		"GLFW",
-		"%{VULKAN_SDK}/Lib/vulkan-1.lib",
+		links
+		{
+			-- ThirdParty
+			"GLFW",
+			"%{VULKAN_SDK}/Lib/vulkan-1.lib",
 
-		-- Modules
-		"Core",
-		"Engine",
-		"Renderer",
-		"UI",
-	}
+			-- Modules
+			"Core",
+			"Engine",
+			"Renderer",
+			"UI",
+		}
 
-	defines "OV_BUILD_EDITOR_DLL"
+		defines "OV_BUILD_EDITOR_DLL"
+	filter {}
