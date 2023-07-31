@@ -37,6 +37,32 @@ std::shared_ptr<WindowsPlatformFile> WindowsPlatformFile::Open(std::string_view 
 	newFile->m_FullPath = fullPath;
 	newFile->m_FileStream = std::fstream(fullPath.data(), openmode);
 
+	if (newFile->IsOpen() == false)
+	{
+		OV_LOG(CoreLog, Error, "Failed to open file: {:s}", fullPath.data());
+		newFile.reset();
+		return (nullptr);
+	}
+	return (newFile);
+}
+
+std::unique_ptr<WindowsPlatformFile> WindowsPlatformFile::OpenUnique(std::string_view fullPath, std::ios_base::openmode openmode)
+{
+	std::unique_ptr<WindowsPlatformFile> newFile = WindowsPlatformFile::CreateUniqueInstance();
+	std::filesystem::path filePath = fullPath;
+
+	if (!std::filesystem::exists(filePath.parent_path()))
+		CreateDirectory(filePath.parent_path());
+
+	newFile->m_FullPath = fullPath;
+	newFile->m_FileStream = std::fstream(fullPath.data(), openmode);
+
+	if (newFile->IsOpen() == false)
+	{
+		OV_LOG(CoreLog, Error, "Failed to open file: {:s}", fullPath.data());
+		newFile.reset();
+		return (nullptr);
+	}
 	return (newFile);
 }
 #pragma endregion
