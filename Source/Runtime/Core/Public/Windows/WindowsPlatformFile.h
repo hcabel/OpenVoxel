@@ -17,7 +17,8 @@ class CORE_API WindowsPlatformFile
 {
 private:
 	WindowsPlatformFile() = default;
-	inline static std::shared_ptr<WindowsPlatformFile> CreateInstance() { return std::shared_ptr<WindowsPlatformFile>(new WindowsPlatformFile()); }
+	__forceinline static std::shared_ptr<WindowsPlatformFile> CreateInstance() { return std::shared_ptr<WindowsPlatformFile>(new WindowsPlatformFile()); }
+	__forceinline static std::unique_ptr<WindowsPlatformFile> CreateUniqueInstance() { return std::unique_ptr<WindowsPlatformFile>(new WindowsPlatformFile()); }
 
 public:
 	/** Use PlatformFile::Copy to copy a file */
@@ -27,9 +28,11 @@ public:
 #pragma region API
 public:
 	/** Close the file stream */
-	inline void Close() { m_FileStream.close(); }
+	__forceinline void Close() { m_FileStream.close(); }
 	/** Tell whether or not the file is open */
-	inline bool IsOpen() const { return (m_FileStream.is_open()); }
+	__forceinline bool IsOpen() const { return (m_FileStream.is_open()); }
+	/** Open the file (probably again, because you have the handle) */
+	__forceinline void Open(std::ios_base::openmode openMode) { m_FileStream.open(m_FullPath.data(), openMode); }
 	/**
 	 * Read the whole file in one go.
 	 *
@@ -38,14 +41,20 @@ public:
 	std::string ReadAll();
 
 	template<typename T>
-	inline WindowsPlatformFile& operator<<(const T& value) {
-		m_FileStream << value;
+	WindowsPlatformFile& Write(const T& str)
+	{
+		m_FileStream << str;
 		return *this;
 	}
-	inline WindowsPlatformFile& operator<<(std::ostream& (*func)(std::ostream&)) {
+	WindowsPlatformFile& Write(std::ostream& (*func)(std::ostream&))
+	{
 		m_FileStream << func;
 		return *this;
 	}
+
+	template<typename T>
+	inline WindowsPlatformFile& operator<<(const T& str) { return (Write(str)); }
+	inline WindowsPlatformFile& operator<<(std::ostream& (*func)(std::ostream&)) { return (Write(func)); }
 #pragma endregion
 
 #pragma region API - Static
@@ -65,6 +74,8 @@ public:
 	 * \return the handle of the new file.
 	 */
 	static std::shared_ptr<WindowsPlatformFile> Open(std::string_view fullPath, std::ios_base::openmode openmode);
+	/** Same as @see Open, but return an unique ptr instead */
+	static std::unique_ptr<WindowsPlatformFile> OpenUnique(std::string_view fullPath, std::ios_base::openmode openmode);
 	/**
 	 * Create a directory at the specified path. (including all the parent directories)
 	 * \note that when creating a file the parent directory are created automatically.
@@ -79,7 +90,7 @@ public:
 #pragma endregion
 
 protected:
-	std::string_view m_FullPath;
+	std::string m_FullPath;
 	std::fstream m_FileStream;
 
 };
