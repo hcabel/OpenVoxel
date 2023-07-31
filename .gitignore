@@ -40,3 +40,6 @@ bin-int/
 .vs/
 *.sln
 *.vcxproj*
+
+# Open Voxel temporary file
+Saved/

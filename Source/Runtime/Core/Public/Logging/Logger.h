@@ -2,9 +2,12 @@
 
 #include "Core_API.h"
 #include "Logging/LoggingType.h"
+#include "HAL/PlatformFile.h"
 
 #include <iostream>
 #include <stdio.h>
+#include <string>
+#include <memory>
 #include <format>
 
 /**
@@ -19,4 +22,9 @@ public:
 
 private:
 	static void LogOntoConsole(std::string_view logMessage);
+	static void LogOntoFile(std::string_view logMessage);
+	static std::string GetLogFilePath();
+
+private:
+	static std::unique_ptr<PlatformFile> s_LogFile;
 };
