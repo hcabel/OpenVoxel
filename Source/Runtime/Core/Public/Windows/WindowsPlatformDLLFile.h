@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Core_API.h"
+#include "Path.h"
 
 #include <windows.h>
-#include <string_view>
 
 class CORE_API WindowsPlatformDLLFile
 {
@@ -13,9 +13,9 @@ private:
 	{}
 
 public:
-	inline static WindowsPlatformDLLFile* Load(std::string_view moduleName)
+	__forceinline static WindowsPlatformDLLFile* Load(const Path& modulePath)
 	{
-		return (new WindowsPlatformDLLFile(LoadLibraryA(moduleName.data())));
+		return (new WindowsPlatformDLLFile(LoadLibraryA(modulePath.GetPath().c_str())));
 	}
 
 	inline void* GetFunctionPtr(const char* functionName) { return GetProcAddress(m_Handle, functionName); }

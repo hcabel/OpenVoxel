@@ -53,3 +53,11 @@
 
 #define OV_DLL_IMPORT __declspec(dllimport)
 #define OV_DLL_EXPORT __declspec(dllexport)
+
+/* Useful constant */
+
+#ifdef PLATFORM_WINDOWS
+# define MAX_PATH_LENGTH 260 // Has describe in https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation (dont want to include windows.h here too heavy)
+#else
+# define MAX_PATH_LENGTH 512 // Arbitrary value, should be enough, I have no idea what is the max path length on Linux/Mac
+#endif
