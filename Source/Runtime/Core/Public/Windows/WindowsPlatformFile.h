@@ -22,7 +22,7 @@ private:
 	__forceinline static std::unique_ptr<WindowsPlatformFile> CreateUniqueInstance() { return std::unique_ptr<WindowsPlatformFile>(new WindowsPlatformFile()); }
 
 public:
-	/** Use PlatformFile::Copy to copy a file */
+	/** Use File::Copy to copy a file */
 	WindowsPlatformFile(const WindowsPlatformFile& other) = delete;
 	~WindowsPlatformFile();
 
@@ -94,5 +94,3 @@ protected:
 	std::string m_FullPath;
 	std::fstream m_FileStream;
 };
-
-typedef WindowsPlatformFile PlatformFile;

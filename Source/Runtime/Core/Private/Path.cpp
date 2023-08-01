@@ -1,7 +1,7 @@
 ﻿#include "Path.h"
 
 #include "Singleton.h"
-#include "HAL/PlatformFileSystem.h"
+#include "HAL/FileSystem.h"
 
 Path::DataCache Path::s_Data;
 
@@ -157,9 +157,9 @@ const std::string_view Path::GetFileName() const
 #pragma region Static - API
 /**
  * Create the content of a function that will get a path from the cache
- * if the cache is empty, it will call the getter function in the PlatformFileSystem to get the path.
+ * if the cache is empty, it will call the getter function in the FileSystem to get the path.
  * @param VariableName the name of the variable that will be used to store the path in the cache
- * @note The getter function must be named Make[VariableName]Path in the PlatformFileSystem class
+ * @note The getter function must be named Make[VariableName]Path in the FileSystem class
  */
 #define PATH_GETTER_CACHED(VariableName) \
 	/* Get the VariableName from in cache */ \
@@ -167,7 +167,7 @@ const std::string_view Path::GetFileName() const
 	if (VariableName == nullptr) \
 	{ \
 		/* if cache is empty, get the value using the getter function */ \
-		VariableName = new Path(PlatformFileSystem::Make##VariableName##Path()); \
+		VariableName = new Path(FileSystem::Make##VariableName##Path()); \
 	} \
 	return (*VariableName);
 

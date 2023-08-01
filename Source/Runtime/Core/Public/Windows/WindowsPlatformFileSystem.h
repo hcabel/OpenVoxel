@@ -15,5 +15,3 @@ public:
 	/** Find the path where all the module are stored */
 	static Path MakeModuleDirectoryPath();
 };
-
-typedef WindowsPlatformFileSystem PlatformFileSystem;

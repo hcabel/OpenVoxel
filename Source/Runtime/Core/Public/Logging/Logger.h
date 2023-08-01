@@ -2,7 +2,7 @@
 
 #include "Core_API.h"
 #include "Logging/LoggingType.h"
-#include "HAL/PlatformFile.h"
+#include "HAL/File.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -26,5 +26,5 @@ private:
 	static std::string GetLogFilePath();
 
 private:
-	static std::unique_ptr<PlatformFile> s_LogFile;
+	static std::unique_ptr<File> s_LogFile;
 };

@@ -43,11 +43,16 @@
 
 /**
  * Platform header will change the include path depending of the current platform.
- *
- * "Windows = Windows/Windows[HeaderName]"
- * "Linux = Linux/Linux[HeaderName]"
+ * return: "[PlatformName]/[PlatformName]Platform[Header]"
+ * e.g. "Windows/WindowsPlatformFile.h", "Mac/MacPlatformFile.h", "Linux/LinuxPlatformFile.h", ...
  */
-#define PLATFORM_HEADER(Header) TO_STRING(JOIN(PLATFORM_NAME/PLATFORM_NAME, Header))
+#define PLATFORM_HEADER(Header) TO_STRING(JOIN(JOIN(PLATFORM_NAME/PLATFORM_NAME, Platform), Header))
+/**
+ * Link a platform specific class to the generic class,
+ * return: typedef [PlatformName]Platform[ClassName] [ClassName];
+ * e.g. typedef WindowsPlatformFile File;
+ */
+#define LINK_PLATFORM_CLASS(ClassName) typedef JOIN(JOIN(PLATFORM_NAME, Platform), ClassName) ClassName;
 
 /* Compiler macros */
 

@@ -26,5 +26,3 @@ public:
 private:
 	const HMODULE m_Handle;
 };
-
-typedef WindowsPlatformDLLFile PlatformDLLFile;
