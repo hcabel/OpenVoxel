@@ -2,7 +2,7 @@
 
 #include "Core_API.h"
 
-#include <string>
+class Path;
 
 /**
  * A helper class to interact with Windows file system
@@ -11,9 +11,9 @@ class CORE_API WindowsPlatformFileSystem
 {
 public:
 	/** Find Engine root directory Path */
-	static std::string MakeEngineRootDirectoryPath();
+	static Path MakeEngineRootDirectoryPath();
 	/** Find the path where all the module are stored */
-	static std::string MakeModuleDirectoryPath();
+	static Path MakeModuleDirectoryPath();
 };
 
 typedef WindowsPlatformFileSystem PlatformFileSystem;

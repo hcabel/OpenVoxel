@@ -7,11 +7,11 @@ DEFINE_LOG_CATEGORY(ModuleManagerLog);
 
 void OVModuleManager::LoadModule(const char* moduleName)
 {
-	std::string modulePath = Path::GetModuleDirectoryPath() + '\\' + moduleName + ".dll";
+	Path modulePath = Path::GetModuleDirectoryPath().AppendSegment(std::string(moduleName) + ".dll");
 
 	if (PlatformFile::Exists(modulePath) == false)
 	{
-		MODULEMANAGER_LOG(Error, "Unable to load module '{:s}': module not found ('{:s}')", moduleName, modulePath);
+		MODULEMANAGER_LOG(Error, "Unable to load module '{:s}': module not found ('{:s}')", moduleName, std::string(modulePath));
 		return;
 	}
 

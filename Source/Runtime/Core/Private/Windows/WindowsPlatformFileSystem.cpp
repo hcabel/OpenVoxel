@@ -1,23 +1,25 @@
 ﻿#include "Windows/WindowsPlatformFileSystem.h"
+#include "MacrosHelper.h"
+#include "Path.h"
 
 #include <Windows.h>
 
-std::string WindowsPlatformFileSystem::MakeEngineRootDirectoryPath()
+Path WindowsPlatformFileSystem::MakeEngineRootDirectoryPath()
 {
 	// Get binary path
-	char buffer[MAX_PATH];
-	if (GetModuleFileNameA(NULL, buffer, MAX_PATH) == 0)
+	char buffer[MAX_PATH_LENGTH];
+	if (GetModuleFileNameA(NULL, buffer, MAX_PATH_LENGTH) == 0)
 		return ("");
-	std::string binaryPath = std::string(buffer);
+	Path binaryPath = buffer;
 
-	// Remove everything after "build/"
-	size_t posOfBuildFolder = binaryPath.rfind("build\\");
-	if (posOfBuildFolder != std::string::npos)
-		binaryPath = binaryPath.erase(posOfBuildFolder);
+	// Remove everything from "build" to the end
+	Path::size_type segmentIndex = binaryPath.RightFindSegment("build");
+	if (segmentIndex != -1)
+		binaryPath.TrimSegments(segmentIndex, binaryPath.GetSegmentCount() - 1);
 	return (binaryPath);
 }
 
-std::string WindowsPlatformFileSystem::MakeModuleDirectoryPath()
+Path WindowsPlatformFileSystem::MakeModuleDirectoryPath()
 {
 	HMODULE currentModuleHandle;
 	GetModuleHandleExA(
@@ -29,11 +31,11 @@ std::string WindowsPlatformFileSystem::MakeModuleDirectoryPath()
 	if (currentModuleHandle == NULL)
 		return ("");
 
-	char currentModulePath[MAX_PATH];
-	GetModuleFileNameA(currentModuleHandle, currentModulePath, MAX_PATH);
+	char currentModulePath[MAX_PATH_LENGTH];
+	GetModuleFileNameA(currentModuleHandle, currentModulePath, MAX_PATH_LENGTH);
 
-	// replace the last '\' with '\0' to crop the module name
-	*strrchr(currentModulePath, '\\') = '\0';
+	Path moduleDirectoryPath = currentModulePath;
+	moduleDirectoryPath.TrimTarget();
 
-	return (currentModulePath);
+	return (moduleDirectoryPath);
 }

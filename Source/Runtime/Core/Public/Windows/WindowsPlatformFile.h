@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core_API.h"
+#include "Path.h"
 
 #include <string_view>
 #include <iostream>
@@ -86,13 +87,12 @@ public:
 	inline static bool CreateDirectory(std::string_view path) { return (std::filesystem::create_directories(path)); }
 	inline static bool CreateDirectory(std::filesystem::path path) { return (std::filesystem::create_directories(path)); }
 	/** Check whether or not a file exist at a given path */
-	inline static bool Exists(std::string_view path) { return (std::filesystem::exists(path)); }
+	inline static bool Exists(const Path& filePath) { return (std::filesystem::exists(std::string(filePath))); }
 #pragma endregion
 
 protected:
 	std::string m_FullPath;
 	std::fstream m_FileStream;
-
 };
 
 typedef WindowsPlatformFile PlatformFile;
