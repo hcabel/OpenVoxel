@@ -15,6 +15,6 @@ Open Voxel is an **open source voxel engine/editor** written in C++, using GLFW,
 - [ ] **2.0.0** - Physics engine ???
 
 ## Links
-![Discord](https://img.shields.io/discord/815142744850694146?style=for-the-badge&logo=Discord&logoColor=white&label=Join%20us%20on%20Discord&labelColor=738adb&color=424549)
+![![Discord](https://img.shields.io/discord/815142744850694146?style=for-the-badge&logo=Discord&logoColor=white&label=Join%20us%20on%20Discord&labelColor=738adb&color=424549)](https://discord.gg/aep25uWaMR)
 
 
