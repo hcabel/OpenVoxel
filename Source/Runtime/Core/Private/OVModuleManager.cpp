@@ -1,6 +1,6 @@
 #include "OVModuleManager.h"
-#include "HAL/PlatformFile.h"
-#include "HAL/PlatformDLLFile.h"
+#include "HAL/File.h"
+#include "HAL/DLLFile.h"
 #include "Path.h"
 
 DEFINE_LOG_CATEGORY(ModuleManagerLog);
@@ -9,13 +9,13 @@ void OVModuleManager::LoadModule(const char* moduleName)
 {
 	Path modulePath = Path::GetModuleDirectoryPath().AppendSegment(std::string(moduleName) + ".dll");
 
-	if (PlatformFile::Exists(modulePath) == false)
+	if (File::Exists(modulePath) == false)
 	{
 		MODULEMANAGER_LOG(Error, "Unable to load module '{:s}': module not found ('{:s}')", moduleName, std::string(modulePath));
 		return;
 	}
 
-	PlatformDLLFile* moduleDLL = PlatformDLLFile::Load(modulePath);
+	DLLFile* moduleDLL = DLLFile::Load(modulePath);
 	if (!moduleDLL->IsValid())
 	{
 		MODULEMANAGER_LOG(Error, "Unable to load module '{:s}': couldn't be loaded by the OS", moduleName);

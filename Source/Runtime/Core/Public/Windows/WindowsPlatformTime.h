@@ -41,6 +41,3 @@ private:
 	static float s_TimeStep;
 
 };
-
-// Allow the platform to override the generic implementation.
-typedef WindowsPlatformTime PlatformTime;

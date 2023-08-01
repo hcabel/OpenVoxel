@@ -1,7 +1,7 @@
 #include "EditorEngine.h"
 #include "OVModuleManager.h"
 #include "Renderer.h"
-#include "HAL/PlatformTime.h"
+#include "HAL/Time.h"
 #include "UI.h"
 
 EditorEngine::~EditorEngine()
@@ -23,7 +23,7 @@ void EditorEngine::EngineLoop()
 
 		UI::Get().RenderNewFrame();
 
-		PlatformTime::CalculateNewTiming();
+		Time::CalculateNewTiming();
 	}
 }
 

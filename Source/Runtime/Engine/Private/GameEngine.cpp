@@ -1,6 +1,6 @@
 #include "GameEngine.h"
 #include "Profiling/ProfilingMacros.h"
-#include "HAL/PlatformTime.h"
+#include "HAL/Time.h"
 #include "Renderer.h"
 #include "RendererModule.h"
 
@@ -21,26 +21,24 @@ void GameEngine::EngineLoop()
 {
 	OV_LOG(GameEngineLog, Display, "Engine Running");
 
-	PlatformTime::Init();
+	Time::Init();
 	while (EngineShouldStop() == false)
 	{
 		CLEAR_ALL_PERFRAME_TIMER_DATA();
 
 		Renderer::Get().PrepareNewFrame();
 
-		float timeStep = PlatformTime::GetTimeStep();
+		float timeStep = Time::GetTimeStep();
 		Tick(timeStep);
 
 		Renderer::Get().RenderNewFrame();
 
-		PlatformTime::CalculateNewTiming();
+		Time::CalculateNewTiming();
 	}
 }
 
 void GameEngine::Tick(float timeStep)
 {
-	CREATE_SCOPE_NAMED_TIMER_CONSOLE(GameEngineTick);
-
 	Renderer::Get().Tick();
 
 	// Stop();

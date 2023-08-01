@@ -1,6 +1,6 @@
 #include "Renderer.h"
 #include "Vulkan/VulkanDebugMessenger.h"
-#include "HAL/PlatformTime.h"
+#include "HAL/Time.h"
 
 #include <format>
 
@@ -174,9 +174,9 @@ void Renderer::Tick()
 	glfwPollEvents();
 
 	// Update title to show fps
-	const uint16_t fpsCount = (uint16_t)std::round(1.0f / PlatformTime::GetTimeStep());
+	const uint16_t fpsCount = (uint16_t)std::round(1.0f / Time::GetTimeStep());
 	GLFWwindow* glfwWindow = RendererModule::GetWindow();
-	glfwSetWindowTitle(glfwWindow, std::format("OpenVoxel - {:.2f}ms = {:d}fps", PlatformTime::GetTimeStep() * 100.0f, fpsCount).c_str());
+	glfwSetWindowTitle(glfwWindow, std::format("OpenVoxel - {:.2f}ms = {:d}fps", Time::GetTimeStep() * 100.0f, fpsCount).c_str());
 }
 
 void Renderer::InitVulkanInstance()

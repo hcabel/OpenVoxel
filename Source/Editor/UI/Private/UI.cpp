@@ -99,6 +99,15 @@ void UI::PrepareNewFrame()
 
 void UI::RenderNewFrame()
 {
+
+	static bool show_demo_window = true;
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	ImGui::Begin("Another window!");
+	ImGui::Text("This is some useful text.");
+	ImGui::End();
+
 	ImGui::Render();
 
 	ImGuiIO& io = ImGui::GetIO();
