@@ -7,15 +7,23 @@ function CreateModuleProject(moduleData)
 	project (moduleData.Name)
 		UseModuleDefaultConfig()
 
+		if moduleData.EngineScope == "Editor" then
+			filter "configurations:Editor*"
+		end
+
 		files(moduleData.Files)
 
 		includedirs (moduleData.Linked.IncludeDirs)
 		includedirs (moduleData.Private_IncludeDirs)
 
 		links (moduleData.ModulesDependencies)
-		links (moduleData.LibrariesDependencies)
+		links (moduleData.Linked.Links)
 
 		defines (moduleData.Defines)
+
+		if moduleData.EngineScope == "Editor" then
+			filter {}
+		end
 end
 
 function GenerateModuleProject(moduleNameList)

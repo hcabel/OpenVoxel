@@ -19,10 +19,6 @@ function CoreModule(config)
 	-- The Private_IncludeDirs are shortcuts for this module only
 	Core.Private_IncludeDirs = {
 		"Private",
-
-		-- REMOVE
-		"../../ThirdParty/GLFW/include",
-		"../../ThirdParty/glm",
 	}
 
 	-- Libraries to link against
@@ -32,7 +28,7 @@ function CoreModule(config)
 	-- List of the third party libraries that required to be linked against
 	Core.LibrariesDependencies = {
 		"GLFW",
-		-- "glm", TODO: add glm has library de
+		"glm",
 	}
 
 	-- Defines

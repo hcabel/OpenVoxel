@@ -12,11 +12,6 @@ function EditorModule(config)
 	}
 	Editor.Private_IncludeDirs = {
 		"Private",
-
-		-- REMOVE
-		"../../ThirdParty/glm",
-		"../../ThirdParty/GLFW/include",
-		"%{VULKAN_SDK}/Include",
 	}
 
 	Editor.ModulesDependencies = {
@@ -27,7 +22,8 @@ function EditorModule(config)
 	}
 	Editor.LibrariesDependencies = {
 		"GLFW",
-		"%{VULKAN_SDK}/Lib/vulkan-1.lib",
+		"Vulkan",
+		"glm",
 	}
 
 	Editor.Defines = {

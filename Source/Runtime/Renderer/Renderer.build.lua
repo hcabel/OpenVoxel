@@ -12,20 +12,15 @@ function RendererModule(config)
 	}
 	Renderer.Private_IncludeDirs = {
 		"Private",
-
-		-- REMOVE
-		"../../ThirdParty/GLFW/include",
-		"../../ThirdParty/glm",
-		"%{VULKAN_SDK}/Include",
 	}
 
 	Renderer.ModulesDependencies = {
 		"Core",
 	}
 	Renderer.LibrariesDependencies = {
-		"%{VULKAN_SDK}/Lib/vulkan-1.lib", -- replace by "Vulkan",
+		"Vulkan",
 		"GLFW",
-		-- "glm",
+		"glm",
 	}
 
 	Renderer.Defines = {

@@ -12,12 +12,6 @@ function UIModule(config)
 	}
 	UI.Private_IncludeDirs = {
 		"Private",
-
-		-- REMOVE
-		"../../ThirdParty/glm",
-		"../../ThirdParty/GLFW/include",
-		"%{VULKAN_SDK}/Include",
-		"../../ThirdParty/imgui"
 	}
 
 	UI.ModulesDependencies = {
@@ -26,7 +20,7 @@ function UIModule(config)
 	}
 	UI.LibrariesDependencies = {
 		"GLFW",
-		"%{VULKAN_SDK}/Lib/vulkan-1.lib", -- replace by "Vulkan",
+		"Vulkan",
 		"ImGui",
 	}
 

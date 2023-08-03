@@ -1,6 +1,7 @@
 include "GlobalValues.lua"
 include "FileUtils.lua"
 include "DebugUtils.lua"
+include "LibraryDataResolver.lua"
 
 -- Replace all the path by the absolute path
 function ResolveModulePaths(moduleData)
@@ -74,7 +75,7 @@ function LoadBuildFile(moduleName)
 	return ModulesDataCache[moduleName]
 end
 
-function TraverseDependenciesTree(moduleName, extractDataFunc, path)
+function TraverseModuleDependenciesTree(moduleName, extractDataFunc, path)
 	if ModulesDataCache[moduleName] == nil then
 		LoadModule(moduleName)
 	end
@@ -98,7 +99,7 @@ function TraverseDependenciesTree(moduleName, extractDataFunc, path)
 
 	if ModulesDataCache[moduleName].LoadingSteps == MODULE_CREATED then
 		for _, dependencyModuleName in ipairs(ModulesDataCache[moduleName].ModulesDependencies) do
-			TraverseDependenciesTree(dependencyModuleName, extractDataFunc, newPath)
+			TraverseModuleDependenciesTree(dependencyModuleName, extractDataFunc, newPath)
 		end
 	end
 
@@ -118,15 +119,20 @@ function LinkModule(moduleName)
 		return currentModule
 	end
 
-	currentModule.Linked = {}
-	currentModule.Linked.IncludeDirs = {}
+	currentModule.Linked = {
+		IncludeDirs = {},
+	}
 
-	TraverseDependenciesTree(moduleName, function(moduleData)
+	TraverseModuleDependenciesTree(moduleName, function(moduleData)
 		-- Add public include directories
 		for _, includeDir in ipairs(moduleData.Public_IncludeDirs) do
 			table.insert(currentModule.Linked.IncludeDirs, includeDir)
 		end
 	end, {})
+
+	for _, libraryName in ipairs(currentModule.LibrariesDependencies) do
+		LinkToLibrary(libraryName, currentModule)
+	end
 
 	currentModule.LoadingSteps = MODULE_LINKED
 	return ModulesDataCache[moduleName]

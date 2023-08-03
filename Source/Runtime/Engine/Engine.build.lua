@@ -12,11 +12,6 @@ function EngineModule(config)
 	}
 	Engine.Private_IncludeDirs = {
 		"Private",
-
-		-- REMOVE
-		"%{VULKAN_SDK}/Include",
-		"../../ThirdParty/GLFW/include",
-		"../../ThirdParty/glm",
 	}
 
 	Engine.ModulesDependencies = {
@@ -24,9 +19,9 @@ function EngineModule(config)
 		"Core",
 	}
 	Engine.LibrariesDependencies = {
-		"%{VULKAN_SDK}/Lib/vulkan-1.lib", -- replace by "Vulkan",
+		"Vulkan",
 		"GLFW",
-		-- "glm",
+		"glm",
 	}
 
 	Engine.Defines = {
