@@ -1,3 +1,5 @@
+include "Source/Programs/BuildTools/GeneratePremakeFile.lua"
+
 include "./vendor/Premake5/GlobalVariable.lua"
 include "./vendor/Premake5/Extended/workspace_files.lua" -- Allow files to be added to the workspace
 
@@ -33,9 +35,11 @@ group "Engine"
 
 	-- Include all modules
 	group "Engine/Modules/Runtime"
-		for _, moduleName in ipairs(OV_RuntimeModules) do
-			include ("Source/Runtime/" .. moduleName .. "/premake5.lua")
-		end
+		GenerateModuleProject({
+			"Core",
+			"Renderer",
+			"Engine",
+		})
 	group "Engine/Modules/Editor"
 		for _, moduleName in ipairs(OV_EditorModules) do
 			include ("Source/Editor/" .. moduleName .. "/premake5.lua")
