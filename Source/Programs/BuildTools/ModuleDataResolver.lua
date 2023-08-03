@@ -94,6 +94,32 @@ function LoadBuildFile(moduleName)
 	return ModulesDataCache[moduleName]
 end
 
+function TraverseDependenciesTree(moduleName, extractDataFunc, path)
+	if ModulesDataCache[moduleName] == nil then
+		LoadModule(moduleName)
+	end
+
+	-- Check circular dependencies
+	for _, dependencyModuleName in ipairs(path) do
+		if dependencyModuleName == moduleName then
+			error("Circular dependencies detected: '" .. table.concat(path, " -> ") .. " -> " .. moduleName .. "'")
+		end
+	end
+
+	table.insert(path, moduleName or { "WRONG NAME"})
+	-- print(table.concat(path, " -> "))
+
+
+	if ModulesDataCache[moduleName].LoadingSteps == MODULE_CREATED then
+		for _, dependencyModuleName in ipairs(ModulesDataCache[moduleName].ModulesDependencies) do
+			TraverseDependenciesTree(dependencyModuleName, extractDataFunc, path)
+		end
+	end
+
+	-- print (string.rep('\t', #path) .. "- Extracting from: " .. moduleName)
+	extractDataFunc(ModulesDataCache[moduleName])
+end
+
 function LinkModule(moduleName)
 	print ("Link modules: " .. moduleName)
 
@@ -105,6 +131,16 @@ function LinkModule(moduleName)
 	if currentModule.LoadingSteps == MODULE_LINKED then
 		return currentModule
 	end
+
+	currentModule.Linked = {}
+	currentModule.Linked.IncludeDirs = {}
+
+	TraverseDependenciesTree(moduleName, function(moduleData)
+		-- Add public include directories
+		for _, includeDir in ipairs(moduleData.Public_IncludeDirs) do
+			table.insert(currentModule.Linked.IncludeDirs, includeDir)
+		end
+	end, {})
 
 	currentModule.LoadingSteps = MODULE_LINKED
 	return ModulesDataCache[moduleName]

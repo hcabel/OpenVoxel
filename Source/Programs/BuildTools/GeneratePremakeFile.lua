@@ -9,7 +9,7 @@ function CreateModuleProject(moduleData)
 
 		files(moduleData.Files)
 
-		includedirs (moduleData.Public_IncludeDirs)
+		includedirs (moduleData.Linked.IncludeDirs)
 		includedirs (moduleData.Private_IncludeDirs)
 
 		links (moduleData.ModulesDependencies)

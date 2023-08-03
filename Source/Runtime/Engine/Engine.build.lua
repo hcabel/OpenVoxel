@@ -17,8 +17,6 @@ function EngineModule(config)
 		"%{VULKAN_SDK}/Include",
 		"../../ThirdParty/GLFW/include",
 		"../../ThirdParty/glm",
-		"../Core/Public",
-		"../Renderer/Public",
 	}
 
 	Engine.ModulesDependencies = {

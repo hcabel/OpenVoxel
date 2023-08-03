@@ -17,7 +17,6 @@ function RendererModule(config)
 		"../../ThirdParty/GLFW/include",
 		"../../ThirdParty/glm",
 		"%{VULKAN_SDK}/Include",
-		"../Core/Public",
 	}
 
 	Renderer.ModulesDependencies = {
