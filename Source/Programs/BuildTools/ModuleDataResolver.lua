@@ -52,6 +52,14 @@ function ResolveModulePaths(moduleData)
 	return moduleData
 end
 
+function FileExists(filePath)
+	local file = io.open(filePath, "rb")
+	if file then
+		file:close()
+	end
+	return file ~= nil
+end
+
 local config = {}; -- TODO
 
 -- Store the modules that have already been created
@@ -66,7 +74,15 @@ function LoadBuildFile(moduleName)
 		return ModulesDataCache[moduleName]
 	end
 
-	local moduleFilePath = "Source/Runtime/" .. moduleName .. "/" .. moduleName .. ".build.lua"
+	local engineScope = "Runtime"
+	local moduleFilePath = "Source/" .. engineScope .. "/" .. moduleName .. "/" .. moduleName .. ".build.lua"
+	if FileExists(moduleFilePath) == false then
+		engineScope = "Editor"
+		moduleFilePath = "Source/" .. engineScope .. "/" .. moduleName .. "/" .. moduleName .. ".build.lua"
+		if FileExists(moduleFilePath) == false then
+			error("Failed to load module build file: " .. moduleName .. ". Build file not found under 'Source/Runtime/' or 'Source/Editor/'")
+		end
+	end
 
 	-- Load the module's build file
 	local createModuleFunc = dofile(moduleFilePath)
@@ -83,7 +99,8 @@ function LoadBuildFile(moduleName)
 
 	-- Add extra handy data
 	moduleData.Name = moduleName
-	moduleData.RootDirectory = ROOT_DIR_PATH .. "Source/Runtime/" .. moduleName .. "/"
+	moduleData.EngineScope = engineScope
+	moduleData.RootDirectory = ROOT_DIR_PATH .. "Source/" .. engineScope .. "/" .. moduleName .. "/"
 	moduleData.LoadingSteps = MODULE_CREATED
 
 	-- resolve all the paths to avoid any confusion
@@ -106,13 +123,19 @@ function TraverseDependenciesTree(moduleName, extractDataFunc, path)
 		end
 	end
 
-	table.insert(path, moduleName or { "WRONG NAME"})
-	-- print(table.concat(path, " -> "))
+	-- copy path onto newPath to avoid modifying the original
+	local newPath = {}
+	for _, dependencyModuleName in ipairs(path) do
+		table.insert(newPath, dependencyModuleName)
+	end
+	table.insert(newPath, moduleName)
+	-- print(table.concat(newPath, " -> "))
+
 
 
 	if ModulesDataCache[moduleName].LoadingSteps == MODULE_CREATED then
 		for _, dependencyModuleName in ipairs(ModulesDataCache[moduleName].ModulesDependencies) do
-			TraverseDependenciesTree(dependencyModuleName, extractDataFunc, path)
+			TraverseDependenciesTree(dependencyModuleName, extractDataFunc, newPath)
 		end
 	end
 

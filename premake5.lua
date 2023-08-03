@@ -41,9 +41,10 @@ group "Engine"
 			"Engine",
 		})
 	group "Engine/Modules/Editor"
-		for _, moduleName in ipairs(OV_EditorModules) do
-			include ("Source/Editor/" .. moduleName .. "/premake5.lua")
-		end
+		GenerateModuleProject({
+			"Editor",
+			"UI",
+		})
 	group ""
 group ""
 
