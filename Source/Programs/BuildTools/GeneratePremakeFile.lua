@@ -1,5 +1,6 @@
 include "GlobalValues.lua"
 include "ModuleDataResolver.lua"
+include "ProjectCreatorUtils.lua"
 
 function CreateModuleProject(moduleData)
 	print("Creating module project: " .. moduleData.Name)
