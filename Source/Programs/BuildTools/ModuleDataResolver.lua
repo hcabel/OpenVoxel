@@ -49,13 +49,13 @@ function LoadBuildFile(moduleName)
 	end
 
 	-- Load the module's build file
-	local createModuleFunc = dofile(moduleFilePath)
-	if createModuleFunc == nil then
+	local GetBuildDataFunc = dofile(moduleFilePath)
+	if GetBuildDataFunc == nil then
 		error("Failed to load module build file: " .. moduleName .. " at path: " .. moduleFilePath .. ". File does not export the createModule function.")
 	end
 
 	-- Create the module
-	local moduleData = createModuleFunc(config)
+	local moduleData = GetBuildDataFunc(config)
 
 	if moduleData == nil then
 		error("Failed to load module build file: " .. moduleName .. " at path: " .. moduleFilePath .. ". Function did not return any module data.")

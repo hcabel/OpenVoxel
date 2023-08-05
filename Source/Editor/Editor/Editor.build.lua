@@ -2,6 +2,8 @@
 function EditorModule(config)
 	local Editor = {}
 
+	Editor.Kind = "Module"
+
 	Editor.Files = {
 		"**.h",
 		"**.cpp"

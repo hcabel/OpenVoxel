@@ -2,6 +2,8 @@
 function CoreModule(config)
 	Core = {} -- Set module object
 
+	Core.Kind = "Module" -- Will be build as a dll
+
 	-- Source file of the module
 	Core.Files = {
 		"**.h",

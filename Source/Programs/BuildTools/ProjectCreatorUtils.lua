@@ -25,11 +25,12 @@ end
 
 include "PremakeExtended/FastUpToDateCheck.lua" -- Allow the project to disable fast up to date check
 
-local ProjectTargetOutput = BUILD_OUTPUT_PATH .. "/%{prj.name}"
 local ProjectObjectOutput = INTERMEDIATE_OUTPUT_PATH .. "/%{prj.name}"
 
 function UseProjectDefaultConfig()
-	UseDefines()
+	UseDefaultDefines()
+
+	kind "ConsoleApp"
 
 	-- Disable Fast Up To Date check, to allow the project to update the dlls after building modules
 	FastUpToDateCheck(false)
@@ -37,8 +38,11 @@ function UseProjectDefaultConfig()
 	language "C++"
 	cppdialect "C++20"
 
+	staticruntime "off"
+	systemversion "latest"
+
 	location(PROJECT_FILE_OUTPUT_PATH) -- Where does the config file for the project will be generated
-	targetdir(ProjectTargetOutput) -- Where the project will be generated
+	targetdir(PROJECT_OUTPUT_DIR) -- Where the project will be generated
 	objdir(ProjectObjectOutput) -- Where the project object files will be generated
 
 	-- Config specific
@@ -57,11 +61,10 @@ end
 -- MODULES --------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-local ModuleTargetOutput = BUILD_OUTPUT_PATH .. "/Modules"
 local ModuleObjectOutput = INTERMEDIATE_OUTPUT_PATH .. "/Modules"
 
 function UseModuleDefaultConfig()
-	UseDefines()
+	UseDefaultDefines()
 
 	kind "SharedLib" -- Dll
 
@@ -69,7 +72,7 @@ function UseModuleDefaultConfig()
 	cppdialect "C++20"
 
 	location(PROJECT_FILE_OUTPUT_PATH) -- Where does the config file for the project will be generated
-	targetdir(ModuleTargetOutput) -- Where the project will be generated
+	targetdir(MODULE_OUTPUT_PATH) -- Where the project will be generated
 	objdir(ModuleObjectOutput) -- Where the project object files will be generated
 
 	-- Config specific

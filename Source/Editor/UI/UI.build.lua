@@ -2,6 +2,8 @@
 function UIModule(config)
 	local UI = {}
 
+	UI.Kind = "Module"
+
 	UI.Files = {
 		"**.h",
 		"**.cpp"

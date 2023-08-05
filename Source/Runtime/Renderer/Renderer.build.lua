@@ -2,6 +2,8 @@
 function RendererModule(config)
 	Renderer = {}
 
+	Renderer.Kind = "Module"
+
 	Renderer.Files = {
 		"**.h",
 		"**.cpp"

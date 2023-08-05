@@ -21,7 +21,7 @@ workspace "OpenVoxel"
 		"imgui.ini",
 	}
 
-	startproject "OpenVoxel"
+	startproject "Launch"
 
 group "Dependencies"
 	include "Source/ThirdParty/imgui"
@@ -29,16 +29,13 @@ group "Dependencies"
 group ""
 
 group "Engine"
-	include "Source/premake5.lua" -- OpenVoxel
-
-	-- Include all modules
-	group "Engine/Modules/Runtime"
-		GenerateModuleProject({
-			"Core",
-			"Renderer",
-			"Engine",
-		})
-	group "Engine/Modules/Editor"
+	GenerateModuleProject({
+		"Core",
+		"Renderer",
+		"Engine",
+		"Launch"
+	})
+	group "Engine/Editor"
 		GenerateModuleProject({
 			"Editor",
 			"UI",

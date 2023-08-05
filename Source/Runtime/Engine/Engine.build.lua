@@ -2,6 +2,8 @@
 function EngineModule(config)
 	Engine = {}
 
+	Engine.Kind = "Module"
+
 	Engine.Files = {
 		"**.h",
 		"**.cpp"
