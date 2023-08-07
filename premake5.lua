@@ -1,5 +1,5 @@
-include "./vendor/Premake5/GlobalVariable.lua"
-include "./vendor/Premake5/Extended/workspace_files.lua" -- Allow files to be added to the workspace
+include "Source/Programs/BuildTools/GeneratePremakeFile.lua"
+include "./Source/Programs/BuildTools/PremakeExtended/workspace_files.lua" -- Allow files to be added to the workspace
 
 workspace "OpenVoxel"
 	architecture "x86_64"
@@ -21,7 +21,10 @@ workspace "OpenVoxel"
 		"imgui.ini",
 	}
 
-	startproject "OpenVoxel"
+	startproject "Launch"
+
+-- Very important, this will allow to generate the modules/applications projects
+SetProjectWorkspace(workspace("OpenVoxel"))
 
 group "Dependencies"
 	include "Source/ThirdParty/imgui"
@@ -29,23 +32,33 @@ group "Dependencies"
 group ""
 
 group "Engine"
-	include "Source/premake5.lua" -- OpenVoxel
+	group "Engine/Editor"
+		GenerateModulesProject({
+			"Editor",
+			"UI",
+		})
+	group "Engine"
 
-	-- Include all modules
-	group "Engine/Modules/Runtime"
-		for _, moduleName in ipairs(OV_RuntimeModules) do
-			include ("Source/Runtime/" .. moduleName .. "/premake5.lua")
-		end
-	group "Engine/Modules/Editor"
-		for _, moduleName in ipairs(OV_EditorModules) do
-			include ("Source/Editor/" .. moduleName .. "/premake5.lua")
-		end
-	group ""
+	GenerateModulesProject({
+		"Core",
+		"Renderer",
+		"Engine",
+		"Launch",
+	})
 group ""
 
 group "Programs"
-	include "Source/Programs/CrashHandler/premake5.lua" -- Crash Handler
 group ""
 
-include "vendor/Premake5"
+-- The premake project allow you to generate the solution file when you build the project from the IDE
+project "Premake"
+	kind "Utility"
 
+	UseProjectDefaultConfig()
+
+	postbuildmessage ("Generating solution...")
+	postbuildcommands {
+		-- @TODO: investigate why the line bellow is not working. for some reason windows does not find the file :/
+		-- '"' .. ROOT_DIR_PATH .. 'GenerateSolution.bat"'
+		'"' .. ROOT_DIR_PATH .. 'vendor/bin/premake5.exe" --file="' .. ROOT_DIR_PATH .. 'premake5.lua" vs2022'
+	}
