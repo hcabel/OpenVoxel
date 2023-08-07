@@ -1,6 +1,7 @@
 include "Cache.lua"
 include "Utils.lua"
 include "Loader.lua"
+include "Library.lua"
 
 local function GetAllModuleDependencyData(buildData)
 	local modulesData = {}
@@ -54,7 +55,19 @@ local function ResolveDependencies(buildData)
 					table.insert(data.Resolved.Public_IncludeDirs, includeDir)
 				end
 
+				-- Resolve libraries dependencies
+				local dependencyLibrariesDependencies = GetFieldFromBuildData(dependencyData, "LibrariesDependencies", configuration)
+				for _, libraryName in ipairs(dependencyLibrariesDependencies) do
+					LinkToLibrary(libraryName, data)
+				end
 			end
+		end
+	end, buildData)
+
+	DoXForEveryConfig(function (data, configuration)
+		-- Resolve libraries dependencies
+		for _, libraryName in ipairs(data.LibrariesDependencies) do
+			LinkToLibrary(libraryName, data)
 		end
 	end, buildData)
 

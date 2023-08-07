@@ -22,11 +22,7 @@ function EditorModule(config)
 		"Renderer",
 		"UI",
 	}
-	Editor.LibrariesDependencies = {
-		"GLFW",
-		"Vulkan",
-		"glm",
-	}
+	Editor.LibrariesDependencies = {}
 
 	Editor.Defines = {
 		"OV_BUILD_EDITOR_DLL"

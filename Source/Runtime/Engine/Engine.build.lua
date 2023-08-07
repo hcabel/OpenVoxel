@@ -20,11 +20,7 @@ function EngineModule(config)
 		"Renderer",
 		"Core",
 	}
-	Engine.LibrariesDependencies = {
-		"Vulkan",
-		"GLFW",
-		"glm",
-	}
+	Engine.LibrariesDependencies = {}
 
 	Engine.Defines = {
 		"OV_BUILD_ENGINE_DLL"

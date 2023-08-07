@@ -19,27 +19,17 @@ function OpenVoxelApplication(config)
 		"Engine",
 		"Renderer",
 	}
-	OpenVoxel.LibrariesDependencies = {
-		"Vulkan",
-		"GLFW",
-		"glm",
-	}
+	OpenVoxel.LibrariesDependencies = {}
 
 	-- check whether or not the configuration START with "Editor"
 	if config.configuration:find("Editor") then
+
 		local EditorModules = {
 			"Editor",
 			"UI",
 		}
 		for _, EditorModule in ipairs(EditorModules) do
 			table.insert(OpenVoxel.ModulesDependencies, EditorModule)
-		end
-
-		local EditorLibraries = {
-			"ImGui",
-		}
-		for _, EditorLibrary in ipairs(EditorLibraries) do
-			table.insert(OpenVoxel.LibrariesDependencies, EditorLibrary)
 		end
 	end
 
