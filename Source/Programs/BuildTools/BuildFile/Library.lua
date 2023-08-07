@@ -1,7 +1,11 @@
-include "GlobalValues.lua"
-include "FileUtils.lua"
 
-function GetLibraryData(libraryName)
+include "../GlobalValues.lua"
+
+local LibraryDataCache = {}
+
+function LoadLibraryFromDisk(libraryName)
+	print ("Loading '" .. libraryName .. "' library from disk")
+
 	local libRoot = ROOT_DIR_PATH .. "Source/ThirdParty/" .. libraryName .. "/"
 	local libPath = libRoot .. libraryName .. ".link.lua"
 
@@ -27,17 +31,24 @@ function GetLibraryData(libraryName)
 	return libraryData
 end
 
-function LinkToLibrary(libraryName, currentModuleData)
+function GetLibraryData(libraryName)
+	if LibraryDataCache[libraryName] == nil then
+		LibraryDataCache[libraryName] = LoadLibraryFromDisk(libraryName)
+	end
+
+	return LibraryDataCache[libraryName]
+end
+
+function LinkToLibrary(libraryName, buildData)
 	local libraryData = GetLibraryData(libraryName)
-	print ("Linking to library: " .. libraryName)
 
 	-- Add library public include directories
-	currentModuleData.Linked.IncludeDirs = currentModuleData.Linked.IncludeDirs or {}
+	buildData.Resolved.Public_IncludeDirs = buildData.Resolved.Public_IncludeDirs or {}
 	for _, includeDir in ipairs(libraryData.IncludeDirs or {}) do
-		table.insert(currentModuleData.Linked.IncludeDirs, libraryData.RootDirectory .. includeDir)
+		table.insert(buildData.Resolved.Public_IncludeDirs, libraryData.RootDirectory .. includeDir)
 	end
-	table.insert(currentModuleData.Linked.IncludeDirs, libraryData.RootDirectory)
+	table.insert(buildData.Resolved.Public_IncludeDirs, libraryData.RootDirectory)
 
-	currentModuleData.Linked.Links = currentModuleData.Linked.Links or {}
-	table.insert(currentModuleData.Linked.Links, libraryData.LinkName)
+	buildData.Resolved.LibrariesDependencies = buildData.Resolved.LibrariesDependencies or {}
+	table.insert(buildData.Resolved.LibrariesDependencies, libraryData.LinkName)
 end

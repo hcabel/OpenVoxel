@@ -11,7 +11,7 @@ function OpenVoxelApplication(config)
 
 	OpenVoxel.Public_IncludeDirs = {}
 	OpenVoxel.Private_IncludeDirs = {
-		"Runtime/Launch/Private",
+		"Private",
 	}
 
 	OpenVoxel.ModulesDependencies = {
@@ -25,18 +25,23 @@ function OpenVoxelApplication(config)
 		"glm",
 	}
 
-	-- if string.starts(config.configurations, "Editor") then
-	-- 	local EditorModules = {
-	-- 		"Editor",
-	-- 		"UI",
-	-- 	}
-	-- 	table.append(OpenVoxel.ModulesDependencies, EditorModules)
+	-- check whether or not the configuration START with "Editor"
+	if config.configuration:find("Editor") then
+		local EditorModules = {
+			"Editor",
+			"UI",
+		}
+		for _, EditorModule in ipairs(EditorModules) do
+			table.insert(OpenVoxel.ModulesDependencies, EditorModule)
+		end
 
-	-- 	local EditorLibraries = {
-	-- 		"ImGui",
-	-- 	}
-	-- 	table.append(OpenVoxel.LibrariesDependencies, EditorLibraries)
-	-- end
+		local EditorLibraries = {
+			"ImGui",
+		}
+		for _, EditorLibrary in ipairs(EditorLibraries) do
+			table.insert(OpenVoxel.LibrariesDependencies, EditorLibrary)
+		end
+	end
 
 	return OpenVoxel
 end

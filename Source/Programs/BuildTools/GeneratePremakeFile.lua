@@ -1,57 +1,93 @@
 include "GlobalValues.lua"
-include "ModuleDataResolver.lua"
+include "BuildFile/Resolver.lua"
 include "ProjectCreatorUtils.lua"
 
-function CreateApplicationProject(applicationData)
-	print("Creating application project: " .. applicationData.Name)
+-- Generate a Premake's project for an application (console application .exe)
+function CreateApplicationProject(buildData)
 
-	project (applicationData.Name)
+	project (buildData.Name)
 		UseProjectDefaultConfig()
 
-		files(applicationData.Files)
+		DoXForEveryConfig(function (data, configuration)
+			if configuration == "Common" then
+				filter {} -- no filter (common data)
+			else
+				filter ("configurations:" .. configuration)
+			end
 
-		includedirs (applicationData.Linked.IncludeDirs)
-		includedirs (applicationData.Private_IncludeDirs)
+				files(data.Files)
 
-		links (applicationData.ModulesDependencies)
-		links (applicationData.Linked.Links)
+				includedirs (data.Resolved.Public_IncludeDirs)
+				includedirs (data.Public_IncludeDirs)
+				includedirs (data.Private_IncludeDirs)
 
-		defines (applicationData.Defines)
+				links (data.ModulesDependencies)
+				links (data.Resolved.LibrariesDependencies)
 
-		postbuildcommands {
-			table.translate(applicationData.ModulesDependencies,
-				function (moduleName)
-					return ('{COPY} "' .. MODULE_OUTPUT_PATH .. moduleName .. '.dll" "' .. PROJECT_OUTPUT_DIR .. '"')
-				end
-			)
-		}
+				defines (data.Defines)
+
+				postbuildcommands {
+					table.translate(data.ModulesDependencies,
+						function (moduleName)
+							return ('{COPY} "' .. MODULE_OUTPUT_PATH .. moduleName .. '.dll" "' .. PROJECT_OUTPUT_DIR .. '"')
+						end
+					)
+				}
+			filter {}
+		end, buildData)
 end
 
-function CreateModuleProject(moduleData)
-	print("Creating module project: " .. moduleData.Name)
+-- Generate a Premake's project for a module (static library .dll)
+function CreateModuleProject(buildData)
 
-	project (moduleData.Name)
+	print("Generating project: " .. buildData.Name)
+	project (buildData.Name)
 		UseModuleDefaultConfig()
 
-		-- If the module is an editor module, only add it to the editor configurations
-		-- This way the module will not be built for the runtime configurations
-		if moduleData.EngineScope == "Editor" then
-			filter "configurations:Editor*"
-		end
+		DoXForEveryConfig(function (data, configuration)
+			if configuration ~= "Common" then
+				-- print("\tFilter: " .. configuration)
+				filter ("configurations:" .. configuration)
+			end
 
-		files(moduleData.Files)
+				-- print("\t\tFiles:")
+				-- for _, file in ipairs(data.Files) do
+				-- 	print("\t\t\t" .. file)
+				-- end
+				files(data.Files)
 
-		includedirs (moduleData.Linked.IncludeDirs)
-		includedirs (moduleData.Private_IncludeDirs)
+				-- print("\t\tPublic Include Dirs:")
+				-- for _, dir in ipairs(data.Resolved.Public_IncludeDirs) do
+				-- 	print("\t\t\t" .. dir)
+				-- end
+				includedirs (data.Resolved.Public_IncludeDirs)
+				-- for _, dir in ipairs(data.Public_IncludeDirs) do
+				-- 	print("\t\t\t" .. dir)
+				-- end
+				includedirs (data.Public_IncludeDirs)
+				-- for _, dir in ipairs(data.Private_IncludeDirs) do
+				-- 	print("\t\t\t" .. dir)
+				-- end
+				includedirs (data.Private_IncludeDirs)
 
-		links (moduleData.ModulesDependencies)
-		links (moduleData.Linked.Links)
+				-- print("\t\tModules Dependencies:")
+				-- for _, module in ipairs(data.ModulesDependencies) do
+				-- 	print("\t\t\t" .. module)
+				-- end
+				links (data.ModulesDependencies)
+				-- for _, module in ipairs(data.Resolved.ModulesDependencies) do
+				-- 	print("\t\t\t" .. module)
+				-- end
+				links (data.Resolved.LibrariesDependencies)
 
-		defines (moduleData.Defines)
+				-- print("\t\tDefines:")
+				-- for _, define in ipairs(data.Defines) do
+				-- 	print("\t\t\t" .. define)
+				-- end
+				defines (data.Defines)
 
-		if moduleData.EngineScope == "Editor" then
-			filter {}
-		end
+			filter {} -- Reset the filter
+		end, buildData)
 end
 
 local GenerateProjectTable = {
@@ -59,14 +95,18 @@ local GenerateProjectTable = {
 	["Module"] = CreateModuleProject,
 }
 
-function GenerateModuleProject(moduleNameList)
-	local modulesData = GetModulesData(moduleNameList)
+function GenerateModulesProject(moduleNameList)
 
-	for moduleName, moduleData in pairs(modulesData) do
+	-- Loop through every module and generate the Premake's project for it
+	for _, moduleName in ipairs(moduleNameList) do
+		-- Get the module's build data
+		local moduleData = GetBuildData(moduleName)
+
+		-- Call the function that will generate the project for the module (depending on the module's kind)
 		if moduleData.Kind and GenerateProjectTable[moduleData.Kind] then
 			GenerateProjectTable[moduleData.Kind](moduleData)
 		else
-			error("Failed to generate project for module: " .. moduleName .. ". Module 'Kind' is not defined. ('Application' or 'Module')")
+			error("Failed to generate project for module: " .. moduleName .. ". Module 'Kind' is not (or not well) defined. ('Application' or 'Module')")
 		end
 	end
 end

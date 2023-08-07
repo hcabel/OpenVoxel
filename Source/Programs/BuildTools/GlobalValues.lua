@@ -17,3 +17,9 @@ INTERMEDIATE_OUTPUT_PATH = intermediateDirPath .. OUTPUT_DIR_FORMAT
 PROJECT_FILE_OUTPUT_PATH = intermediateDirPath .. "ProjectFile/"
 MODULE_OUTPUT_PATH = BUILD_OUTPUT_PATH .. "Modules/"
 PROJECT_OUTPUT_DIR = BUILD_OUTPUT_PATH .. "%{prj.name}/"
+
+WKS = nil
+
+function SetProjectWorkspace(workspace)
+	WKS = workspace
+end
