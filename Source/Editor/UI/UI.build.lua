@@ -16,11 +16,11 @@ function UIModule(config)
 		"Private",
 	}
 
-	UI.ModulesDependencies = {
+	UI.ModuleDependency = {
 		"Core",
 		"Renderer",
 	}
-	UI.LibrariesDependencies = {
+	UI.ThirdPartyDependency = {
 		"GLFW",
 		"Vulkan",
 		"ImGui",

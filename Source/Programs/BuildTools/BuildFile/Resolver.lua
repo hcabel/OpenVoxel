@@ -1,7 +1,7 @@
 include "Cache.lua"
 include "Utils.lua"
 include "Loader.lua"
-include "Library.lua"
+include "ThirdParty.lua"
 
 local function GetAllModuleDependencyData(buildData)
 	local modulesData = {}
@@ -24,7 +24,7 @@ local function GetAllModuleDependencyData(buildData)
 		-- print ("=> " .. table.concat(newPath, " -> "));
 
 		DoXForEveryConfig(function (buildData)
-			for _, dependencyModuleName in ipairs(buildData.ModulesDependencies) do
+			for _, dependencyModuleName in ipairs(buildData.ModuleDependency) do
 				if modulesData[dependencyModuleName] == nil then
 					modulesData[dependencyModuleName] = GetBuildData(dependencyModuleName)
 					GetAllModuleDependencyData_Inner(modulesData[dependencyModuleName], newPath)
@@ -45,7 +45,7 @@ local function ResolveDependencies(buildData)
 	DoXForEveryConfig(function (data, configuration)
 		data.Resolved = CreateEmptyBuildData()
 
-		for _, dependencyName in ipairs(data.ModulesDependencies) do
+		for _, dependencyName in ipairs(data.ModuleDependency) do
 			local dependencyData = moduleDependenciesData[dependencyName]
 
 			if dependencyData then
@@ -55,19 +55,19 @@ local function ResolveDependencies(buildData)
 					table.insert(data.Resolved.Public_IncludeDirs, includeDir)
 				end
 
-				-- Resolve libraries dependencies
-				local dependencyLibrariesDependencies = GetFieldFromBuildData(dependencyData, "LibrariesDependencies", configuration)
-				for _, libraryName in ipairs(dependencyLibrariesDependencies) do
-					LinkToLibrary(libraryName, data)
+				-- Resolve third party dependency
+				local dependencyThirdPartyDependency = GetFieldFromBuildData(dependencyData, "ThirdPartyDependency", configuration)
+				for _, thirdPartyName in ipairs(dependencyThirdPartyDependency) do
+					LinkToThirdParty(thirdPartyName, data)
 				end
 			end
 		end
 	end, buildData)
 
 	DoXForEveryConfig(function (data, configuration)
-		-- Resolve libraries dependencies
-		for _, libraryName in ipairs(data.LibrariesDependencies) do
-			LinkToLibrary(libraryName, data)
+		-- Resolve third party dependency
+		for _, thirdPartyName in ipairs(data.ThirdPartyDependency) do
+			LinkToThirdParty(thirdPartyName, data)
 		end
 	end, buildData)
 

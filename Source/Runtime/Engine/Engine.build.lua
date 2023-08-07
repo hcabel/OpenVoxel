@@ -16,11 +16,11 @@ function EngineModule(config)
 		"Private",
 	}
 
-	Engine.ModulesDependencies = {
+	Engine.ModuleDependency = {
 		"Renderer",
 		"Core",
 	}
-	Engine.LibrariesDependencies = {}
+	Engine.ThirdPartyDependency = {}
 
 	Engine.Defines = {
 		"OV_BUILD_ENGINE_DLL"

@@ -1,5 +1,5 @@
 
-function stb_imageLibrary(config)
+function stb_imageThirdParty(config)
 	local stb_image = {}
 
 	-- stb_image is a header-only library, so we don't need to link to anything.
@@ -11,4 +11,4 @@ function stb_imageLibrary(config)
 	return stb_image
 end
 
-return stb_imageLibrary
+return stb_imageThirdParty

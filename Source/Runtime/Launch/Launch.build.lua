@@ -14,12 +14,12 @@ function OpenVoxelApplication(config)
 		"Private",
 	}
 
-	OpenVoxel.ModulesDependencies = {
+	OpenVoxel.ModuleDependency = {
 		"Core",
 		"Engine",
 		"Renderer",
 	}
-	OpenVoxel.LibrariesDependencies = {}
+	OpenVoxel.ThirdPartyDependency = {}
 
 	-- check whether or not the configuration START with "Editor"
 	if config.configuration:find("Editor") then
@@ -29,7 +29,7 @@ function OpenVoxelApplication(config)
 			"UI",
 		}
 		for _, EditorModule in ipairs(EditorModules) do
-			table.insert(OpenVoxel.ModulesDependencies, EditorModule)
+			table.insert(OpenVoxel.ModuleDependency, EditorModule)
 		end
 	end
 

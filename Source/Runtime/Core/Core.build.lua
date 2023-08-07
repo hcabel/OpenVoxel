@@ -26,9 +26,9 @@ function CoreModule(config)
 	-- Libraries to link against
 	--
 	-- List of the module that required to be linked against
-	Core.ModulesDependencies = {}
+	Core.ModuleDependency = {}
 	-- List of the third party libraries that required to be linked against
-	Core.LibrariesDependencies = {
+	Core.ThirdPartyDependency = {
 		"GLFW",
 		"glm",
 	}

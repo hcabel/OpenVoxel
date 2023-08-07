@@ -21,13 +21,13 @@ function CreateApplicationProject(buildData)
 				includedirs (data.Public_IncludeDirs)
 				includedirs (data.Private_IncludeDirs)
 
-				links (data.ModulesDependencies)
-				links (data.Resolved.LibrariesDependencies)
+				links (data.ModuleDependency)
+				links (data.Resolved.ThirdPartyDependency)
 
 				defines (data.Defines)
 
 				postbuildcommands {
-					table.translate(data.ModulesDependencies,
+					table.translate(data.ModuleDependency,
 						function (moduleName)
 							return ('{COPY} "' .. MODULE_OUTPUT_PATH .. moduleName .. '.dll" "' .. PROJECT_OUTPUT_DIR .. '"')
 						end
@@ -71,14 +71,14 @@ function CreateModuleProject(buildData)
 				includedirs (data.Private_IncludeDirs)
 
 				-- print("\t\tModules Dependencies:")
-				-- for _, module in ipairs(data.ModulesDependencies) do
+				-- for _, module in ipairs(data.ModuleDependency) do
 				-- 	print("\t\t\t" .. module)
 				-- end
-				links (data.ModulesDependencies)
-				-- for _, module in ipairs(data.Resolved.ModulesDependencies) do
+				links (data.ModuleDependency)
+				-- for _, module in ipairs(data.Resolved.ModuleDependency) do
 				-- 	print("\t\t\t" .. module)
 				-- end
-				links (data.Resolved.LibrariesDependencies)
+				links (data.Resolved.ThirdPartyDependency)
 
 				-- print("\t\tDefines:")
 				-- for _, define in ipairs(data.Defines) do

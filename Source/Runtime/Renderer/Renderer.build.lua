@@ -16,10 +16,10 @@ function RendererModule(config)
 		"Private",
 	}
 
-	Renderer.ModulesDependencies = {
+	Renderer.ModuleDependency = {
 		"Core",
 	}
-	Renderer.LibrariesDependencies = {
+	Renderer.ThirdPartyDependency = {
 		"Vulkan",
 		"GLFW",
 		"glm",

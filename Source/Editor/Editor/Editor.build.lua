@@ -16,13 +16,13 @@ function EditorModule(config)
 		"Private",
 	}
 
-	Editor.ModulesDependencies = {
+	Editor.ModuleDependency = {
 		"Core",
 		"Engine",
 		"Renderer",
 		"UI",
 	}
-	Editor.LibrariesDependencies = {}
+	Editor.ThirdPartyDependency = {}
 
 	Editor.Defines = {
 		"OV_BUILD_EDITOR_DLL"

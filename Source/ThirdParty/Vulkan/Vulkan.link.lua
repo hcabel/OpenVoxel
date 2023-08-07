@@ -1,7 +1,7 @@
 local VulkanSDK = os.getenv("VULKAN_SDK")
 VulkanSDK = string.gsub(VulkanSDK, '\\', '/')
 
-function VulkanLibrary(config)
+function VulkanThirdParty(config)
 	local Vulkan = {}
 
 	-- This will be used to override the root directory of the library.
@@ -19,4 +19,4 @@ function VulkanLibrary(config)
 	return Vulkan
 end
 
-return VulkanLibrary;
+return VulkanThirdParty;

@@ -44,8 +44,8 @@ function CreateEmptyBuildData()
 		Files = {},
 		Public_IncludeDirs = {},
 		Private_IncludeDirs = {},
-		ModulesDependencies = {},
-		LibrariesDependencies = {},
+		ModuleDependency = {},
+		ThirdPartyDependency = {},
 		Defines = {},
 
 		-- Extra data (Added by the resolver)
