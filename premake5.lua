@@ -1,7 +1,7 @@
 include "Source/Programs/BuildTools/GeneratePremakeFile.lua"
 include "./Source/Programs/BuildTools/PremakeExtended/workspace_files.lua" -- Allow files to be added to the workspace
 
-workspace "OpenVoxel_Copy"
+workspace "OpenVoxel"
 	architecture "x86_64"
 	configurations
 	{
@@ -24,7 +24,7 @@ workspace "OpenVoxel_Copy"
 	startproject "Launch"
 
 -- Very important, this will allow to generate the modules/applications projects
-SetProjectWorkspace(workspace("OpenVoxel_Copy"))
+SetProjectWorkspace(workspace("OpenVoxel"))
 
 group "Dependencies"
 	include "Source/ThirdParty/imgui"

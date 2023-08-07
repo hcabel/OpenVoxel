@@ -137,8 +137,6 @@ end
 
 function LoadModuleFromDisk(moduleName)
 
-	print("'" .. moduleName .. "' Loading...")
-
 	local bundle = GetPathAndEngineScope(moduleName)
 
 	local moduleFilePath = bundle.Path

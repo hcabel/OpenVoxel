@@ -46,44 +46,18 @@ function CreateModuleProject(buildData)
 
 		DoXForEveryConfig(function (data, configuration)
 			if configuration ~= "Common" then
-				-- print("\tFilter: " .. configuration)
 				filter ("configurations:" .. configuration)
 			end
 
-				-- print("\t\tFiles:")
-				-- for _, file in ipairs(data.Files) do
-				-- 	print("\t\t\t" .. file)
-				-- end
 				files(data.Files)
 
-				-- print("\t\tPublic Include Dirs:")
-				-- for _, dir in ipairs(data.Resolved.Public_IncludeDirs) do
-				-- 	print("\t\t\t" .. dir)
-				-- end
 				includedirs (data.Resolved.Public_IncludeDirs)
-				-- for _, dir in ipairs(data.Public_IncludeDirs) do
-				-- 	print("\t\t\t" .. dir)
-				-- end
 				includedirs (data.Public_IncludeDirs)
-				-- for _, dir in ipairs(data.Private_IncludeDirs) do
-				-- 	print("\t\t\t" .. dir)
-				-- end
 				includedirs (data.Private_IncludeDirs)
 
-				-- print("\t\tModules Dependencies:")
-				-- for _, module in ipairs(data.ModuleDependency) do
-				-- 	print("\t\t\t" .. module)
-				-- end
 				links (data.ModuleDependency)
-				-- for _, module in ipairs(data.Resolved.ModuleDependency) do
-				-- 	print("\t\t\t" .. module)
-				-- end
 				links (data.Resolved.ThirdPartyDependency)
 
-				-- print("\t\tDefines:")
-				-- for _, define in ipairs(data.Defines) do
-				-- 	print("\t\t\t" .. define)
-				-- end
 				defines (data.Defines)
 
 			filter {} -- Reset the filter
