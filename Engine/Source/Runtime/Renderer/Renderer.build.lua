@@ -6,7 +6,8 @@ function RendererModule(config)
 
 	Renderer.Files = {
 		"**.h",
-		"**.cpp"
+		"**.cpp",
+		"**.lua",
 	}
 
 	Renderer.Public_IncludeDirs = {

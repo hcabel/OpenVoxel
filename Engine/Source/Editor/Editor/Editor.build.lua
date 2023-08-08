@@ -6,7 +6,8 @@ function EditorModule(config)
 
 	Editor.Files = {
 		"**.h",
-		"**.cpp"
+		"**.cpp",
+		"**.lua",
 	}
 
 	Editor.Public_IncludeDirs = {
