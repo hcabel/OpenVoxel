@@ -1,4 +1,4 @@
-<img src="./vendor/Resources/Logo_Side.png" width="200px" height="200px" />
+<img src="./Repo/Resources/Logo_Side.png" width="200px" height="200px" />
 
 # Open Voxel 🧊
 Open Voxel is an **open source voxel engine/editor** written in C++, using GLFW, Vulkan and ImGui.
