@@ -41,7 +41,7 @@ void UI::Init()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui::StyleColorsDark();
 
-	ImGui_ImplGlfw_InitForVulkan(RendererModule::GetWindow(), true);
+	ImGui_ImplGlfw_InitForVulkan(Renderer::GetWindow(), true);
 	ImGui_ImplVulkan_InitInfo initInfo = {};
 	initInfo.Instance = Renderer::Get().m_VkInstance;
 	initInfo.Device = vulkanDevice;

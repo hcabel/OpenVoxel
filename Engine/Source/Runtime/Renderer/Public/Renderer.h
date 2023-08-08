@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Renderer_API.h"
-#include "RendererModule.h"
 #include "Vulkan/VulkanInstanceHandler.h"
 #include "Vulkan/VulkanDeviceHandler.h"
 #include "Vulkan/VulkanSwapChainHandler.h"
@@ -37,7 +36,7 @@ public:
 	 */
 	_NODISCARD __forceinline static Renderer& Get();
 	/** function to explicitly initialize the singleton */
-	__forceinline static Renderer& Initialize(GLFWwindow* window);
+	__forceinline static Renderer& Create();
 	/** Cleanup the renderer to make sure the engine exit properly */
 	static void Shutdown();
 
@@ -50,7 +49,8 @@ public:
 	/** Called every frame */
 	void Tick();
 
-	__forceinline bool IsWindowClosed() const { return (glfwWindowShouldClose(RendererModule::GetWindow()) == GLFW_TRUE); }
+	__forceinline bool IsWindowClosed() const { return (glfwWindowShouldClose(s_Window) == GLFW_TRUE); }
+	__forceinline static GLFWwindow* GetWindow() { return s_Window; }
 
 public:
 	__forceinline const VulkanSwapChainFrame& GetCurrentFrame() const { return m_VkSwapChain.GetFrame(m_CurrentFrameIndex); }
@@ -74,6 +74,7 @@ private:
 	void TraceRays(const vk::CommandBuffer& cmdBuffer);
 
 private:
+	static GLFWwindow* s_Window;
 	static Renderer* s_Instance;
 
 	VulkanInstanceHandler m_VkInstance;
@@ -97,5 +98,4 @@ private:
 #ifdef WITH_EDITOR
 	friend class UI;
 #endif // WITH_EDITOR
-
 };

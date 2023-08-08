@@ -4,10 +4,13 @@
 
 #include <format>
 
+GLFWwindow* Renderer::s_Window = nullptr;
 Renderer* Renderer::s_Instance = nullptr;
 
 Renderer::Renderer(GLFWwindow* window)
 {
+	s_Window = window;
+
 	InitVulkanInstance();
 #if OV_DEBUG
 	VulkanDebugMessenger::Initialize(m_VkInstance);
@@ -139,6 +142,9 @@ Renderer::~Renderer()
 #endif
 	m_VkInstance.Raw().destroySurfaceKHR(m_Surface);
 	m_VkInstance.DestroyInstance();
+
+	glfwDestroyWindow(s_Window);
+	glfwTerminate();
 }
 
 Renderer& Renderer::Get()
@@ -146,8 +152,14 @@ Renderer& Renderer::Get()
 	return (*s_Instance);
 }
 
-Renderer& Renderer::Initialize(GLFWwindow* window)
+Renderer& Renderer::Create()
 {
+	// Create glfwWindow
+	glfwInit();
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // TODO
+	GLFWwindow *window = glfwCreateWindow(1280, 720, "OpenVoxel", nullptr, nullptr);
+
 	s_Instance = new Renderer(window);
 	return (*s_Instance);
 }
@@ -175,8 +187,7 @@ void Renderer::Tick()
 
 	// Update title to show fps
 	const uint16_t fpsCount = (uint16_t)std::round(1.0f / Time::GetTimeStep());
-	GLFWwindow* glfwWindow = RendererModule::GetWindow();
-	glfwSetWindowTitle(glfwWindow, std::format("OpenVoxel - {:.2f}ms = {:d}fps", Time::GetTimeStep() * 100.0f, fpsCount).c_str());
+	glfwSetWindowTitle(s_Window, std::format("OpenVoxel - {:.2f}ms = {:d}fps", Time::GetTimeStep() * 100.0f, fpsCount).c_str());
 }
 
 void Renderer::InitVulkanInstance()
