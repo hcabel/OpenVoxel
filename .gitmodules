@@ -1,10 +1,10 @@
-[submodule "Source/ThirdParty/GLFW"]
-	path = Source/ThirdParty/GLFW
+[submodule "Engine/Source/ThirdParty/GLFW"]
+	path = Engine/Source/ThirdParty/GLFW
 	url = git@github.com:hcabel/glfw.git
-[submodule "Source/ThirdParty/glm"]
-	path = Source/ThirdParty/glm
+[submodule "Engine/Source/ThirdParty/glm"]
+	path = Engine/Source/ThirdParty/glm
 	url = https://github.com/g-truc/glm.git
 	branch = 0.9.8
-[submodule "Source/ThirdParty/imgui"]
-	path = Source/ThirdParty/imgui
+[submodule "Engine/Source/ThirdParty/imgui"]
+	path = Engine/Source/ThirdParty/imgui
 	url = git@github.com:hcabel/imgui.git
