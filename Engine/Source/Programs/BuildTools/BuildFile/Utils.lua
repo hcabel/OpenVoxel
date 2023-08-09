@@ -41,7 +41,6 @@ end
 function CreateEmptyBuildData()
 	return {
 		Kind = nil,
-		Files = {},
 		Public_IncludeDirs = {},
 		Private_IncludeDirs = {},
 		ModuleDependency = {},

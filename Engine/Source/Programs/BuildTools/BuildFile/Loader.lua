@@ -98,8 +98,7 @@ local function ResolveBuildDataPaths(buildFileData)
 	-- list of all the build data fields that contain paths
 	local pathFields = {
 		"Public_IncludeDirs",
-		"Private_IncludeDirs",
-		"Files",
+		"Private_IncludeDirs"
 	}
 
 	-- Loop over each field that contain path for every configuration and common data

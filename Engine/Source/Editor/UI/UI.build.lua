@@ -4,12 +4,6 @@ function UIModule(config)
 
 	UI.Kind = "Module"
 
-	UI.Files = {
-		"**.h",
-		"**.cpp",
-		"**.lua",
-	}
-
 	UI.Public_IncludeDirs = {
 		"Public",
 	}
