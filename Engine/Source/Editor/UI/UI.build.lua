@@ -6,7 +6,8 @@ function UIModule(config)
 
 	UI.Files = {
 		"**.h",
-		"**.cpp"
+		"**.cpp",
+		"**.lua",
 	}
 
 	UI.Public_IncludeDirs = {

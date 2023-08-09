@@ -6,7 +6,8 @@ function OpenVoxelApplication(config)
 
 	OpenVoxel.Files = {
 		"**.h",
-		"**.cpp"
+		"**.cpp",
+		"**.lua",
 	}
 
 	OpenVoxel.Public_IncludeDirs = {}

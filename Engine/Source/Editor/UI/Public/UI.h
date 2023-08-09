@@ -26,6 +26,7 @@ public:
 	void ShutDown(); // will be called by UIModule
 private:
 	void Init(); // will be called by UIModule
+	void SetupDefaultStyle();
 	void RecordFrameCmdBuffer(const VulkanSwapChainFrame& frame);
 
 	void CreateRenderPass();

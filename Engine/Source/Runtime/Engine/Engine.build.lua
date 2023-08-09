@@ -6,7 +6,8 @@ function EngineModule(config)
 
 	Engine.Files = {
 		"**.h",
-		"**.cpp"
+		"**.cpp",
+		"**.lua",
 	}
 
 	Engine.Public_IncludeDirs = {

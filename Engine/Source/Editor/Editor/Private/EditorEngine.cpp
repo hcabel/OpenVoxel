@@ -29,7 +29,6 @@ void EditorEngine::EngineLoop()
 
 bool EditorEngine::EngineShouldStop()
 {
-	GLFWwindow* glfwWindow = RendererModule::GetWindow();
 	return (
 		m_State == EngineState::Type::Stopping
 		|| Renderer::Get().IsWindowClosed()

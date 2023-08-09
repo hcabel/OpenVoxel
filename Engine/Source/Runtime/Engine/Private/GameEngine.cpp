@@ -2,7 +2,6 @@
 #include "Profiling/ProfilingMacros.h"
 #include "HAL/Time.h"
 #include "Renderer.h"
-#include "RendererModule.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
@@ -40,13 +39,10 @@ void GameEngine::EngineLoop()
 void GameEngine::Tick(float timeStep)
 {
 	Renderer::Get().Tick();
-
-	// Stop();
 }
 
 bool GameEngine::EngineShouldStop()
 {
-	GLFWwindow* glfwWindow = RendererModule::GetWindow();
 	return (
 		m_State == EngineState::Type::Stopping
 		|| Renderer::Get().IsWindowClosed()

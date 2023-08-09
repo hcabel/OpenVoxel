@@ -7,7 +7,8 @@ function CoreModule(config)
 	-- Source file of the module
 	Core.Files = {
 		"**.h",
-		"**.cpp"
+		"**.cpp",
+		"**.lua",
 	}
 
 	-- Include directories of the module

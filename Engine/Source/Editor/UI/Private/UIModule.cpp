@@ -1,7 +1,6 @@
 #include "UIModule.h"
 #include "UIGlobals.h"
 #include "UI.h"
-#include "RendererModule.h"
 #include "Renderer.h"
 
 IMPLEMENT_MODULE(UIModule);
