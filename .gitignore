@@ -43,3 +43,6 @@ bin-int/
 
 # Open Voxel temporary file
 Saved/
+
+# Misc
+desktop.ini

@@ -31,20 +31,14 @@ group "Dependencies"
 	include "Source/ThirdParty/GLFW"
 group ""
 
+local RuntimeModuleName = GetFolders("Source/Runtime")
+local EditorModuleName = GetFolders("Source/Editor")
+
 group "Engine"
 	group "Engine/Editor"
-		GenerateModulesProject({
-			"Editor",
-			"UI",
-		})
+		GenerateModulesProject(EditorModuleName)
 	group "Engine"
-
-	GenerateModulesProject({
-		"Core",
-		"Renderer",
-		"Engine",
-		"Launch",
-	})
+	GenerateModulesProject(RuntimeModuleName)
 group ""
 
 group "Programs"
