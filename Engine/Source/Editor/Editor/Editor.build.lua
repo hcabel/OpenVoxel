@@ -4,12 +4,6 @@ function EditorModule(config)
 
 	Editor.Kind = "Module"
 
-	Editor.Files = {
-		"**.h",
-		"**.cpp",
-		"**.lua",
-	}
-
 	Editor.Public_IncludeDirs = {
 		"Public",
 	}

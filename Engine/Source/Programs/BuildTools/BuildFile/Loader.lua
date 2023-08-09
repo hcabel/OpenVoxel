@@ -6,7 +6,7 @@ include "../DebugUtils.lua"
 include "Utils.lua"
 
 local function BuildFileLoadingError(buildFilePath, errorMessage)
-	error("Failed to load build file: '" .. buildFilePath .. "'. " .. errorMessage)
+	error("Failed to load build file: '" .. (buildFilePath or "") .. "'. " .. (errorMessage or ""))
 end
 
 local function MoveNonConfigDataToTheRoot(buildData)
@@ -98,8 +98,7 @@ local function ResolveBuildDataPaths(buildFileData)
 	-- list of all the build data fields that contain paths
 	local pathFields = {
 		"Public_IncludeDirs",
-		"Private_IncludeDirs",
-		"Files",
+		"Private_IncludeDirs"
 	}
 
 	-- Loop over each field that contain path for every configuration and common data
@@ -128,7 +127,7 @@ local function GetPathAndEngineScope(moduleName)
 
 		-- Is not an editor module either, we throw an error
 		if FileExists(returnBundle.Path) == false then
-			BuildFileLoadingError("Build file not found at 'Source/Runtime/[ModuleName]/[ModuleName].build.lua' or 'Source/Editor/[ModuleName]/[ModuleName].build.lua'")
+			BuildFileLoadingError("'Source/[Runtime|Editor]/" .. moduleName .. "/" .. moduleName .. ".build.lua", "Build file not found!")
 		end
 	end
 

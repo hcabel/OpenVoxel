@@ -20,3 +20,21 @@ function FileExists(filePath)
 	end
 	return file ~= nil
 end
+
+function GetFolders(directory)
+	local command = 'ls -d "' .. directory .. '/*/"'
+	if package.config:sub(1,1) == '\\' then
+		command = 'dir /b /ad "' .. directory .. '"'
+	end
+
+	local folders = {}
+	local handle = io.popen(command)
+	local output = handle:read("*a")
+	handle:close()
+
+	for folder in output:gmatch("[^\r\n]+") do
+		table.insert(folders, folder)
+	end
+
+	return folders
+end

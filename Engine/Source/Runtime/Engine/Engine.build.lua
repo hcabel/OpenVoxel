@@ -4,12 +4,6 @@ function EngineModule(config)
 
 	Engine.Kind = "Module"
 
-	Engine.Files = {
-		"**.h",
-		"**.cpp",
-		"**.lua",
-	}
-
 	Engine.Public_IncludeDirs = {
 		"Public",
 	}

@@ -4,12 +4,6 @@ function RendererModule(config)
 
 	Renderer.Kind = "Module"
 
-	Renderer.Files = {
-		"**.h",
-		"**.cpp",
-		"**.lua",
-	}
-
 	Renderer.Public_IncludeDirs = {
 		"Public",
 	}

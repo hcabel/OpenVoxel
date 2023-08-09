@@ -4,12 +4,6 @@ function OpenVoxelApplication(config)
 
 	OpenVoxel.Kind = "Application"
 
-	OpenVoxel.Files = {
-		"**.h",
-		"**.cpp",
-		"**.lua",
-	}
-
 	OpenVoxel.Public_IncludeDirs = {}
 	OpenVoxel.Private_IncludeDirs = {
 		"Private",

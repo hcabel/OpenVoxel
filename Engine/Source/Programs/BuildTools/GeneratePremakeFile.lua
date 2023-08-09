@@ -15,7 +15,12 @@ function CreateApplicationProject(buildData)
 				filter ("configurations:" .. configuration)
 			end
 
-				files(data.Files)
+				-- We include all the file under the module directory
+				files({
+					buildData.RootDirectory .. "**.h",
+					buildData.RootDirectory .. "**.cpp",
+					buildData.RootDirectory .. "**.lua",
+				})
 
 				includedirs (data.Resolved.Public_IncludeDirs)
 				includedirs (data.Public_IncludeDirs)
@@ -49,7 +54,11 @@ function CreateModuleProject(buildData)
 				filter ("configurations:" .. configuration)
 			end
 
-				files(data.Files)
+				files({
+					buildData.RootDirectory .. "**.h",
+					buildData.RootDirectory .. "**.cpp",
+					buildData.RootDirectory .. "**.lua",
+				})
 
 				includedirs (data.Resolved.Public_IncludeDirs)
 				includedirs (data.Public_IncludeDirs)

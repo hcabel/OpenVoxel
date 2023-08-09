@@ -4,13 +4,6 @@ function CoreModule(config)
 
 	Core.Kind = "Module" -- Will be build as a dll
 
-	-- Source file of the module
-	Core.Files = {
-		"**.h",
-		"**.cpp",
-		"**.lua",
-	}
-
 	-- Include directories of the module
 	--
 	-- Module that include this module will add those Public_IncludeDirs to their include directories (automatically)
