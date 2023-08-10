@@ -9,25 +9,39 @@ local function BuildFileLoadingError(buildFilePath, errorMessage)
 	error("Failed to load build file: '" .. (buildFilePath or "") .. "'. " .. (errorMessage or ""))
 end
 
-local function MoveNonConfigDataToTheRoot(buildData)
+local function FillTheGaps(buildData, emptyBuildData)
+	-- Loop over each field of the empty build data and if the field does not exist in the build data, copy it
+	for key, value in pairs(emptyBuildData) do
+		if buildData[key] == nil then
+			buildData[key] = value
+		end
+	end
+end
+
+local function HandleStaticData(buildData, newBuildData)
 	-- Those are the field that the build file need to have but are not configuration specific
-	local nonConfigDataField = {
-		"Kind"
+	local staticDataField = {
+		{
+			Name = "Kind",
+			DefaultValue = "Module"
+		}
 	}
 
-	for _, field in ipairs(nonConfigDataField) do
-		buildData[field] = buildData["Common"][field]
-		buildData["Common"][field] = nil
+	for _, field in ipairs(staticDataField) do
+		if buildData[field.Name] == nil then
+			buildData[field.Name] = (newBuildData[field.Name] or field.DefaultValue)
+		end
+		newBuildData[field.Name] = nil
 	end
 end
 
 -- this function take two object and remove the common data from the config data
-local function RemoveCommonData(configBuildData, commonBuildData)
+local function RemoveCommonData(commonBuildData, configBuildData)
 	local cleanedData = {}
 
 	for key, value in pairs(configBuildData) do
 		if type(value) == "table" then
-			cleanedData[key] = RemoveCommonData(value, commonBuildData[key])
+			cleanedData[key] = RemoveCommonData(commonBuildData[key] or {}, value)
 		else
 			if value ~= commonBuildData[key] then
 				-- if commonBuildData is a table and the key is a number use the table.insert function (otherwise we would have a hole in the array)
@@ -38,23 +52,6 @@ local function RemoveCommonData(configBuildData, commonBuildData)
 				end
 			end
 		end
-	end
-
-	return cleanedData
-end
-
-local function CleanConfigData(buildData, configBuildData)
-
-	-- Remove data that are already in the common data or are static
-	local cleanedData = RemoveCommonData(configBuildData, buildData["Common"])
-
-	-- Remove data that are static
-	local staticDataField = {
-		"Kind"
-	}
-
-	for _, field in ipairs(staticDataField) do
-		cleanedData[field] = nil
 	end
 
 	return cleanedData
@@ -80,16 +77,17 @@ local function LoadBuildFile(buildFilePath)
 		end
 
 		-- We run the function and store the data for the current configuration
-		local configBuildData = GetBuildDataFunc(config)
+		local newBuildData = GetBuildDataFunc(config)
 
-		if configName == "Common" then
-			buildData[configName] = configBuildData
-			MoveNonConfigDataToTheRoot(buildData)
-		else
-			-- Remove data that are already in the common data or are static
-			buildData[configName] = CleanConfigData(buildData, configBuildData)
-		end
+		-- Add empty data to avoid error when we try to access a field that does not exist
+		FillTheGaps(newBuildData, CreateEmptyBuildData())
+		-- Some data are "Static" they're not configuration specific, so we move them to the root
+		HandleStaticData(buildData, newBuildData)
+		-- Remove data that are already in the common data or are static
+		buildData[configName]  = RemoveCommonData(buildData["Common"], newBuildData)
+
 	end, buildData)
+
 
 	return buildData
 end

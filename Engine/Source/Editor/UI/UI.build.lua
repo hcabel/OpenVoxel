@@ -2,8 +2,6 @@
 function UIModule(config)
 	local UI = {}
 
-	UI.Kind = "Module"
-
 	UI.Public_IncludeDirs = {
 		"Public",
 	}

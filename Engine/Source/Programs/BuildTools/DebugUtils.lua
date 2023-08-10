@@ -18,7 +18,7 @@ end
 
 
 
-function dump(object)
+function dump(object, showEmpty)
 	function recursiveDump(obj, indent)
 		if indent > 5 then
 			return "..."
@@ -33,8 +33,8 @@ function dump(object)
 				-- If is a table, we recursively print only is they are not empty
 				if type(v) == "table" then
 					-- recursivly check whether the table is empty or not
-					local isEmpty = IsTableEmpty(v, 0)
-					if isEmpty == false then
+					local isEmpty = IsTableEmpty(v, indent + 1)
+					if isEmpty == false or showEmpty then
 						str = str .. string.rep("\t", indent) .. "[" .. k .. "] = " .. recursiveDump(v, indent + 1) .. ",\n"
 					end
 				else

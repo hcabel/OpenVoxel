@@ -2,7 +2,7 @@
 function OpenVoxelApplication(config)
 	local OpenVoxel = {}
 
-	OpenVoxel.Kind = "Application"
+	OpenVoxel.Kind = "Application" -- output a binary file
 
 	OpenVoxel.Public_IncludeDirs = {}
 	OpenVoxel.Private_IncludeDirs = {
@@ -14,7 +14,6 @@ function OpenVoxelApplication(config)
 		"Engine",
 		"Renderer",
 	}
-	OpenVoxel.ThirdPartyDependency = {}
 
 	-- check whether or not the configuration START with "Editor"
 	if config.configuration:find("Editor") then

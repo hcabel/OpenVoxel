@@ -2,8 +2,6 @@
 function RendererModule(config)
 	Renderer = {}
 
-	Renderer.Kind = "Module"
-
 	Renderer.Public_IncludeDirs = {
 		"Public",
 	}

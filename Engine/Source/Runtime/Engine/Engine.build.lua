@@ -2,8 +2,6 @@
 function EngineModule(config)
 	Engine = {}
 
-	Engine.Kind = "Module"
-
 	Engine.Public_IncludeDirs = {
 		"Public",
 	}

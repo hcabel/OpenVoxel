@@ -2,7 +2,7 @@
 function CoreModule(config)
 	Core = {} -- Set module object
 
-	Core.Kind = "Module" -- Will be build as a dll
+	Core.Kind = "Module" -- Will be build as a dll (optional, by default it's "Module")
 
 	-- Include directories of the module
 	--

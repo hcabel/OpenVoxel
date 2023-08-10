@@ -2,8 +2,15 @@
 include "Cache.lua"
 
 function DoXForEveryConfig(x, buildData)
+
+	if buildData["Common"] == nil then
+		buildData["Common"] = {}
+	end
 	x(buildData["Common"], "Common")
 	for _, configuration in ipairs(WKS.configurations) do
+		if buildData[configuration] == nil then
+			buildData[configuration] = {}
+		end
 		x(buildData[configuration], configuration)
 	end
 end
