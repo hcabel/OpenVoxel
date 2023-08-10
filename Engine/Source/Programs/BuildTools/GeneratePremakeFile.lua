@@ -50,6 +50,12 @@ function CreateModuleProject(buildData)
 		UseModuleDefaultConfig()
 
 		DoXForEveryConfig(function (data, configuration)
+
+			-- Add building data for Editor configuration only if the module is an Editor module
+			if buildData.EngineScope == "Editor" and configuration:find("Editor") == nil then
+				goto continue
+			end
+
 			if configuration ~= "Common" then
 				filter ("configurations:" .. configuration)
 			end
@@ -70,6 +76,8 @@ function CreateModuleProject(buildData)
 				defines (data.Defines)
 
 			filter {} -- Reset the filter
+
+			::continue::
 		end, buildData)
 end
 
