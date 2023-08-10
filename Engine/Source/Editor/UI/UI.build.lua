@@ -19,10 +19,6 @@ function UIModule(config)
 		"ImGui",
 	}
 
-	UI.Defines = {
-		"OV_BUILD_UI_DLL"
-	}
-
 	return UI
 end
 

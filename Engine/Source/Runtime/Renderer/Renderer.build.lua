@@ -18,10 +18,6 @@ function RendererModule(config)
 		"glm",
 	}
 
-	Renderer.Defines = {
-		"OV_BUILD_RENDERER_DLL"
-	}
-
 	return Renderer;
 end
 

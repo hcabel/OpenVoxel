@@ -16,10 +16,6 @@ function EditorModule(config)
 		"UI",
 	}
 
-	Editor.Defines = {
-		"OV_BUILD_EDITOR_DLL"
-	}
-
 	return Editor
 end
 

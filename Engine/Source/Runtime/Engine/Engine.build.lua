@@ -13,11 +13,6 @@ function EngineModule(config)
 		"Renderer",
 		"Core",
 	}
-	Engine.ThirdPartyDependency = {}
-
-	Engine.Defines = {
-		"OV_BUILD_ENGINE_DLL"
-	}
 
 	return Engine;
 end

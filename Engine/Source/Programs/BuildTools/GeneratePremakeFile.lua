@@ -74,6 +74,8 @@ function CreateModuleProject(buildData)
 				links (data.Resolved.ThirdPartyDependency)
 
 				defines (data.Defines)
+				-- Add API define (OV_BUILD_[UpperCaseModuleName]_DLL)
+				defines ("OV_BUILD_" .. string.upper(buildData.Name) .. "_DLL")
 
 			filter {} -- Reset the filter
 
