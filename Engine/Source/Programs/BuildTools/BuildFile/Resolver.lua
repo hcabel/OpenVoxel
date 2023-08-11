@@ -8,24 +8,27 @@ local function GetAllModuleDependencyData(buildData)
 
 	local function GetAllModuleDependencyData_Inner(currentBuildData, path)
 
-		-- Check for circular dependencies
-		for _, dependencyModuleName in ipairs(path) do
-			if dependencyModuleName == currentBuildData.Name then
-				error("Circular dependencies detected: '" .. table.concat(path, " -> ") .. "'")
-			end
-		end
-
 		-- Update path
 		local newPath = {}
 		for _, dependencyModuleName in ipairs(path) do
 			table.insert(newPath, dependencyModuleName)
 		end
 		table.insert(newPath, currentBuildData.Name)
+
+		-- Check for circular dependencies
+		for _, dependencyModuleName in ipairs(path) do
+			if dependencyModuleName == currentBuildData.Name then
+				error("Circular dependencies detected: '" .. table.concat(path, " -> ") .. "'")
+			end
+		end
 		-- print ("=> " .. table.concat(newPath, " -> "));
 
 		DoXForEveryConfig(function (buildData)
 			for _, dependencyModuleName in ipairs(buildData.ModuleDependency) do
 				if modulesData[dependencyModuleName] == nil then
+					if dependencyModuleName == currentBuildData.Name then
+						error("Self dependency detected: '" .. dependencyModuleName .. "'")
+					end
 					modulesData[dependencyModuleName] = GetBuildData(dependencyModuleName)
 					GetAllModuleDependencyData_Inner(modulesData[dependencyModuleName], newPath)
 				end
