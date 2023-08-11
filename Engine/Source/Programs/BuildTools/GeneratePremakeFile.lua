@@ -31,13 +31,6 @@ function CreateApplicationProject(buildData)
 
 				defines (data.Defines)
 
-				postbuildcommands {
-					table.translate(data.ModuleDependency,
-						function (moduleName)
-							return ('{COPY} "' .. MODULE_OUTPUT_PATH .. moduleName .. '.dll" "' .. PROJECT_OUTPUT_DIR .. '"')
-						end
-					)
-				}
 			filter {}
 		end, buildData)
 end
