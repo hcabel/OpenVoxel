@@ -5,14 +5,40 @@ include "ProjectCreatorUtils.lua"
 -- Generate a Premake's project for an application (console application .exe)
 function CreateApplicationProject(buildData)
 
+	local allRuntimeModules = GetFolders(ROOT_DIR_PATH .. "Source/Runtime/")
+	local allEditorModules = GetFolders(ROOT_DIR_PATH .. "Source/Editor/")
+
+	-- Remove buildData.Name from the list of modules
+	for i, moduleName in ipairs(allRuntimeModules) do
+		if moduleName == buildData.Name then
+			table.remove(allRuntimeModules, i)
+			break
+		end
+	end
+	for i, moduleName in ipairs(allEditorModules) do
+		if moduleName == buildData.Name then
+			table.remove(allEditorModules, i)
+			break
+		end
+	end
+
+	print("Generating project: " .. buildData.Name)
+
 	project (buildData.Name)
 		UseProjectDefaultConfig()
+
+		-- When building any app we ask to build also all the modules dll, just in case they are loaded by the module manager (which don't require linking)
+		dependson (allRuntimeModules)
 
 		DoXForEveryConfig(function (data, configuration)
 			if configuration == "Common" then
 				filter {} -- no filter (common data)
 			else
 				filter ("configurations:" .. configuration)
+
+				if configuration:find("Editor") then
+					dependson (allEditorModules)
+				end
 			end
 
 				-- We include all the file under the module directory
@@ -31,13 +57,6 @@ function CreateApplicationProject(buildData)
 
 				defines (data.Defines)
 
-				postbuildcommands {
-					table.translate(data.ModuleDependency,
-						function (moduleName)
-							return ('{COPY} "' .. MODULE_OUTPUT_PATH .. moduleName .. '.dll" "' .. PROJECT_OUTPUT_DIR .. '"')
-						end
-					)
-				}
 			filter {}
 		end, buildData)
 end
@@ -50,6 +69,12 @@ function CreateModuleProject(buildData)
 		UseModuleDefaultConfig()
 
 		DoXForEveryConfig(function (data, configuration)
+
+			-- Add building data for Editor configuration only if the module is an Editor module
+			if buildData.EngineScope == "Editor" and configuration:find("Editor") == nil then
+				goto continue
+			end
+
 			if configuration ~= "Common" then
 				filter ("configurations:" .. configuration)
 			end
@@ -68,8 +93,12 @@ function CreateModuleProject(buildData)
 				links (data.Resolved.ThirdPartyDependency)
 
 				defines (data.Defines)
+				-- Add API define (OV_BUILD_[UpperCaseModuleName]_DLL)
+				defines ("OV_BUILD_" .. string.upper(buildData.Name) .. "_DLL")
 
 			filter {} -- Reset the filter
+
+			::continue::
 		end, buildData)
 end
 

@@ -2,8 +2,6 @@
 function EditorModule(config)
 	local Editor = {}
 
-	Editor.Kind = "Module"
-
 	Editor.Public_IncludeDirs = {
 		"Public",
 	}
@@ -16,11 +14,6 @@ function EditorModule(config)
 		"Engine",
 		"Renderer",
 		"UI",
-	}
-	Editor.ThirdPartyDependency = {}
-
-	Editor.Defines = {
-		"OV_BUILD_EDITOR_DLL"
 	}
 
 	return Editor

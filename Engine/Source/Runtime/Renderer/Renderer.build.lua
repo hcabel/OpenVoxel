@@ -2,8 +2,6 @@
 function RendererModule(config)
 	Renderer = {}
 
-	Renderer.Kind = "Module"
-
 	Renderer.Public_IncludeDirs = {
 		"Public",
 	}
@@ -18,10 +16,6 @@ function RendererModule(config)
 		"Vulkan",
 		"GLFW",
 		"glm",
-	}
-
-	Renderer.Defines = {
-		"OV_BUILD_RENDERER_DLL"
 	}
 
 	return Renderer;

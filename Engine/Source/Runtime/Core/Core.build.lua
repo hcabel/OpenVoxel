@@ -2,7 +2,7 @@
 function CoreModule(config)
 	Core = {} -- Set module object
 
-	Core.Kind = "Module" -- Will be build as a dll
+	Core.Kind = "Module" -- Will be build as a dll (optional, by default it's "Module")
 
 	-- Include directories of the module
 	--
@@ -30,9 +30,8 @@ function CoreModule(config)
 	-- Defines
 	--
 	-- Extra Defines that can be used in this module
-	Core.Defines = {
-		"OV_BUILD_CORE_DLL"
-	}
+	-- @note Modules have 1 define by default: OV_BUILD_[UpperCaseModuleName]_DLL (For the module API)
+	Core.Defines = {}
 
 	return Core;
 end

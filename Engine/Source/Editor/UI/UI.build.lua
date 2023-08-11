@@ -2,8 +2,6 @@
 function UIModule(config)
 	local UI = {}
 
-	UI.Kind = "Module"
-
 	UI.Public_IncludeDirs = {
 		"Public",
 	}
@@ -19,10 +17,6 @@ function UIModule(config)
 		"GLFW",
 		"Vulkan",
 		"ImGui",
-	}
-
-	UI.Defines = {
-		"OV_BUILD_UI_DLL"
 	}
 
 	return UI

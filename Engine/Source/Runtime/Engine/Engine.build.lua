@@ -2,8 +2,6 @@
 function EngineModule(config)
 	Engine = {}
 
-	Engine.Kind = "Module"
-
 	Engine.Public_IncludeDirs = {
 		"Public",
 	}
@@ -14,11 +12,6 @@ function EngineModule(config)
 	Engine.ModuleDependency = {
 		"Renderer",
 		"Core",
-	}
-	Engine.ThirdPartyDependency = {}
-
-	Engine.Defines = {
-		"OV_BUILD_ENGINE_DLL"
 	}
 
 	return Engine;
