@@ -5,14 +5,40 @@ include "ProjectCreatorUtils.lua"
 -- Generate a Premake's project for an application (console application .exe)
 function CreateApplicationProject(buildData)
 
+	local allRuntimeModules = GetFolders(ROOT_DIR_PATH .. "Source/Runtime/")
+	local allEditorModules = GetFolders(ROOT_DIR_PATH .. "Source/Editor/")
+
+	-- Remove buildData.Name from the list of modules
+	for i, moduleName in ipairs(allRuntimeModules) do
+		if moduleName == buildData.Name then
+			table.remove(allRuntimeModules, i)
+			break
+		end
+	end
+	for i, moduleName in ipairs(allEditorModules) do
+		if moduleName == buildData.Name then
+			table.remove(allEditorModules, i)
+			break
+		end
+	end
+
+	print("Generating project: " .. buildData.Name)
+
 	project (buildData.Name)
 		UseProjectDefaultConfig()
+
+		-- When building any app we ask to build also all the modules dll, just in case they are loaded by the module manager (which don't require linking)
+		dependson (allRuntimeModules)
 
 		DoXForEveryConfig(function (data, configuration)
 			if configuration == "Common" then
 				filter {} -- no filter (common data)
 			else
 				filter ("configurations:" .. configuration)
+
+				if configuration:find("Editor") then
+					dependson (allEditorModules)
+				end
 			end
 
 				-- We include all the file under the module directory
