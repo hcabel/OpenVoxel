@@ -1,10 +1,4 @@
-VULKAN_SDK = os.getenv("VULKAN_SDK")
-
-ROOT_DIR_PATH = os.getenv("PWD") or io.popen("cd"):read()
--- replace windows slashes with linux ones
-ROOT_DIR_PATH = string.gsub(ROOT_DIR_PATH, '\\', '/')
--- Remove last part of the path
-ROOT_DIR_PATH = string.gsub(ROOT_DIR_PATH, "Source/Programs/BuildTools", "")
+include "../Constants.lua"
 
 local outputDirPath = ROOT_DIR_PATH .. "build/"
 local intermediateDirPath = ROOT_DIR_PATH .. "intermediate/"
@@ -20,8 +14,3 @@ PROJECT_FILE_OUTPUT_PATH = intermediateDirPath .. "ProjectFile/"
 -- (It's already a config specific folder anyway)
 MODULE_OUTPUT_PATH = BUILD_OUTPUT_PATH
 PROJECT_OUTPUT_DIR = BUILD_OUTPUT_PATH
-
-WKS = nil
-function SetProjectWorkspace(workspace)
-	WKS = workspace
-end
