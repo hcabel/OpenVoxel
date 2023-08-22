@@ -1,4 +1,4 @@
-﻿include "GlobalValues.lua"
+﻿include "Constants.lua"
 
 function UseDefaultDefines()
 	-- Config specific
@@ -23,7 +23,7 @@ end
 -- PROJECTS -------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-include "PremakeExtended/FastUpToDateCheck.lua" -- Allow the project to disable fast up to date check
+include "Extended/FastUpToDateCheck.lua" -- Allow the project to disable fast up to date check
 
 local ProjectObjectOutput = INTERMEDIATE_OUTPUT_PATH .. "/%{prj.name}"
 

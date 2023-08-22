@@ -1,5 +1,6 @@
-include "Source/Programs/BuildTools/GeneratePremakeFile.lua"
-include "./Source/Programs/BuildTools/PremakeExtended/workspace_files.lua" -- Allow files to be added to the workspace
+include "Source/Programs/BuildTools/Premake/ProjectGenerator.lua"
+include "Source/Programs/BuildTools/Files/Utils.lua"
+include "Source/Programs/BuildTools/Premake/Extended/workspace_files.lua" -- Allow files to be added to the workspace
 
 workspace "OpenVoxel"
 	architecture "x86_64"
@@ -31,14 +32,14 @@ group "Dependencies"
 	include "Source/ThirdParty/GLFW"
 group ""
 
-local RuntimeModuleName = GetFolders("Source/Runtime")
-local EditorModuleName = GetFolders("Source/Editor")
+local RuntimeProjectNames = GetFolders("Source/Runtime")
+local EditorProjectNames = GetFolders("Source/Editor")
 
 group "Engine"
 	group "Engine/Editor"
-		GenerateModulesProject(EditorModuleName)
+		GenerateProject(EditorProjectNames)
 	group "Engine"
-	GenerateModulesProject(RuntimeModuleName)
+	GenerateProject(RuntimeProjectNames)
 group ""
 
 group "Programs"

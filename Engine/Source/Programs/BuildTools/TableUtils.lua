@@ -1,3 +1,17 @@
+function CombineTable(TableA, TableB)
+	local result = {}
+
+	for _, value in ipairs(TableA or {}) do
+		table.insert(result, value)
+	end
+
+	for _, value in ipairs(TableB or {}) do
+		table.insert(result, value)
+	end
+
+	return result
+end
+
 local function IsTableEmpty(table, depth)
 	if depth > 5 then
 		return false
@@ -14,9 +28,6 @@ local function IsTableEmpty(table, depth)
 	end
 	return true
 end
-
-
-
 
 function dump(object, showEmpty)
 	function recursiveDump(obj, indent)

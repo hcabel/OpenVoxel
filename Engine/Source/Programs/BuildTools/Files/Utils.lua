@@ -1,18 +1,3 @@
-
-function ResolveRelativePaths(object, root)
-	if type(object) == "table" then
-		for key, value in pairs(object) do
-			if type(value) == "string" then
-				object[key] = root .. value
-			else
-				ResolveTableOfRelativePaths(value, root)
-			end
-		end
-	elseif type(object) == "string" then
-		object = root .. object
-	end
-end
-
 function FileExists(filePath)
 	local file = io.open(filePath, "rb")
 	if file then
@@ -37,4 +22,13 @@ function GetFolders(directory)
 	end
 
 	return folders
+end
+
+-- Target is the last part of the path (after the last /)
+function GetPathTarget(path)
+	local target = path:match("^.+/(.+)$")
+	if target == nil then
+		target = path
+	end
+	return target
 end
