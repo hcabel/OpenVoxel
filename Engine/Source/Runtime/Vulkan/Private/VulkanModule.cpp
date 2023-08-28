@@ -10,4 +10,5 @@ void VulkanModule::StartupModule()
 
 void VulkanModule::ShutdownModule()
 {
+	VulkanContext::Get().Destroy();
 }

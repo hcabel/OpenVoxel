@@ -24,5 +24,7 @@ int main(int argc, char** argv)
 	delete g_Engine;
 	g_Engine = nullptr;
 
+	OVModuleManager::Get().Unload("Renderer");
+
 	return (0);
 }

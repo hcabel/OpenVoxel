@@ -12,20 +12,22 @@
  */
 
 // Get the major version of the current version
-#define OV_VERSION_GET_MAJOR(version) ((version) >> 22) & 0x3FF
+#define OV_VERSION_GET_MAJOR(version) (((version) >> 22) & 0x3FFu)
 // Get the minor version of the current version
-#define OV_VERSION_GET_MINOR(version) (((version) >> 12) & 0x3FF)
+#define OV_VERSION_GET_MINOR(version) (((version) >> 12) & 0x3FFu)
 // Get the patch version of the current version
-#define OV_VERSION_GET_PATCH(version) ((version) >> 2) & 0x3FF)
+#define OV_VERSION_GET_PATCH(version) (((version) >> 2) & 0x3FFu)
+
+#define CAST_U32(value) ((uint32_t)(value))
 
 // Take the major, minor and patch version and make convert it to a uint32_t version
-#define OV_MAKE_VERSION(major, minor, patch) ((((major & 0x3FF) << 20) | ((minor & 0x3FF) << 10) | (patch & 0x3FF)) << 2)
+#define OV_MAKE_VERSION(major, minor, patch) (((CAST_U32(major) & 0x3FFu) << 20) | ((CAST_U32(minor) & 0x3FFu) << 10) | ((CAST_U32(patch) & 0x3FFu)) << 2)
 
 /* OPEN VOXEL CURRENT VERSION */
 
-#define OV_CURRENT_VERSION_MAJOR 0 // The current major version of Open Voxel
-#define OV_CURRENT_VERSION_MINOR 0 // The current minor version of Open Voxel
-#define OV_CURRENT_VERSION_PATCH 0 // The current patch version of Open Voxel
+#define OV_CURRENT_VERSION_MAJOR 0u // The current major version of Open Voxel
+#define OV_CURRENT_VERSION_MINOR 0u // The current minor version of Open Voxel
+#define OV_CURRENT_VERSION_PATCH 0u // The current patch version of Open Voxel
 
 // The current version of Open Voxel
 #define OV_CURRENT_VERSION OV_MAKE_VERSION(OV_CURRENT_VERSION_MAJOR, OV_CURRENT_VERSION_MINOR, OV_CURRENT_VERSION_PATCH)
