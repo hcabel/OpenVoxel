@@ -40,6 +40,8 @@ GlfwWindow::GlfwWindow(AxisSize width, AxisSize height, const char* title)
 
 GlfwWindow::~GlfwWindow()
 {
+	m_Swapchain.Destroy();
+
 	glfwDestroyWindow(m_WindowPtr);
 }
 

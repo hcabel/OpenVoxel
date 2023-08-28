@@ -8,6 +8,7 @@ DEFINE_LOG_CATEGORY(GameEngineLog);
 
 GameEngine::~GameEngine()
 {
+	delete m_Window;
 }
 
 void GameEngine::OnInitialize()

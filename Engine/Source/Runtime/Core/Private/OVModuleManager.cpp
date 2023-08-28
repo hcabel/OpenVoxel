@@ -17,6 +17,8 @@ OVModuleManager::~OVModuleManager()
 
 void OVModuleManager::Load(const char *moduleName)
 {
+	MODULEMANAGER_LOG(VeryVerbose, "Module '{:s}' is being loaded...", moduleName);
+
 	auto moduleIt = m_Modules.find(moduleName);
 	if (moduleIt != m_Modules.end())
 	{
@@ -56,6 +58,8 @@ void OVModuleManager::Load(const char *moduleName)
 
 void OVModuleManager::Unload(const char* moduleName)
 {
+	MODULEMANAGER_LOG(VeryVerbose, "Module '{:s}' is being unloaded...", moduleName);
+
 	auto moduleIt = m_Modules.find(moduleName);
 	if (moduleIt == m_Modules.end())
 	{
