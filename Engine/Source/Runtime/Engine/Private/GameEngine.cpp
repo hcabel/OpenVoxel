@@ -1,19 +1,21 @@
 #include "GameEngine.h"
 #include "Profiling/ProfilingMacros.h"
 #include "HAL/Time.h"
-#include "Renderer.h"
+// #include "Renderer.h"
+#include "GlfwWindow.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
 GameEngine::~GameEngine()
 {
-	Renderer::Shutdown();
 }
 
 void GameEngine::OnInitialize()
 {
 	CREATE_SCOPE_NAMED_TIMER_CONSOLE(EngineStartup);
 	OV_LOG(GameEngineLog, Display, "Init Engine");
+
+	m_Window = new GlfwWindow(1280, 720, "Open Voxel");
 }
 
 void GameEngine::EngineLoop()
@@ -25,12 +27,10 @@ void GameEngine::EngineLoop()
 	{
 		CLEAR_ALL_PERFRAME_TIMER_DATA();
 
-		Renderer::Get().PrepareNewFrame();
-
 		float timeStep = Time::GetTimeStep();
 		Tick(timeStep);
 
-		Renderer::Get().RenderNewFrame();
+		m_Window->Draw();
 
 		Time::CalculateNewTiming();
 	}
@@ -38,13 +38,13 @@ void GameEngine::EngineLoop()
 
 void GameEngine::Tick(float timeStep)
 {
-	Renderer::Get().Tick();
+ 	m_Window->Tick(timeStep);
 }
 
 bool GameEngine::EngineShouldStop()
 {
 	return (
 		m_State == EngineState::Type::Stopping
-		|| Renderer::Get().IsWindowClosed()
+		|| m_Window->IsClosed()
 	);
 }
