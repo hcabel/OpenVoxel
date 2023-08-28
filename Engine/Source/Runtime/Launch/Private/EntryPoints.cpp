@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-	OVModuleManager::LoadModule("Renderer");
+	OVModuleManager::Get().Load("Renderer");
 
 #ifdef WITH_EDITOR
 	g_Engine = new EditorEngine();

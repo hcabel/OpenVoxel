@@ -11,9 +11,9 @@ function RendererModule(config)
 
 	Renderer.ModuleDependency = {
 		"Core",
+		"Vulkan",
 	}
 	Renderer.ThirdPartyDependency = {
-		"Vulkan",
 		"GLFW",
 		"glm",
 	}

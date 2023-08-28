@@ -5,7 +5,7 @@
 #include "CoreGlobals.h"
 #include "Module.h"
 
-#include <string>
+#include <unordered_map>
 
 DECLARE_LOG_CATEGORY(ModuleManagerLog);
 
@@ -21,7 +21,23 @@ typedef Module* (*CreateModuleFunctionPtr)(void);
  */
 class CORE_API OVModuleManager
 {
+protected:
+	OVModuleManager()
+		: m_Modules()
+	{}
+	~OVModuleManager();
 
 public:
-	static void LoadModule(const char* moduleName);
+	static OVModuleManager& Get()
+	{
+		static OVModuleManager instance;
+		return instance;
+	}
+
+public:
+	void Load(const char* moduleName);
+	void Unload(const char* moduleName);
+
+protected:
+	std::unordered_map<const char*, Module*> m_Modules;
 };
