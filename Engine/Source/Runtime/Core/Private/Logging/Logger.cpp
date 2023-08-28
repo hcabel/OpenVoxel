@@ -50,5 +50,5 @@ void Logger::LogOntoFile(std::string_view logMessage)
 std::string Logger::GetLogFilePath()
 {
 	// File name format: log_YYYY-MM-DD_HH-MM-SS.txt
-	return (Path::GetLogDirectoryPath() + std::format("log_{:s}.txt", Time::GetDate("%F_%H-%M-%S")));
+	return (Path::GetLogDirectoryPath() + std::format("log_{:s}.log", Time::GetDate("%F_%H-%M-%S")));
 }
