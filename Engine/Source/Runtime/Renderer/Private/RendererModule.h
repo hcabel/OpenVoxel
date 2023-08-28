@@ -5,7 +5,7 @@
 
 struct GLFWwindow;
 
-class RENDERER_API RendererModule : public Module
+class RendererModule final : public Module
 {
 
 public:
