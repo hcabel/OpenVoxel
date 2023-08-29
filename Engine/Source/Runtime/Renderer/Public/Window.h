@@ -13,7 +13,7 @@ public:
 	using AxisSize = uint16_t;
 
 public:
-	Window(int width, int height, const char* title)
+	Window(AxisSize width, AxisSize height, const char* title)
 		: m_Width(width), m_Height(height), m_Title(title), m_HasBeenResized(false)
 	{}
 	virtual ~Window() = default;

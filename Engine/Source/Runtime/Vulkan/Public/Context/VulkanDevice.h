@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <vulkan/vulkan.hpp>
+#include <functional>
 
 // This class is exposed public because it is used in the VulkanContext class
 // but in theory it will be nice if it wasn't
@@ -61,18 +62,12 @@ protected:
 		m_QueueFamilyIndicies(),
 		m_PhysicalDevice(VK_NULL_HANDLE)
 	{}
-	VulkanDevice(
-		vk::Device& device,
-		std::vector<const char*>& extensionNames,
-		VulkanPNextChain& featureChain,
-		QueueFamily<uint8_t>& queueFamilyIndicies,
-		vk::PhysicalDevice& physicalDevice
-	)
+	VulkanDevice(vk::Device device, VulkanDevice* rhs)
 		: vk::Device(device),
-		m_ExtensionNames(std::move(extensionNames)),
-		m_FeatureChain(std::move(featureChain)),
-		m_QueueFamilyIndicies(std::move(queueFamilyIndicies)),
-		m_PhysicalDevice(physicalDevice)
+		m_ExtensionNames(std::move(rhs->m_ExtensionNames)),
+		m_FeatureChain(std::move(rhs->m_FeatureChain)),
+		m_QueueFamilyIndicies(std::move(rhs->m_QueueFamilyIndicies)),
+		m_PhysicalDevice(rhs->m_PhysicalDevice)
 	{}
 
 public:
@@ -92,6 +87,16 @@ public:
 	 * @return A vector of all suitable physical devices.
 	 */
 	std::vector<vk::PhysicalDevice> FetchAllSuitablePhysicalDevices() const;
+
+	/**
+	 * Create, record and send command buffer, use for one time commands.
+	 * To record the command buffer, use the lambda function.
+	 * @note: This function is waiting for the command buffer to finish executing before returning.
+	 *
+	 * @param queueFamilyIndex The queue family index to use.
+	 * @param lambda The lambda function to record the command buffer.
+	 */
+	void SubmitOneTimeCommandBuffer(uint8_t queueFamilyIndex, std::function<void(vk::CommandBuffer&)> lambda) const;
 
 public:
 	__forceinline const vk::PhysicalDevice& GetPhysicalDevice() const { return (m_PhysicalDevice); }

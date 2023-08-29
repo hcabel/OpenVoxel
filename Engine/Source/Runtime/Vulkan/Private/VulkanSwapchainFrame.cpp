@@ -34,50 +34,6 @@ VulkanSwapchainFrame::VulkanSwapchainFrame(
 	m_Sync.RenderedFinished = VulkanContext::GetDevice().createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
 	m_Sync.AcquireImage = VulkanContext::GetDevice().createSemaphore(vk::SemaphoreCreateInfo());
 	m_Sync.RenderFinished = VulkanContext::GetDevice().createSemaphore(vk::SemaphoreCreateInfo());
-
-	/* DUMMY RENDER PASS */
-
-	std::array<vk::AttachmentDescription, 1> attachments = {};
-	attachments[0].format = imageFormat;
-	attachments[0].samples = vk::SampleCountFlagBits::e1;
-	attachments[0].loadOp = vk::AttachmentLoadOp::eClear,
-	attachments[0].storeOp = vk::AttachmentStoreOp::eStore;
-	attachments[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-	attachments[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-	attachments[0].initialLayout = vk::ImageLayout::eUndefined;
-	attachments[0].finalLayout = vk::ImageLayout::ePresentSrcKHR;
-
-	vk::AttachmentReference colorReference(0, vk::ImageLayout::eColorAttachmentOptimal);
-	vk::SubpassDescription subpass = {};
-	subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorReference;
-
-	vk::SubpassDependency subpassDependency = {};
-	subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	subpassDependency.dstSubpass = 0;
-	subpassDependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-	subpassDependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-	subpassDependency.srcAccessMask = vk::AccessFlagBits::eNone;
-	subpassDependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
-
-	vk::RenderPassCreateInfo renderPassCreateInfo(
-		vk::RenderPassCreateFlags(),
-		static_cast<uint32_t>(attachments.size()), attachments.data(),
-		1, &subpass,
-		1, &subpassDependency
-	);
-	VulkanContext::GetDevice().createRenderPass(&renderPassCreateInfo, nullptr, &m_RP);
-
-	/* FRAMEBUFFER */
-
-	vk::FramebufferCreateInfo framebufferCreateInfo(
-		vk::FramebufferCreateFlags(),
-		m_RP,
-		1, &m_ImageView,
-		m_Width, m_Height, 1
-	);
-	m_FB = VulkanContext::GetDevice().createFramebuffer(framebufferCreateInfo);
 }
 
 void VulkanSwapchainFrame::Begin() const
@@ -88,27 +44,6 @@ void VulkanSwapchainFrame::Begin() const
 
 void VulkanSwapchainFrame::End() const
 {
-	// Dummy render pass to set a background color, allow me to debug the swapchain resizing
-	vk::ClearValue clearValue(vk::ClearColorValue(std::array<float, 4>{1.0f, 0.5f, 0.5f, 1.0f}));
-	vk::RenderPassBeginInfo renderPassBeginInfo(
-		m_RP,
-		m_FB,
-		vk::Rect2D(vk::Offset2D(0, 0), vk::Extent2D(m_Width, m_Height)),
-		1, &clearValue
-	);
-	m_CommandBuffer.beginRenderPass(renderPassBeginInfo, vk::SubpassContents::eInline);
-	vk::ClearAttachment clearAttachment(
-		vk::ImageAspectFlagBits::eColor,
-		0,
-		clearValue
-	);
-	vk::ClearRect clearRect(
-		vk::Rect2D(vk::Offset2D(0, 0), vk::Extent2D(m_Width, m_Height)),
-		0, 1
-	);
-	m_CommandBuffer.clearAttachments(clearAttachment, clearRect);
-	m_CommandBuffer.endRenderPass();
-
 	m_CommandBuffer.end();
 }
 
@@ -128,12 +63,6 @@ void VulkanSwapchainFrame::Destroy(const vk::CommandPool commandPool)
 	if (m_Sync.RenderFinished)
 		VulkanContext::GetDevice().destroySemaphore(m_Sync.RenderFinished, nullptr, VulkanContext::GetDispatcher());
 
-	if (m_FB)
-		VulkanContext::GetDevice().destroyFramebuffer(m_FB, nullptr, VulkanContext::GetDispatcher());
-
-	if (m_RP)
-		VulkanContext::GetDevice().destroyRenderPass(m_RP, nullptr, VulkanContext::GetDispatcher());
-
 	if (m_ImageView)
 		VulkanContext::GetDevice().destroyImageView(m_ImageView, nullptr, VulkanContext::GetDispatcher());
 
@@ -148,7 +77,6 @@ void VulkanSwapchainFrame::Resize(vk::Image& newImage, VulkanSwapchainFrame::Axi
 
 	// Destroy old stuff
 	VulkanContext::GetDevice().destroyImageView(m_ImageView, nullptr, VulkanContext::GetDispatcher());
-	VulkanContext::GetDevice().destroyFramebuffer(m_FB, nullptr, VulkanContext::GetDispatcher());
 
 	/* IMAGE VIEW */
 
@@ -161,14 +89,4 @@ void VulkanSwapchainFrame::Resize(vk::Image& newImage, VulkanSwapchainFrame::Axi
 		vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)
 	);
 	m_ImageView = VulkanContext::GetDevice().createImageView(imageViewCreateInfo);
-
-	/* FRAME BUFFER */
-
-	vk::FramebufferCreateInfo framebufferCreateInfo(
-		vk::FramebufferCreateFlags(),
-		m_RP,
-		1, &m_ImageView,
-		m_Width, m_Height, 1
-	);
-	m_FB = VulkanContext::GetDevice().createFramebuffer(framebufferCreateInfo);
 }

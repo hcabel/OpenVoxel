@@ -40,11 +40,11 @@ public:
 public:
 	__forceinline AxisSize GetWidth() const { return m_Width; }
 	__forceinline AxisSize GetHeight() const { return m_Height; }
+	__forceinline vk::Extent2D GetExtent() const { return vk::Extent2D(m_Width, m_Height); }
 
 	__forceinline const vk::Image& GetImage() const { return m_Image; }
 	__forceinline const vk::ImageView& GetImageView() const { return m_ImageView; }
 	__forceinline const vk::CommandBuffer& GetCommandBuffer() const { return m_CommandBuffer; }
-
 	__forceinline const Syncronization& GetSync() const { return m_Sync; }
 
 protected:
@@ -64,9 +64,6 @@ protected:
 	// Syncronization object, used to synchronize the job of the GPU and the CPU
 	// E.g: Making sure that the image is acquired before drawing to it
 	Syncronization m_Sync;
-
-	vk::RenderPass m_RP;
-	vk::Framebuffer m_FB;
 
 	friend class VulkanSwapchain;
 };

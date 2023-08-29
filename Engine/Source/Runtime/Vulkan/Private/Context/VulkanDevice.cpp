@@ -67,7 +67,7 @@ bool VulkanDevice::Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalD
 
 	try {
 		vk::Device logicalDevice = m_PhysicalDevice.createDevice(createInfo);
-		*this = VulkanDevice(logicalDevice, m_ExtensionNames, m_FeatureChain, m_QueueFamilyIndicies, m_PhysicalDevice);
+		*this = VulkanDevice(logicalDevice, this);
 		return (true);
 	}
 	catch (vk::SystemError& e)
@@ -79,7 +79,7 @@ bool VulkanDevice::Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalD
 
 void VulkanDevice::Destroy()
 {
-	if (static_cast<VkDevice>(*this) != VK_NULL_HANDLE)
+	if (this->operator bool())
 	{
 		waitIdle();
 
@@ -114,7 +114,58 @@ std::vector<vk::PhysicalDevice> VulkanDevice::FetchAllSuitablePhysicalDevices() 
 	return (suitableDevices);
 }
 
-void VulkanDevice::FindQueueFamilyIndicies(vk::SurfaceKHR& surface)
+void VulkanDevice::SubmitOneTimeCommandBuffer(uint8_t queueFamilyIndex, std::function<void(vk::CommandBuffer &)> lambda) const
+{
+	if (queueFamilyIndex == UINT8_MAX)
+	{
+		VULKAN_LOG(Error, "Invalid queue family index");
+		return;
+	}
+	if (lambda == nullptr)
+	{
+		VULKAN_LOG(Error, "Invalid lambda function");
+		return;
+	}
+
+	vk::CommandPoolCreateInfo poolInfo(
+	vk::CommandPoolCreateFlagBits::eTransient,
+		queueFamilyIndex
+	);
+	vk::CommandPool commandPool = createCommandPool(poolInfo);
+
+	vk::FenceCreateInfo fenceInfo(
+		vk::FenceCreateFlagBits::eSignaled
+	);
+	vk::Fence fence = createFence(fenceInfo);
+
+	vk::CommandBuffer commandBuffer = allocateCommandBuffers(
+		vk::CommandBufferAllocateInfo(
+			commandPool,
+			vk::CommandBufferLevel::ePrimary,
+			1
+		)
+	)[0];
+
+	commandBuffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
+	lambda(commandBuffer);
+	commandBuffer.end();
+
+	resetFences(fence);
+	vk::SubmitInfo submitInfo(
+		0, nullptr,
+		nullptr,
+		1, &commandBuffer,
+		0, nullptr
+	);
+	getQueue(queueFamilyIndex, 0).submit(submitInfo, fence);
+	waitForFences(fence, VK_TRUE, UINT64_MAX);
+
+	destroyFence(fence);
+	freeCommandBuffers(commandPool, 1, &commandBuffer);
+	destroyCommandPool(commandPool);
+}
+
+void VulkanDevice::FindQueueFamilyIndicies(vk::SurfaceKHR &surface)
 {
 	m_QueueFamilyIndicies = QueueFamily<uint8_t>(UINT8_MAX);
 

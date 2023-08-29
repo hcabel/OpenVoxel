@@ -49,6 +49,13 @@ public:
 	bool IsPresentModeSupported(vk::PresentModeKHR presentMode) const;
 	__forceinline VulkanSwapchainFrame::AxisSize GetFrameWidth() const { return (m_Frames.empty() ? 0 : m_Frames[0].GetWidth()); }
 	__forceinline VulkanSwapchainFrame::AxisSize GetFrameHeight() const { return (m_Frames.empty() ? 0 : m_Frames[0].GetHeight()); }
+	__forceinline vk::Extent2D GetFrameExtent() const { return vk::Extent2D(GetFrameWidth(), GetFrameHeight()); }
+	__forceinline uint8_t GetFrameCount() const { return static_cast<uint8_t>(m_Frames.size()); }
+	__forceinline uint8_t GetCurrentFrameIndex() const { return m_CurrentFrameIndex; }
+	__forceinline const VulkanSwapchainFrame& GetCurrentFrame() const { return m_Frames[m_CurrentFrameIndex]; }
+	__forceinline const std::vector<VulkanSwapchainFrame>& GetAllFrames() const { return m_Frames; }
+	__forceinline vk::Format GetFrameFormat() const { return m_FrameImageFormat.format; }
+	__forceinline vk::ColorSpaceKHR GetFrameColorSpace() const { return m_FrameImageFormat.colorSpace; }
 
 protected:
 	void CreateSwapchain(vk::PresentModeKHR presentMode, VulkanSwapchainFrame::AxisSize width, VulkanSwapchainFrame::AxisSize height);

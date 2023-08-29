@@ -86,9 +86,23 @@ void GlfwWindow::Draw()
 	const VulkanSwapchainFrame& frame = m_Swapchain.AcquireNextFrame();
 
 	frame.Begin();
-
-	// TODO: Ask to draw the scene on the frame
-
+	frame.GetCommandBuffer().pipelineBarrier( // Make the frame ready for presenting
+		vk::PipelineStageFlagBits::eColorAttachmentOutput,
+		vk::PipelineStageFlagBits::eColorAttachmentOutput,
+		vk::DependencyFlagBits::eByRegion,
+		{},
+		{},
+		vk::ImageMemoryBarrier(
+			vk::AccessFlagBits::eColorAttachmentWrite,
+			vk::AccessFlagBits::eColorAttachmentWrite,
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::ePresentSrcKHR,
+			VK_QUEUE_FAMILY_IGNORED,
+			VK_QUEUE_FAMILY_IGNORED,
+			frame.GetImage(),
+			vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)
+		)
+	);
 	frame.End();
 
 	m_Swapchain.PresentFrame();

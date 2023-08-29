@@ -116,7 +116,7 @@ const VulkanSwapchainFrame& VulkanSwapchain::AcquireNextFrame()
 			&m_CurrentFrameIndex,
 			VulkanContext::GetDispatcher()
 		),
-		"Acquiring next swapchain image", Error
+		"Acquiring next swapchain image", Fatal
 	);
 
 	return (m_Frames[m_CurrentFrameIndex]);
@@ -140,7 +140,7 @@ void VulkanSwapchain::PresentFrame()
 	}
 	catch (vk::SystemError& e)
 	{
-		VULKAN_LOG(Error, "Failed to submit swapchain image: \"{:s}\"", e.what());
+		VULKAN_LOG(Fatal, "Failed to submit swapchain image: \"{:s}\"", e.what());
 		return;
 	}
 
@@ -163,13 +163,13 @@ void VulkanSwapchain::PresentFrame()
 		}
 		else if (result != vk::Result::eSuccess)
 		{
-			VULKAN_LOG(Error, "Failed to present swapchain image: \"{:s}\"", vk::to_string(result));
+			VULKAN_LOG(Fatal, "Failed to present swapchain image: \"{:s}\"", vk::to_string(result));
 			return;
 		}
 	}
 	catch (vk::SystemError& e)
 	{
-		VULKAN_LOG(Error, "Failed to present swapchain image: \"{:s}\"", e.what());
+		VULKAN_LOG(Fatal, "Failed to present swapchain image: \"{:s}\"", e.what());
 		return;
 	}
 
