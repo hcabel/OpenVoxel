@@ -1,27 +1,29 @@
 #include "EditorEngine.h"
 #include "OVModuleManager.h"
-#include "Renderer.h"
 #include "HAL/Time.h"
-#include "UI.h"
+#include "EditorWindow.h"
 
 EditorEngine::~EditorEngine()
 {
+	delete m_Window;
+
+	OVModuleManager::Get().Unload("UI");
 }
 
 void EditorEngine::OnInitialize()
 {
-	OVModuleManager::LoadModule("UI");
+	OVModuleManager::Get().Load("UI");
+
+	m_Window = new EditorWindow(1280, 720, "Open Voxel Editor");
 }
 
 void EditorEngine::EngineLoop()
 {
 	while (EngineShouldStop() == false)
 	{
-		UI::Get().PrepareNewFrame();
+		m_Window->Tick(0.0f);
 
-		Renderer::Get().Tick();
-
-		UI::Get().RenderNewFrame();
+		m_Window->Draw();
 
 		Time::CalculateNewTiming();
 	}
@@ -31,6 +33,6 @@ bool EditorEngine::EngineShouldStop()
 {
 	return (
 		m_State == EngineState::Type::Stopping
-		|| Renderer::Get().IsWindowClosed()
+		|| m_Window->IsClosed()
 	);
 }
