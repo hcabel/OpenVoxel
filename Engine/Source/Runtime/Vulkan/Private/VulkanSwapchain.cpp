@@ -18,8 +18,7 @@ VulkanSwapchain::VulkanSwapchain(
 	m_PresentMode(vk::PresentModeKHR::eImmediate),
 	m_Frames(0),
 	m_FrameImageFormat(),
-	m_CurrentFrameIndex(0),
-	m_CurrentSyncFrameIndex(0)
+	m_CurrentFrameIndex(0)
 {
 	CreateSwapchain(presentMode, width, height);
 
@@ -94,24 +93,24 @@ const VulkanSwapchainFrame& VulkanSwapchain::AcquireNextFrame()
 	// Wait for the sync fence, that make sure the frame is not in use
 	CHECK_VK_RESULT(
 		VulkanContext::GetDevice().waitForFences(
-			1, &m_Frames[m_CurrentSyncFrameIndex].GetSync().RenderedFinished,
+			1, &m_Frames[m_CurrentFrameIndex].GetSync().RenderedFinished,
 			VK_TRUE, UINT64_MAX, VulkanContext::GetDispatcher()
 		),
 		"Waiting for sync fence", Error
 	);
 	CHECK_VK_RESULT( // Close the frame behind
 		VulkanContext::GetDevice().resetFences(
-			1, &m_Frames[m_CurrentSyncFrameIndex].GetSync().RenderedFinished,
+			1, &m_Frames[m_CurrentFrameIndex].GetSync().RenderedFinished,
 			VulkanContext::GetDispatcher()
 		),
 		"Resetting sync fence", Error
 	);
-
+	
 	CHECK_VK_RESULT(
 		VulkanContext::GetDevice().acquireNextImageKHR(
 			m_VkSwapchain,
 			UINT64_MAX,
-			m_Frames[m_CurrentSyncFrameIndex].GetSync().AcquireImage,
+			m_Frames[m_CurrentFrameIndex].GetSync().AcquireImage,
 			VK_NULL_HANDLE,
 			&m_CurrentFrameIndex,
 			VulkanContext::GetDispatcher()
@@ -147,7 +146,7 @@ void VulkanSwapchain::PresentFrame()
 	/* PRESENT */
 
 	vk::PresentInfoKHR presentInfo(
-		1, &m_Frames[m_CurrentSyncFrameIndex].GetSync().RenderFinished,
+		1, &m_Frames[m_CurrentFrameIndex].GetSync().RenderFinished,
 		1, &m_VkSwapchain,
 		&m_CurrentFrameIndex
 	);
@@ -174,7 +173,7 @@ void VulkanSwapchain::PresentFrame()
 	}
 
 	// Increment the current sync frame index to the next frame
-	m_CurrentSyncFrameIndex = (m_CurrentSyncFrameIndex + 1) % m_Frames.size();
+	m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % m_Frames.size();
 }
 
 void VulkanSwapchain::Resize(VulkanSwapchainFrame::AxisSize width, VulkanSwapchainFrame::AxisSize height)
@@ -328,5 +327,5 @@ void VulkanSwapchain::RecreateSwapchain(VulkanSwapchainFrame::AxisSize width, Vu
 	}
 
 	// Reset indexes
-	m_CurrentFrameIndex = m_CurrentSyncFrameIndex = 0;
+	m_CurrentFrameIndex = m_CurrentFrameIndex = 0;
 }

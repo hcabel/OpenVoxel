@@ -6,11 +6,6 @@
 #include <Vulkan/vulkan.hpp>
 #include <vector>
 
-namespace vk
-{
-	enum class PresentModeKHR;
-}
-
 /**
  * This is a swapchain, it is a collection of images that you can draw to one at a time.
  * The thing is that you cant draw to an image that is currently being displayed on the screen.
@@ -31,8 +26,7 @@ public:
 		m_CommandPool(VK_NULL_HANDLE),
 		m_PresentMode(vk::PresentModeKHR::eFifo),
 		m_Frames(0),
-		m_CurrentFrameIndex(0),
-		m_CurrentSyncFrameIndex(0)
+		m_CurrentFrameIndex(0)
 	{}
 	VulkanSwapchain(vk::PresentModeKHR presentMode, const vk::SurfaceKHR surface, VulkanSwapchainFrame::AxisSize width, VulkanSwapchainFrame::AxisSize height);
 	~VulkanSwapchain();
@@ -45,13 +39,15 @@ public:
 
 	void Resize(VulkanSwapchainFrame::AxisSize width, VulkanSwapchainFrame::AxisSize height);
 
+	operator bool() const { return m_VkSwapchain; }
+
 public:
 	bool IsPresentModeSupported(vk::PresentModeKHR presentMode) const;
 	__forceinline VulkanSwapchainFrame::AxisSize GetFrameWidth() const { return (m_Frames.empty() ? 0 : m_Frames[0].GetWidth()); }
 	__forceinline VulkanSwapchainFrame::AxisSize GetFrameHeight() const { return (m_Frames.empty() ? 0 : m_Frames[0].GetHeight()); }
 	__forceinline vk::Extent2D GetFrameExtent() const { return vk::Extent2D(GetFrameWidth(), GetFrameHeight()); }
-	__forceinline uint8_t GetFrameCount() const { return static_cast<uint8_t>(m_Frames.size()); }
-	__forceinline uint8_t GetCurrentFrameIndex() const { return m_CurrentFrameIndex; }
+	__forceinline uint32_t GetFrameCount() const { return static_cast<uint32_t>(m_Frames.size()); }
+	__forceinline uint32_t GetCurrentFrameIndex() const { return m_CurrentFrameIndex; }
 	__forceinline const VulkanSwapchainFrame& GetCurrentFrame() const { return m_Frames[m_CurrentFrameIndex]; }
 	__forceinline const std::vector<VulkanSwapchainFrame>& GetAllFrames() const { return m_Frames; }
 	__forceinline vk::Format GetFrameFormat() const { return m_FrameImageFormat.format; }
@@ -71,5 +67,4 @@ protected:
 	std::vector<VulkanSwapchainFrame> m_Frames;
 	vk::SurfaceFormatKHR m_FrameImageFormat;
 	uint32_t m_CurrentFrameIndex;
-	uint8_t m_CurrentSyncFrameIndex;
 };
