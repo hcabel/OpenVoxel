@@ -1,7 +1,6 @@
 #include "GameEngine.h"
 #include "Profiling/ProfilingMacros.h"
 #include "HAL/Time.h"
-// #include "Renderer.h"
 #include "GlfwWindow.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
@@ -39,7 +38,10 @@ void GameEngine::EngineLoop()
 
 void GameEngine::Tick(float timeStep)
 {
- 	m_Window->Tick(timeStep);
+	m_Window->Tick(timeStep);
+
+	const uint16_t fpsCount = (uint16_t)std::round(1.0f / Time::GetTimeStep());
+	m_Window->SetTitle(std::format("OpenVoxel - {:.2f}ms = {:d}fps", Time::GetTimeStep() * 100.0f, fpsCount).c_str());
 }
 
 bool GameEngine::EngineShouldStop()
