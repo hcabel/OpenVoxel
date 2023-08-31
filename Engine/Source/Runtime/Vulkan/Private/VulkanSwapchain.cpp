@@ -2,7 +2,6 @@
 #include "VulkanContext.h"
 #include "Vulkan/Log.h"
 #include "Vulkan/ErrorHandling.h"
-#include "VulkanDevice.h"
 
 #include <vulkan/vulkan.hpp>
 
@@ -105,7 +104,7 @@ const VulkanSwapchainFrame& VulkanSwapchain::AcquireNextFrame()
 		),
 		"Resetting sync fence", Error
 	);
-	
+
 	CHECK_VK_RESULT(
 		VulkanContext::GetDevice().acquireNextImageKHR(
 			m_VkSwapchain,
@@ -327,5 +326,5 @@ void VulkanSwapchain::RecreateSwapchain(VulkanSwapchainFrame::AxisSize width, Vu
 	}
 
 	// Reset indexes
-	m_CurrentFrameIndex = m_CurrentFrameIndex = 0;
+	m_CurrentFrameIndex = 0;
 }

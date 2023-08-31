@@ -1,9 +1,8 @@
 #pragma once
 
-#include "UI_API.h"
 #include "Module.h"
 
-class UI_API UIModule : public Module
+class UIModule : public Module
 {
 
 public:

@@ -8,7 +8,7 @@
 #include <vector>
 #include <vulkan/vulkan.hpp>
 
-class GLFWwindow;
+struct GLFWwindow;
 
 /**
  * Vulkan context, used to initialize the Vulkan API and store all the global vulkan objects.
