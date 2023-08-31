@@ -74,6 +74,7 @@ void VulkanSwapchainFrame::Resize(vk::Image& newImage, VulkanSwapchainFrame::Axi
 {
 	m_Width = width;
 	m_Height = height;
+	m_Image = newImage;
 
 	// Destroy old stuff
 	VulkanContext::GetDevice().destroyImageView(m_ImageView, nullptr, VulkanContext::GetDispatcher());
