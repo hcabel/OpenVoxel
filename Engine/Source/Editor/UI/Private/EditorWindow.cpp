@@ -91,7 +91,7 @@ EditorWindow::EditorWindow(AxisSize width, AxisSize height, const char* title)
 		vk::PipelineStageFlagBits::eColorAttachmentOutput,
 		vk::PipelineStageFlagBits::eColorAttachmentOutput,
 		vk::AccessFlags(),
-		vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite
+		vk::AccessFlagBits::eColorAttachmentWrite
 	);
 
 	vk::RenderPassCreateInfo renderPassInfo(

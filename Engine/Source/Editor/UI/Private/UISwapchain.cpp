@@ -179,7 +179,7 @@ void UISwapchain::Resize(UISwapchainFrame::AxisSize width, UISwapchainFrame::Axi
 	RecreateSwapchain(width, height);
 }
 
-vk::SurfaceFormatKHR UISwapchain::SelectSurfaceFormat(vk::SurfaceKHR surface, vk::Format preferredFormat, vk::ColorSpaceKHR preferredColorSpace)
+vk::SurfaceFormatKHR UISwapchain::SelectSurfaceFormat(vk::SurfaceKHR surface)
 {
 	const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
 	const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;

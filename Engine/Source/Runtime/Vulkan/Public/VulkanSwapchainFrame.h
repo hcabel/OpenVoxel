@@ -34,8 +34,8 @@ public:
 	);
 
 public:
-	void Begin() const;
-	void End() const;
+	virtual void Begin() const;
+	virtual void End() const;
 
 public:
 	__forceinline AxisSize GetWidth() const { return m_Width; }
@@ -48,8 +48,8 @@ public:
 	__forceinline const Syncronization& GetSync() const { return m_Sync; }
 
 protected:
-	void Destroy(const vk::CommandPool commandPool);
-	void Resize(vk::Image& image, AxisSize width, AxisSize height, vk::Format imageFormat);
+	virtual void Destroy(const vk::CommandPool commandPool);
+	virtual void Resize(vk::Image& image, AxisSize width, AxisSize height, vk::Format imageFormat);
 
 protected:
 	// The image that is used as a frame
