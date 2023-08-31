@@ -12,6 +12,7 @@ function UIModule(config)
 	UI.ModuleDependency = {
 		"Core",
 		"Renderer",
+		"Vulkan",
 	}
 	UI.ThirdPartyDependency = {
 		"GLFW",
