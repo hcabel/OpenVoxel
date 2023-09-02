@@ -16,6 +16,7 @@ function RendererModule(config)
 	Renderer.ThirdPartyDependency = {
 		"GLFW",
 		"glm",
+		"stb_image"
 	}
 
 	return Renderer;

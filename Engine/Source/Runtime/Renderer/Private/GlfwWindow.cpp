@@ -1,16 +1,23 @@
 ﻿#include "GlfwWindow.h"
 #include "VulkanContext.h"
-
 #include "CoreGlobals.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 GlfwWindow::GlfwWindow(AxisSize width, AxisSize height, const char* title)
 	: Window(width, height, title)
 {
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	m_WindowPtr = glfwCreateWindow(m_Width, m_Height, title, nullptr, nullptr);
+
+	// Set window icon to the OpenVoxel logo
+	GLFWimage icon[1];
+	std::string path = Path::GetEngineRootDirectoryPath() + "Resources/OpenVoxelLogo 128x128.png";
+	icon[0].pixels = stbi_load(path.c_str(), &icon[0].width, &icon[0].height, nullptr, STBI_rgb_alpha);
+	glfwSetWindowIcon(m_WindowPtr, 1, icon);
 
 	// Get GLFW vulkan extensions
 	uint32_t glfwExtensionCount = 0;

@@ -18,6 +18,7 @@ function UIModule(config)
 		"GLFW",
 		"Vulkan",
 		"ImGui",
+		"stb_image"
 	}
 
 	return UI
