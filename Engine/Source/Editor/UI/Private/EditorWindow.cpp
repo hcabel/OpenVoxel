@@ -215,6 +215,8 @@ void EditorWindow::Draw()
 
 	frame.Begin();
 
+	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()); // Make the glfw window dockable
+
 	// TODO: Ask to draw the scene on the frame
 	static bool show_demo_window = true;
 	if (show_demo_window)
