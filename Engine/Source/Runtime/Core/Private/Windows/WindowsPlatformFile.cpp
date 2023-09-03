@@ -15,13 +15,28 @@ WindowsPlatformFile::~WindowsPlatformFile()
 
 std::string WindowsPlatformFile::ReadAll()
 {
+	bool isOpen = IsOpen();
+
+	// Open if not already opened
+	if (isOpen == false)
+		Open(std::ios_base::in);
+
 	m_FileStream.seekg(0, std::ios::end);
 	std::streamsize fileSize = m_FileStream.tellg();
+	if (fileSize == -1)
+	{
+		OV_LOG(CoreLog, Error, "Failed to read file: '{:s}'", m_FullPath.data());
+		return ("");
+	}
+
 	m_FileStream.seekg(0, std::ios::beg);
 
 	std::string content(fileSize, '\0');
 	m_FileStream.read(&content[0], fileSize);
 
+	// Close the file if this function opened it
+	if (isOpen == false)
+		Close();
 	return (content);
 }
 #pragma endregion
