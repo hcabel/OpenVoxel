@@ -3,12 +3,13 @@
 #include "UI_API.h"
 #include "Window.h"
 #include "UISwapchain.h"
+#include "UI.h"
 
 #include <vulkan/vulkan.hpp>
 
 struct GLFWwindow;
 
-class UI_API EditorWindow : public Window
+class UI_API EditorWindow : public Window, public UI
 {
 public:
 	EditorWindow(AxisSize width, AxisSize height, const char* title);

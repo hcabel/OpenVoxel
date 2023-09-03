@@ -3,9 +3,11 @@ function UIModule(config)
 	local UI = {}
 
 	UI.Public_IncludeDirs = {
+		"Public/UI",
 		"Public",
 	}
 	UI.Private_IncludeDirs = {
+		"Private/UI",
 		"Private",
 	}
 

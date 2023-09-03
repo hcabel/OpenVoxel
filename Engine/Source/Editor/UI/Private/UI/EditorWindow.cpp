@@ -3,6 +3,7 @@
 #include "UIGlobals.h"
 #include "ImGuiBackends.h"
 #include "Path.h"
+#include "UIConsole.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -155,6 +156,10 @@ EditorWindow::EditorWindow(AxisSize width, AxisSize height, const char* title)
 	);
 
 	ImGui_ImplVulkan_DestroyFontUploadObjects();
+
+	AddChild(
+		new UIConsole()
+	);
 }
 
 EditorWindow::~EditorWindow()
@@ -207,6 +212,8 @@ void EditorWindow::Tick(float deltaTime)
 		m_Swapchain.Resize(m_Width, m_Height);
 		m_HasBeenResized = false;
 	}
+
+	TickChildren(deltaTime);
 }
 
 void EditorWindow::Draw()
@@ -217,14 +224,7 @@ void EditorWindow::Draw()
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()); // Make the glfw window dockable
 
-	// TODO: Ask to draw the scene on the frame
-	static bool show_demo_window = true;
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	ImGui::Begin("Viewport");
-	ImGui::Text("Hello, world!");
-	ImGui::End();
+	DrawChildren();
 
 	frame.End();
 
