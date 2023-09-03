@@ -28,9 +28,11 @@ UIConsole::UIConsole()
 	}
 
 	Logger::s_OnLogMessage.BindLambda(
-		[this](LogCategory& category, Verbosity::Type verbosity, std::string_view message)
+		[this](LogCategory& category, Verbosity::Type verbosity, std::string_view fullyFormattedMessage)
 		{
-			m_Logs.emplace_back(std::format("[{:s}]: {:s}: {:s}", category.GetName(), Verbosity::ToString(verbosity), message));
+			if (verbosity == Verbosity::VeryVerbose)
+				return;
+			m_Logs.emplace_back(fullyFormattedMessage);
 		}
 	);
 }

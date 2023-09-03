@@ -11,7 +11,7 @@
 #include <memory>
 #include <format>
 
-DECLARE_MULTICAST_DELEGATE(OnLogMessage, LogCategory&, Verbosity::Type, std::string_view);
+DECLARE_MULTICAST_DELEGATE(OnLogMessage, LogCategory& /* category */, Verbosity::Type /* verbosity */, std::string_view /* fullyFormattedMessage */);
 
 /**
  * Static Class that log message onto console and/or file.
