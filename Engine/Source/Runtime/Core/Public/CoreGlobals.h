@@ -3,6 +3,7 @@
 #include "Core_API.h"
 #include "MacrosHelper.h"
 #include "Logging/LoggingMacros.h"
+#include "Delegates.h"
 
 // Log category for core logging
 CORE_API DECLARE_LOG_CATEGORY(CoreLog);
