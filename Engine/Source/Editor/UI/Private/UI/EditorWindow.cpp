@@ -222,7 +222,7 @@ void EditorWindow::Draw()
 
 	frame.Begin();
 
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()); // Make the glfw window dockable
+	m_DockSpaceId = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode); // Make the glfw window dockable
 
 	DrawChildren();
 

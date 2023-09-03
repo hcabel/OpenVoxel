@@ -3,6 +3,7 @@
 #include "UI_API.h"
 
 #include <vector>
+#include <imgui.h>
 
 /**
  * This is the interface that every UI should implement.
@@ -23,8 +24,14 @@ protected:
 	}
 	void DrawChildren()
 	{
+		if (!m_DockSpaceId)
+			m_DockSpaceId = ImGui::GetWindowDockID();
+
 		for (auto& child : m_Children)
+		{
+			ImGui::SetNextWindowDockID(m_DockSpaceId, ImGuiCond_FirstUseEver);
 			child->Draw();
+		}
 	}
 
 protected:
@@ -33,6 +40,9 @@ protected:
 
 private:
 	std::vector<UI*> m_Children;
+
+protected:
+	ImGuiID m_DockSpaceId = 0;
 };
 
 

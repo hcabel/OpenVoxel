@@ -44,10 +44,6 @@ void UIConsole::Tick(float deltaTime)
 
 void UIConsole::Draw()
 {
-	static bool show = true;
-	if (show)
-		ImGui::ShowDemoWindow(&show);
-
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
 	if (ImGui::Begin("Console"))
