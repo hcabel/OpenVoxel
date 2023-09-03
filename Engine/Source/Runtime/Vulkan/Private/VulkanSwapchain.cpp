@@ -37,12 +37,6 @@ VulkanSwapchain::VulkanSwapchain(
 		return;
 	}
 
-	VULKAN_LOG(Verbose, "Swapchain properties: ");
-	VULKAN_LOG(Verbose, "\tFormat: {:s} ({:s})", vk::to_string(m_FrameImageFormat.format), vk::to_string(m_FrameImageFormat.colorSpace));
-	VULKAN_LOG(Verbose, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
-	VULKAN_LOG(Verbose, "\tExtent: {:d}x{:d}", width, height);
-	VULKAN_LOG(Verbose, "\tImage count: {:d}", m_Frames.size());
-
 	/* CREATE EACH IMAGES */
 
 	auto swapchainImages = VulkanContext::GetDevice().getSwapchainImagesKHR(m_VkSwapchain);
@@ -50,6 +44,12 @@ VulkanSwapchain::VulkanSwapchain(
 
 	for (auto& image : swapchainImages)
 		m_Frames.emplace_back(VulkanSwapchainFrame(image, width, height, m_FrameImageFormat.format, m_CommandPool));
+
+	VULKAN_LOG(Verbose, "Swapchain properties: ");
+	VULKAN_LOG(Verbose, "\tFormat: {:s} ({:s})", vk::to_string(m_FrameImageFormat.format), vk::to_string(m_FrameImageFormat.colorSpace));
+	VULKAN_LOG(Verbose, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
+	VULKAN_LOG(Verbose, "\tExtent: {:d}x{:d}", width, height);
+	VULKAN_LOG(Verbose, "\tImage count: {:d}", m_Frames.size());
 }
 
 VulkanSwapchain::~VulkanSwapchain()

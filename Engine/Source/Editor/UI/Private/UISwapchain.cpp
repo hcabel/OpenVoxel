@@ -40,12 +40,6 @@ UISwapchain::UISwapchain(
 		return;
 	}
 
-	UI_LOG(Verbose, "Swapchain properties: ");
-	UI_LOG(Verbose, "\tFormat: {:s} ({:s})", vk::to_string(m_FrameImageFormat.format), vk::to_string(m_FrameImageFormat.colorSpace));
-	UI_LOG(Verbose, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
-	UI_LOG(Verbose, "\tExtent: {:d}x{:d}", width, height);
-	UI_LOG(Verbose, "\tImage count: {:d}", m_Frames.size());
-
 	/* CREATE EACH IMAGES */
 
 	auto swapchainImages = VulkanContext::GetDevice().getSwapchainImagesKHR(m_VkSwapchain);
@@ -57,6 +51,12 @@ UISwapchain::UISwapchain(
 			UISwapchainFrame(image, width, height, m_FrameImageFormat.format, m_CommandPool, imGuiRenderPass)
 		);
 	}
+
+	UI_LOG(Verbose, "Swapchain properties: ");
+	UI_LOG(Verbose, "\tFormat: {:s} ({:s})", vk::to_string(m_FrameImageFormat.format), vk::to_string(m_FrameImageFormat.colorSpace));
+	UI_LOG(Verbose, "\tPresent mode: {:s}", vk::to_string(m_PresentMode));
+	UI_LOG(Verbose, "\tExtent: {:d}x{:d}", width, height);
+	UI_LOG(Verbose, "\tImage count: {:d}", m_Frames.size());
 }
 
 UISwapchain::~UISwapchain()
