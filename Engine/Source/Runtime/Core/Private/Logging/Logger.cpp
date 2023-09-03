@@ -7,6 +7,7 @@
 #include <format>
 
 std::unique_ptr<File> Logger::s_LogFile = nullptr;
+OnLogMessage Logger::s_OnLogMessage = OnLogMessage();
 
 void Logger::Log(Verbosity::Type verbosity, LogCategory& category, std::string message)
 {
@@ -22,6 +23,8 @@ void Logger::Log(Verbosity::Type verbosity, LogCategory& category, std::string m
 	LogOntoConsole(logMessage);
 #endif
 	LogOntoFile(logMessage);
+
+	s_OnLogMessage.Execute(category, verbosity, logMessage);
 
 	if (verbosity == Verbosity::Fatal)
 		assert(false);

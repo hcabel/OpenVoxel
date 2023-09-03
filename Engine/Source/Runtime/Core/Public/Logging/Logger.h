@@ -3,12 +3,15 @@
 #include "Core_API.h"
 #include "Logging/LoggingType.h"
 #include "HAL/File.h"
+#include "Delegates.h"
 
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include <memory>
 #include <format>
+
+DECLARE_MULTICAST_DELEGATE(OnLogMessage, LogCategory&, Verbosity::Type, std::string_view);
 
 /**
  * Static Class that log message onto console and/or file.
@@ -27,4 +30,9 @@ private:
 
 private:
 	static std::unique_ptr<File> s_LogFile;
+	static OnLogMessage	s_OnLogMessage;
+
+#ifdef WITH_EDITOR
+	friend class UIConsole;
+#endif
 };
