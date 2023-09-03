@@ -1,4 +1,4 @@
-﻿#include "GlfwWindow.h"
+﻿#include "GameWindow.h"
 #include "VulkanContext.h"
 #include "CoreGlobals.h"
 
@@ -7,7 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-GlfwWindow::GlfwWindow(AxisSize width, AxisSize height, const char* title)
+GameWindow::GameWindow(AxisSize width, AxisSize height, const char* title)
 	: Window(width, height, title)
 {
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -45,19 +45,19 @@ GlfwWindow::GlfwWindow(AxisSize width, AxisSize height, const char* title)
 	m_Swapchain = VulkanSwapchain(vk::PresentModeKHR::eMailbox, surface, m_Width, m_Height);
 }
 
-GlfwWindow::~GlfwWindow()
+GameWindow::~GameWindow()
 {
 	m_Swapchain.Destroy();
 
 	glfwDestroyWindow(m_WindowPtr);
 }
 
-bool GlfwWindow::IsClosed() const
+bool GameWindow::IsClosed() const
 {
 	return glfwWindowShouldClose(m_WindowPtr);
 }
 
-void GlfwWindow::SetSize(AxisSize width, AxisSize height)
+void GameWindow::SetSize(AxisSize width, AxisSize height)
 {
 	m_Width = width;
 	m_Height = height;
@@ -65,7 +65,7 @@ void GlfwWindow::SetSize(AxisSize width, AxisSize height)
 	m_HasBeenResized = true;
 }
 
-void GlfwWindow::Tick(float deltaTime)
+void GameWindow::Tick(float deltaTime)
 {
 	glfwPollEvents();
 
@@ -88,7 +88,7 @@ void GlfwWindow::Tick(float deltaTime)
 	}
 }
 
-void GlfwWindow::Draw()
+void GameWindow::Draw()
 {
 	const VulkanSwapchainFrame& frame = m_Swapchain.AcquireNextFrame();
 
@@ -115,7 +115,7 @@ void GlfwWindow::Draw()
 	m_Swapchain.PresentFrame();
 }
 
-void GlfwWindow::OnTitleUpdate()
+void GameWindow::OnTitleUpdate()
 {
 	glfwSetWindowTitle(m_WindowPtr, m_Title);
 }

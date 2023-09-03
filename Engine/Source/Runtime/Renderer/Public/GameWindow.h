@@ -10,11 +10,11 @@ class VulkanSwapchain;
 /**
  * This class is a window implementation using GLFW.
  */
-class RENDERER_API GlfwWindow final : public Window
+class RENDERER_API GameWindow final : public Window
 {
 public:
-	GlfwWindow(AxisSize width, AxisSize height, const char* title);
-	~GlfwWindow();
+	GameWindow(AxisSize width, AxisSize height, const char* title);
+	~GameWindow();
 
 public:
 	__forceinline bool IsClosed() const override;

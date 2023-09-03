@@ -1,7 +1,7 @@
 #include "GameEngine.h"
 #include "Profiling/ProfilingMacros.h"
 #include "HAL/Time.h"
-#include "GlfwWindow.h"
+#include "GameWindow.h"
 
 DEFINE_LOG_CATEGORY(GameEngineLog);
 
@@ -15,7 +15,7 @@ void GameEngine::OnInitialize()
 	CREATE_SCOPE_NAMED_TIMER_CONSOLE(EngineStartup);
 	OV_LOG(GameEngineLog, Display, "Init Engine");
 
-	m_Window = new GlfwWindow(1280, 720, "Open Voxel");
+	m_Window = new GameWindow(1280, 720, "Open Voxel");
 }
 
 void GameEngine::EngineLoop()
