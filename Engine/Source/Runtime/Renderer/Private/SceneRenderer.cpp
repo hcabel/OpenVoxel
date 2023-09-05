@@ -32,10 +32,14 @@ SceneRenderer::SceneRenderer()
 		&m_DescriptorSetLayout
 	);
 	m_DescriptorSet = VulkanContext::GetDevice().allocateDescriptorSets(descriptorSetAllocateInfo)[0];
+
+	// Create the pipeline
+	m_Pipeline = VulkanRayTracingPipeline(m_DescriptorSetLayout);
 }
 
 SceneRenderer::~SceneRenderer()
 {
+	m_Pipeline.~VulkanRayTracingPipeline();
 
 	VulkanContext::GetDevice().destroyDescriptorSetLayout(m_DescriptorSetLayout);
 }

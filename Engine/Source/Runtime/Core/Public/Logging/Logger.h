@@ -15,8 +15,6 @@ DECLARE_MULTICAST_DELEGATE(OnLogMessage, LogCategory& /* category */, Verbosity:
 
 /**
  * Static Class that log message onto console and/or file.
- * TODO: Add file logging
- * TODO: Add thread safe logging (using a queue probably)
  */
 class CORE_API Logger final
 {

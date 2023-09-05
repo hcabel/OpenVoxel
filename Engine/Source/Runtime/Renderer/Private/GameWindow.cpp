@@ -19,14 +19,33 @@ GameWindow::GameWindow(AxisSize width, AxisSize height, const char* title)
 	icon[0].pixels = stbi_load(path.c_str(), &icon[0].width, &icon[0].height, nullptr, STBI_rgb_alpha);
 	glfwSetWindowIcon(m_WindowPtr, 1, icon);
 
-	// Get GLFW vulkan extensions
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
-		VulkanContext::Get().AddInstanceExtension(glfwExtensions[i]);
+	// Add vulkan extensions
+	{
+		// Add GLFW vulkan extensions
+		uint32_t glfwExtensionCount = 0;
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		for (uint32_t i = 0; i < glfwExtensionCount; ++i)
+			VulkanContext::Get().AddInstanceExtension(glfwExtensions[i]);
 
-	// Add swapchain extension
-	VulkanContext::Get().AddDeviceExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		// Add swapchain extension
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+		// Add ray tracing Extension
+		vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingFeatures;
+		rayTracingFeatures.rayTracingPipeline = true;
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME, &rayTracingFeatures);
+
+		// Acceleration structure extension
+		vk::PhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures;
+		accelerationStructureFeatures.accelerationStructure = true;
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, &accelerationStructureFeatures);
+
+		// Required by the Acceleration structure extension
+		vk::PhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures;
+		bufferDeviceAddressFeatures.bufferDeviceAddress = true;
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, &bufferDeviceAddressFeatures);
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+	}
 
 	// Create the vulkan instance in 1.3.224
 	// It's a static version, because I want to verify that the everything works before upgrading

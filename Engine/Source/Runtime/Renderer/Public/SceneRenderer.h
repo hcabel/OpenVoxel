@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VulkanRayTracingPipeline.h"
+
 #include <vulkan/vulkan.hpp>
 
 class SceneRenderer
@@ -13,5 +15,6 @@ protected:
 protected:
 	vk::DescriptorSetLayout m_DescriptorSetLayout;
 	vk::DescriptorSet m_DescriptorSet;
+	VulkanRayTracingPipeline m_Pipeline;
 
 };
