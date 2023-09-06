@@ -91,7 +91,6 @@ bool VulkanContext::CreateDevice(vk::SurfaceKHR& surface)
 
 void VulkanContext::Destroy()
 {
-
 	if (m_Device)
 		m_Device.Destroy();
 
