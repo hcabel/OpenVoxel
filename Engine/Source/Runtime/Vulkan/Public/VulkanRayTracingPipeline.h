@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vulkan_API.h"
+#include "VulkanBuffer.h"
 
 #include <vulkan/vulkan.hpp>
 #include <vector>
@@ -9,9 +10,9 @@ class Path;
 
 /**
  * Wrapper around the vk::Pipeline ptr.
- * 
+ *
  * To create it just call the constructor with the vk::DescriptorSetLayout as parameter.
- * 
+ *
  * Here is how the whole proccess of creation should go:
  * 1- The class is automatically created with the default constructor.
  * 2- The user calls the constructor with the vk::DescriptorSetLayout as parameter.
@@ -41,7 +42,12 @@ public:
 		: vk::Pipeline(nullptr),
 		m_PipelineLayout(nullptr),
 		m_ShaderModules(0),
-		m_ShaderGroup(0)
+		m_ShaderGroup(0),
+		m_ShaderBindingTableBuffer(),
+		m_RaygenSbt(),
+		m_MissSbt(),
+		m_HitSbt(),
+		m_CallableSbt()
 	{}
 	VulkanRayTracingPipeline(std::nullptr_t) : VulkanRayTracingPipeline() {} // default constructor 2 (for null assignment)
 	VulkanRayTracingPipeline(const vk::DescriptorSetLayout& layout); // The real constructor (the one who create the pipeline)
@@ -65,4 +71,9 @@ protected:
 	std::vector<vk::ShaderModule> m_ShaderModules;
 	std::vector<vk::RayTracingShaderGroupCreateInfoKHR> m_ShaderGroup;
 
+	VulkanBuffer m_ShaderBindingTableBuffer;
+	vk::StridedDeviceAddressRegionKHR m_RaygenSbt;
+	vk::StridedDeviceAddressRegionKHR m_MissSbt;
+	vk::StridedDeviceAddressRegionKHR m_HitSbt;
+	vk::StridedDeviceAddressRegionKHR m_CallableSbt;
 };

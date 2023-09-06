@@ -53,21 +53,21 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 		nullptr
 	);
 
-	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR(
+	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR( // Raygen group
 		vk::RayTracingShaderGroupTypeKHR::eGeneral,
 		0,
 		VK_SHADER_UNUSED_KHR,
 		VK_SHADER_UNUSED_KHR,
 		VK_SHADER_UNUSED_KHR
 	));
-	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR(
+	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR( // Miss group
 		vk::RayTracingShaderGroupTypeKHR::eGeneral,
 		2,
 		VK_SHADER_UNUSED_KHR,
 		VK_SHADER_UNUSED_KHR,
 		VK_SHADER_UNUSED_KHR
 	));
-	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR(
+	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR( // Hit group (with closest hit and intersection shaders)
 		vk::RayTracingShaderGroupTypeKHR::eProceduralHitGroup,
 		VK_SHADER_UNUSED_KHR,
 		1,
@@ -98,10 +98,61 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	catch (vk::SystemError& e) {
 		VULKAN_LOG(Error, "Failed to create ray tracing pipeline: {:s}", e.what());
 	}
+
+	/* CREATE SBT */
+
+	auto align_up = [](uint32_t a, size_t x) { return ((x + ((a) - 1)) & ~(a - 1)); };
+	vk::PhysicalDeviceRayTracingPipelinePropertiesKHR rtProperties
+		= VulkanContext::GetPhysicalDevice()
+		.getProperties2<vk::PhysicalDeviceProperties2, vk::PhysicalDeviceRayTracingPipelinePropertiesKHR>()
+		.get<vk::PhysicalDeviceRayTracingPipelinePropertiesKHR>();
+
+	uint32_t handleSize = rtProperties.shaderGroupHandleSize;
+	uint32_t baseAlignment = rtProperties.shaderGroupBaseAlignment;
+	uint32_t handleSizeAligned = align_up(handleSize, rtProperties.shaderGroupHandleAlignment);
+
+	m_RaygenSbt.stride = align_up(handleSizeAligned, baseAlignment);
+	m_RaygenSbt.size = m_RaygenSbt.stride;
+
+	m_MissSbt.stride = align_up(handleSizeAligned, baseAlignment);
+	m_MissSbt.size = align_up(m_MissSbt.stride, baseAlignment);
+
+	m_HitSbt.stride = align_up(handleSizeAligned, baseAlignment);
+	m_HitSbt.size = align_up(m_HitSbt.stride, baseAlignment);
+
+	// Not using callable shaders yet
+	// m_CallableSbt.stride = ...
+	// m_CallableSbt.size = ...
+
+	constexpr uint8_t shaderCount = 3;
+	uint32_t dataSize = handleSize * shaderCount;
+	std::vector<uint8_t> handles(dataSize);
+	VulkanContext::GetDevice().getRayTracingShaderGroupHandlesKHR(
+		*this,
+		0, shaderCount,
+		dataSize,
+		handles.data(),
+		VulkanContext::GetDispatcher()
+	);
+
+	m_ShaderBindingTableBuffer = VulkanBuffer(
+		m_RaygenSbt.size + m_MissSbt.size + m_HitSbt.size + m_CallableSbt.size,
+		vk::BufferUsageFlagBits::eShaderBindingTableKHR | vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eShaderDeviceAddress,
+		vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+	);
+	uint8_t* data = reinterpret_cast<uint8_t*>(m_ShaderBindingTableBuffer.Map());
+
+	memcpy(data, handles.data(), dataSize); // Copy Raygen group handle
+	memcpy(data, handles.data() + handleSize, dataSize); // Copy Miss group handle
+	memcpy(data, handles.data() + handleSize * 2, dataSize); // Copy Hit group handle
+
+	m_ShaderBindingTableBuffer.Unmap();
 }
 
 VulkanRayTracingPipeline::~VulkanRayTracingPipeline()
 {
+	m_ShaderBindingTableBuffer.~VulkanBuffer();
+
 	VulkanContext::GetDevice().destroyPipelineLayout(m_PipelineLayout);
 	for (auto& shaderModule : m_ShaderModules)
 		VulkanContext::GetDevice().destroyShaderModule(shaderModule);
