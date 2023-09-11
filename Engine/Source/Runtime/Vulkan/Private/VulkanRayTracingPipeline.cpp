@@ -98,6 +98,16 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	catch (vk::SystemError& e) {
 		VULKAN_LOG(Error, "Failed to create ray tracing pipeline: {:s}", e.what());
 	}
+}
+
+VulkanRayTracingPipeline::VulkanRayTracingPipeline(vk::Pipeline rayTracingPipeline, VulkanRayTracingPipeline&& self)
+	: vk::Pipeline(rayTracingPipeline),
+	m_PipelineLayout(self.m_PipelineLayout),
+	m_ShaderModules(std::move(self.m_ShaderModules)),
+	m_ShaderGroup(std::move(self.m_ShaderGroup))
+{
+	// Clean moved object
+	self.m_PipelineLayout = nullptr;
 
 	/* CREATE SBT */
 
@@ -135,9 +145,15 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 		VulkanContext::GetDispatcher()
 	);
 
-	m_ShaderBindingTableBuffer = VulkanBuffer(
+	vk::MemoryAllocateFlagsInfo memoryAllocateFlagsInfo(
+		vk::MemoryAllocateFlagBits::eDeviceAddress
+	);
+	m_ShaderBindingTableBuffer = VulkanBuffer::Create(
 		m_RaygenSbt.size + m_MissSbt.size + m_HitSbt.size + m_CallableSbt.size,
 		vk::BufferUsageFlagBits::eShaderBindingTableKHR | vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eShaderDeviceAddress,
+		vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+		&memoryAllocateFlagsInfo
+	);
 
 	m_RaygenSbt.deviceAddress = m_ShaderBindingTableBuffer.GetDeviceAddress();
 	m_MissSbt.deviceAddress = m_ShaderBindingTableBuffer.GetDeviceAddress() + m_RaygenSbt.size;
@@ -160,7 +176,8 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 
 VulkanRayTracingPipeline::~VulkanRayTracingPipeline()
 {
-	m_ShaderBindingTableBuffer.~VulkanBuffer();
+	if (m_ShaderBindingTableBuffer)
+		m_ShaderBindingTableBuffer.~VulkanBuffer();
 
 	VulkanContext::GetDevice().destroyPipelineLayout(m_PipelineLayout);
 	for (auto& shaderModule : m_ShaderModules)

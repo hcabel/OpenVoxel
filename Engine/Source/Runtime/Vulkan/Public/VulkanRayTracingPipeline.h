@@ -28,14 +28,7 @@ class VULKAN_API VulkanRayTracingPipeline : public vk::Pipeline
 
 protected:
 	// m_pipeline is a private member of vk::Pipeline, so to assigned it I recreate the object and then I move it to the current object
-	VulkanRayTracingPipeline(vk::Pipeline rayTracingPipeline, VulkanRayTracingPipeline&& self)
-		: vk::Pipeline(rayTracingPipeline),
-		m_PipelineLayout(self.m_PipelineLayout),
-		m_ShaderModules(std::move(self.m_ShaderModules)),
-		m_ShaderGroup(std::move(self.m_ShaderGroup))
-	{
-		self.m_PipelineLayout = nullptr;
-	}
+	VulkanRayTracingPipeline(vk::Pipeline rayTracingPipeline, VulkanRayTracingPipeline&& self);
 
 public:
 	VulkanRayTracingPipeline() // Default constructor
@@ -55,9 +48,20 @@ public:
 
 	VulkanRayTracingPipeline& operator=(VulkanRayTracingPipeline&& self) noexcept
 	{
-		static_cast<vk::Pipeline>(*this).operator=(self);
-		m_PipelineLayout = self.m_PipelineLayout;
+		static_cast<vk::Pipeline*>(this)->operator=(self);
+		static_cast<vk::Pipeline&&>(self).operator=(VK_NULL_HANDLE);
+
+		m_PipelineLayout = std::move(self.m_PipelineLayout);
 		self.m_PipelineLayout = nullptr;
+
+		m_ShaderBindingTableBuffer = std::move(self.m_ShaderBindingTableBuffer);
+		self.m_ShaderBindingTableBuffer = nullptr;
+
+		m_RaygenSbt = std::move(self.m_RaygenSbt);
+		m_MissSbt = std::move(self.m_MissSbt);
+		m_HitSbt = std::move(self.m_HitSbt);
+		m_CallableSbt = std::move(self.m_CallableSbt);
+
 		m_ShaderModules = std::move(self.m_ShaderModules);
 		m_ShaderGroup = std::move(self.m_ShaderGroup);
 		return *this;
