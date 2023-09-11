@@ -8,35 +8,39 @@ class VULKAN_API VulkanBuffer : public vk::Buffer
 {
 
 protected:
-	// m_buffer is a private member of vk::Buffer, so to assigned it I recreate the object and then I move it to the current object
-	VulkanBuffer(vk::Buffer buffer, VulkanBuffer&& self)
+	VulkanBuffer(vk::Buffer buffer, vk::DeviceSize bufferSize, vk::DeviceMemory bufferMemory)
 		: vk::Buffer(buffer),
-		m_BufferSize(std::move(self.m_BufferSize)),
-		m_BufferMemory(std::move(self.m_BufferMemory))
-	{
-		self.m_BufferSize = 0;
-		self.m_BufferMemory = nullptr;
-	}
+		m_BufferSize(bufferSize),
+		m_BufferMemory(bufferMemory)
+	{}
 
 public:
+	static VulkanBuffer Create(
+		const vk::DeviceSize size,
+		const vk::BufferUsageFlags usage,
+		const vk::MemoryPropertyFlags properties,
+		const void* pNextMemoryAllocateChain = nullptr
+	);
+	VulkanBuffer& operator=(VulkanBuffer&& rhs) noexcept
+	{
+		static_cast<vk::Buffer*>(this)->operator=(rhs);
+		static_cast<vk::Buffer&&>(rhs).operator=(VK_NULL_HANDLE);
+
+		m_BufferSize = std::move(rhs.m_BufferSize);
+		rhs.m_BufferSize = 0;
+
+		m_BufferMemory = std::move(rhs.m_BufferMemory);
+		rhs.m_BufferMemory = nullptr;
+
+		return *this;
+	}
 	VulkanBuffer()
 		: vk::Buffer(nullptr),
 		m_BufferSize(0),
 		m_BufferMemory(nullptr)
 	{}
 	VulkanBuffer(std::nullptr_t) : VulkanBuffer() {} // default constructor 2 (for null assignment)
-	VulkanBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags usage, const vk::MemoryPropertyFlags properties);
 	~VulkanBuffer();
-
-	VulkanBuffer& operator=(VulkanBuffer&& self) noexcept
-	{
-		static_cast<vk::Buffer>(*this).operator=(self);
-		m_BufferSize = std::move(self.m_BufferSize);
-		m_BufferMemory = std::move(self.m_BufferMemory);
-		self.m_BufferSize = 0;
-		self.m_BufferMemory = nullptr;
-		return *this;
-	}
 
 public:
 	void* Map(const vk::MemoryMapFlags flags = vk::MemoryMapFlags()) const;

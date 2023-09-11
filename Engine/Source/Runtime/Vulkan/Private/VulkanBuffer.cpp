@@ -1,19 +1,21 @@
 #include "VulkanBuffer.h"
+#include "Vulkan/Log.h"
 #include "VulkanContext.h"
 
-VulkanBuffer::VulkanBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags usage, const vk::MemoryPropertyFlags properties)
+VulkanBuffer VulkanBuffer::Create(const vk::DeviceSize size, const vk::BufferUsageFlags usage, const vk::MemoryPropertyFlags properties, const void* pNextMemoryAllocateChain)
 {
+	// Create the buffer
 	vk::BufferCreateInfo bufferInfo(
 		vk::BufferCreateFlags(),
 		size,
 		usage,
 		vk::SharingMode::eExclusive
 	);
-	*this = VulkanBuffer(VulkanContext::GetDevice().createBuffer(bufferInfo), std::move(*this));
+	vk::Buffer buffer = VulkanContext::GetDevice().createBuffer(bufferInfo, nullptr, VulkanContext::GetDispatcher());
 
-	vk::MemoryRequirements memoryRequirements = VulkanContext::GetDevice().getBufferMemoryRequirements(*this);
-
-	vk::PhysicalDeviceMemoryProperties memoryProperties = VulkanContext::GetPhysicalDevice().getMemoryProperties();
+	// Find the memory type index
+	vk::MemoryRequirements memoryRequirements = VulkanContext::GetDevice().getBufferMemoryRequirements(buffer, VulkanContext::GetDispatcher());
+	vk::PhysicalDeviceMemoryProperties memoryProperties = VulkanContext::GetPhysicalDevice().getMemoryProperties(VulkanContext::GetDispatcher());
 	uint32_t memoryTypeIndex = 0;
 	for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
 	{
@@ -24,22 +26,36 @@ VulkanBuffer::VulkanBuffer(const vk::DeviceSize size, const vk::BufferUsageFlags
 		}
 	}
 
+	// Allocate the memory
 	vk::MemoryAllocateInfo allocateInfo(
 		memoryRequirements.size,
-		memoryTypeIndex
+		memoryTypeIndex,
+		pNextMemoryAllocateChain
 	);
-	m_BufferMemory = VulkanContext::GetDevice().allocateMemory(allocateInfo);
+	vk::DeviceMemory bufferMemory = VulkanContext::GetDevice().allocateMemory(
+		allocateInfo,
+		nullptr,
+		VulkanContext::GetDispatcher()
+	);
 
-	VulkanContext::GetDevice().bindBufferMemory(*this, m_BufferMemory, 0);
+	// Bind the buffer to the memory
+	VulkanContext::GetDevice().bindBufferMemory(buffer, bufferMemory, 0);
+
+	// Create the buffer wrapper
+	return VulkanBuffer(
+		buffer,
+		size,
+		bufferMemory
+	);
 }
 
 VulkanBuffer::~VulkanBuffer()
 {
-	if (static_cast<vk::Buffer>(*this))
+	if (static_cast<VkBuffer>(*this))
 		VulkanContext::GetDevice().destroyBuffer(*this);
+
 	if (m_BufferMemory)
 		VulkanContext::GetDevice().freeMemory(m_BufferMemory);
-
 }
 
 void* VulkanBuffer::Map(const vk::MemoryMapFlags flags) const
