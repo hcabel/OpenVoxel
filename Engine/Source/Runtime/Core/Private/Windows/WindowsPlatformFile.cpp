@@ -47,11 +47,29 @@ std::shared_ptr<WindowsPlatformFile> WindowsPlatformFile::Open(std::string_view 
 	std::shared_ptr<WindowsPlatformFile> newFile = WindowsPlatformFile::CreateInstance();
 	std::filesystem::path filePath = fullPath;
 
-	if (!std::filesystem::exists(filePath.parent_path()))
-		CreateDirectory(filePath.parent_path());
+	if (std::filesystem::exists(filePath.parent_path()) == false)
+	{
+		// Create the directory if you open the file in write mode
+		if (openmode & std::ios_base::out)
+			CreateDirectory(filePath.parent_path());
+		else
+		{
+			OV_LOG(CoreLog, Error, "Failed to open file: '{:s}'. Does not exist.", fullPath.data());
+			newFile.reset();
+			return (nullptr);
+		}
+	}
 
-	newFile->m_FullPath = fullPath;
-	newFile->m_FileStream = std::fstream(fullPath.data(), openmode);
+	newFile->m_FileStream.exceptions(newFile->m_FileStream.exceptions() | std::ios::failbit | std::ifstream::badbit);
+	try {
+		newFile->m_FileStream.open(fullPath.data(), openmode);
+	}
+	catch (std::ios_base::failure& e)
+	{
+		OV_LOG(CoreLog, Error, "Failed to open file: '{:s}'. {}", fullPath.data(), e.what());
+		newFile.reset();
+		return (nullptr);
+	}
 
 	if (newFile->IsOpen() == false)
 	{
@@ -59,6 +77,9 @@ std::shared_ptr<WindowsPlatformFile> WindowsPlatformFile::Open(std::string_view 
 		newFile.reset();
 		return (nullptr);
 	}
+
+	newFile->m_FullPath = fullPath;
+
 	return (newFile);
 }
 
