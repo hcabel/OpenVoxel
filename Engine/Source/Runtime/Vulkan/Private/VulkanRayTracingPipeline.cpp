@@ -144,10 +144,16 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	m_HitSbt.deviceAddress = m_ShaderBindingTableBuffer.GetDeviceAddress() + m_RaygenSbt.size + m_MissSbt.size;
 	m_CallableSbt.deviceAddress = 0; // Not using callable shaders yet
 
+	void* data = m_ShaderBindingTableBuffer.Map();
 
-	memcpy(data, handles.data(), dataSize); // Copy Raygen group handle
-	memcpy(data, handles.data() + handleSize, dataSize); // Copy Miss group handle
-	memcpy(data, handles.data() + handleSize * 2, dataSize); // Copy Hit group handle
+	void* pData = data; // Create a pointer that will move around (still in the boundary of the buffer though)
+	memcpy(pData, handles.data(), dataSize); // Copy Raygen group handle
+
+	pData = &data + m_RaygenSbt.size; // Move the pointer after raygen
+	memcpy(pData, handles.data() + handleSize, dataSize); // Copy Miss group handle
+
+	pData = &data + m_RaygenSbt.size + m_MissSbt.size; // Move the pointer after miss
+	memcpy(pData, handles.data() + handleSize * 2, dataSize); // Copy Hit group handle
 
 	m_ShaderBindingTableBuffer.Unmap();
 }
