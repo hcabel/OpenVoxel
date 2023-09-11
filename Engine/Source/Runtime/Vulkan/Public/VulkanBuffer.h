@@ -42,6 +42,8 @@ public:
 	void* Map(const vk::MemoryMapFlags flags = vk::MemoryMapFlags()) const;
 	void Unmap() const;
 
+	vk::DeviceAddress GetDeviceAddress() const;
+
 protected:
 	vk::DeviceSize m_BufferSize;
 	vk::DeviceMemory m_BufferMemory;

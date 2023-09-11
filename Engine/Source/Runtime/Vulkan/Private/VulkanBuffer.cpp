@@ -53,3 +53,10 @@ void VulkanBuffer::Unmap() const
 {
 	VulkanContext::GetDevice().unmapMemory(m_BufferMemory);
 }
+
+vk::DeviceAddress VulkanBuffer::GetDeviceAddress() const
+{
+	return (VulkanContext::GetDevice().getBufferAddress(
+		vk::BufferDeviceAddressInfo(*this)
+	));
+}
