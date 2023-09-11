@@ -44,8 +44,13 @@ VulkanBuffer::~VulkanBuffer()
 
 void* VulkanBuffer::Map(const vk::MemoryMapFlags flags) const
 {
-	void* data;
-	VulkanContext::GetDevice().mapMemory(m_BufferMemory, 0, m_BufferSize, flags, &data);
+	void* data = nullptr;
+	vk::Result result = VulkanContext::GetDevice().mapMemory(m_BufferMemory, 0, m_BufferSize, flags, &data);
+	if (result != vk::Result::eSuccess)
+	{
+		VULKAN_LOG(Warning, "Unable to map buffer memory: {:s}", vk::to_string(result));
+		return (nullptr);
+	}
 	return (data);
 }
 
