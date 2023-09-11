@@ -18,12 +18,12 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 
 	// Load shaders
 	m_ShaderModules.resize(4);
-	m_ShaderModules[0] = CreateShaderModule(Path("/intermediate/Shaders/RayGen.spv"));
-	m_ShaderModules[1] = CreateShaderModule(Path("/intermediate/Shaders/Miss.spv"));
-	m_ShaderModules[2] = CreateShaderModule(Path("/intermediate/Shaders/Hit.spv"));
-	m_ShaderModules[3] = CreateShaderModule(Path("/intermediate/Shaders/Intersection.spv"));
+	m_ShaderModules[0] = CreateShaderModule(Path("intermediate/Shaders/RayGen.spv"));
+	m_ShaderModules[1] = CreateShaderModule(Path("intermediate/Shaders/Miss.spv"));
+	m_ShaderModules[2] = CreateShaderModule(Path("intermediate/Shaders/Hit.spv"));
+	m_ShaderModules[3] = CreateShaderModule(Path("intermediate/Shaders/Intersection.spv"));
 
-	std::vector<vk::PipelineShaderStageCreateInfo> shaderStages(4);
+	std::array<vk::PipelineShaderStageCreateInfo, 4> shaderStages;
 	shaderStages[0] = vk::PipelineShaderStageCreateInfo(
 		vk::PipelineShaderStageCreateFlags(),
 		vk::ShaderStageFlagBits::eRaygenKHR,
@@ -33,14 +33,14 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	);
 	shaderStages[1] = vk::PipelineShaderStageCreateInfo(
 		vk::PipelineShaderStageCreateFlags(),
-		vk::ShaderStageFlagBits::eClosestHitKHR,
+		vk::ShaderStageFlagBits::eMissKHR,
 		m_ShaderModules[1],
 		"main",
 		nullptr
 	);
 	shaderStages[2] = vk::PipelineShaderStageCreateInfo(
 		vk::PipelineShaderStageCreateFlags(),
-		vk::ShaderStageFlagBits::eMissKHR,
+		vk::ShaderStageFlagBits::eClosestHitKHR,
 		m_ShaderModules[2],
 		"main",
 		nullptr
@@ -62,7 +62,7 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	));
 	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR( // Miss group
 		vk::RayTracingShaderGroupTypeKHR::eGeneral,
-		2,
+		1,
 		VK_SHADER_UNUSED_KHR,
 		VK_SHADER_UNUSED_KHR,
 		VK_SHADER_UNUSED_KHR
@@ -70,7 +70,7 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	m_ShaderGroup.push_back(vk::RayTracingShaderGroupCreateInfoKHR( // Hit group (with closest hit and intersection shaders)
 		vk::RayTracingShaderGroupTypeKHR::eProceduralHitGroup,
 		VK_SHADER_UNUSED_KHR,
-		1,
+		2,
 		VK_SHADER_UNUSED_KHR,
 		3
 	));
@@ -161,7 +161,10 @@ VulkanRayTracingPipeline::~VulkanRayTracingPipeline()
 vk::ShaderModule VulkanRayTracingPipeline::CreateShaderModule(const Path& shaderModuleRelativePath)
 {
 	// Load binary shader file
-	auto shaderFile = File::OpenUnique(static_cast<std::string>(Path::GetEngineRootDirectoryPath() + shaderModuleRelativePath), std::ios_base::binary);
+	auto shaderFile = File::Open(
+		(Path::GetEngineRootDirectoryPath() + shaderModuleRelativePath).GetPath(),
+		std::ios::in | std::ios::binary
+	);
 	std::string fileContent = shaderFile->ReadAll();
 	shaderFile->Close();
 
