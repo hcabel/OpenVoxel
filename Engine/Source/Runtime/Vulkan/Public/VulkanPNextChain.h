@@ -29,6 +29,7 @@ public:
 
 public:
 	VulkanPNextChain() = default;
+	VulkanPNextChain(std::nullptr_t) : VulkanPNextChain() {}
 
 	struct ChainElement
 	{
