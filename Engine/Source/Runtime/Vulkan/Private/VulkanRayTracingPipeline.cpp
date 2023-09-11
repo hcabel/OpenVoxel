@@ -138,9 +138,12 @@ VulkanRayTracingPipeline::VulkanRayTracingPipeline(const vk::DescriptorSetLayout
 	m_ShaderBindingTableBuffer = VulkanBuffer(
 		m_RaygenSbt.size + m_MissSbt.size + m_HitSbt.size + m_CallableSbt.size,
 		vk::BufferUsageFlagBits::eShaderBindingTableKHR | vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eShaderDeviceAddress,
-		vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
-	);
-	uint8_t* data = reinterpret_cast<uint8_t*>(m_ShaderBindingTableBuffer.Map());
+
+	m_RaygenSbt.deviceAddress = m_ShaderBindingTableBuffer.GetDeviceAddress();
+	m_MissSbt.deviceAddress = m_ShaderBindingTableBuffer.GetDeviceAddress() + m_RaygenSbt.size;
+	m_HitSbt.deviceAddress = m_ShaderBindingTableBuffer.GetDeviceAddress() + m_RaygenSbt.size + m_MissSbt.size;
+	m_CallableSbt.deviceAddress = 0; // Not using callable shaders yet
+
 
 	memcpy(data, handles.data(), dataSize); // Copy Raygen group handle
 	memcpy(data, handles.data() + handleSize, dataSize); // Copy Miss group handle

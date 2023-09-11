@@ -63,6 +63,13 @@ public:
 		return *this;
 	}
 
+public:
+	__forceinline const vk::PipelineLayout GetLayout() const { return m_PipelineLayout; }
+	__forceinline const vk::StridedDeviceAddressRegionKHR& GetRaygenSbt() const { return m_RaygenSbt; }
+	__forceinline const vk::StridedDeviceAddressRegionKHR& GetMissSbt() const { return m_MissSbt; }
+	__forceinline const vk::StridedDeviceAddressRegionKHR& GetHitSbt() const { return m_HitSbt; }
+	__forceinline const vk::StridedDeviceAddressRegionKHR& GetCallableSbt() const { return m_CallableSbt; }
+
 protected:
 	vk::ShaderModule CreateShaderModule(const Path& shaderModuleRelativePath);
 
