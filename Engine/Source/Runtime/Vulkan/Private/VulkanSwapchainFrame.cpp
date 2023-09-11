@@ -36,10 +36,12 @@ VulkanSwapchainFrame::VulkanSwapchainFrame(
 	m_Sync.RenderFinished = VulkanContext::GetDevice().createSemaphore(vk::SemaphoreCreateInfo());
 }
 
-void VulkanSwapchainFrame::Begin() const
+const vk::CommandBuffer& VulkanSwapchainFrame::Begin() const
 {
 	m_CommandBuffer.reset(vk::CommandBufferResetFlagBits::eReleaseResources);
 	m_CommandBuffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
+
+	return (m_CommandBuffer);
 }
 
 void VulkanSwapchainFrame::End() const

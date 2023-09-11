@@ -1,4 +1,4 @@
-﻿#include "GameWindow.h"
+#include "GameWindow.h"
 #include "VulkanContext.h"
 #include "CoreGlobals.h"
 
@@ -111,8 +111,8 @@ void GameWindow::Draw()
 {
 	const VulkanSwapchainFrame& frame = m_Swapchain.AcquireNextFrame();
 
-	frame.Begin();
-	frame.GetCommandBuffer().pipelineBarrier( // Make the frame ready for presenting
+	auto cmdBuffer = frame.Begin();
+	cmdBuffer.pipelineBarrier( // Make the frame ready for presenting
 		vk::PipelineStageFlagBits::eColorAttachmentOutput,
 		vk::PipelineStageFlagBits::eColorAttachmentOutput,
 		vk::DependencyFlagBits::eByRegion,

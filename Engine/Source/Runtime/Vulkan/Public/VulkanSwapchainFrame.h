@@ -34,7 +34,7 @@ public:
 	);
 
 public:
-	virtual void Begin() const;
+	virtual const vk::CommandBuffer& Begin() const;
 	virtual void End() const;
 
 public:
