@@ -5,7 +5,7 @@
 
 #include <set>
 
-bool VulkanDevice::Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalDevice)
+bool VulkanDevice::Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalDevice, vk::PhysicalDeviceFeatures features)
 {
 	if (physicalDevice && IsASuitableDevice(*physicalDevice))
 		m_PhysicalDevice = *physicalDevice;
@@ -55,13 +55,12 @@ bool VulkanDevice::Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalD
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	vk::PhysicalDeviceFeatures physicalDeviceFeatures = {};
 	vk::DeviceCreateInfo createInfo(
 		vk::DeviceCreateFlags(),
 		static_cast<uint32_t>(queueCreateInfos.size()), queueCreateInfos.data(),
 		0, nullptr, // Device layers are deprecated since Vulkan 1.0.13
 		static_cast<uint32_t>(m_ExtensionNames.size()), m_ExtensionNames.data(),
-		&physicalDeviceFeatures,
+		&features,
 		m_FeatureChain.Begin()
 	);
 

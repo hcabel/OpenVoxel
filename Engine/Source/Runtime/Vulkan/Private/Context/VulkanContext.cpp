@@ -73,7 +73,7 @@ bool VulkanContext::CreateInstance(uint32_t major, uint32_t minor, uint32_t patc
 	return (true);
 }
 
-bool VulkanContext::CreateDevice(vk::SurfaceKHR& surface)
+bool VulkanContext::CreateDevice(vk::SurfaceKHR& surface, vk::PhysicalDeviceFeatures features)
 {
 	if (m_Device)
 	{
@@ -81,7 +81,7 @@ bool VulkanContext::CreateDevice(vk::SurfaceKHR& surface)
 		return (true);
 	}
 
-	if (m_Device.Create(surface) == false)
+	if (m_Device.Create(surface, VK_NULL_HANDLE, features) == false)
 	{
 		VULKAN_LOG(Error, "Failed to create Vulkan device!");
 		return (false);

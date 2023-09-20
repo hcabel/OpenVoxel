@@ -27,13 +27,13 @@ public:
 		QueueFamily(T graphics, T present, T compute, T transfer) // One value for each
 			: Graphics(graphics), Present(present), Compute(compute), Transfer(transfer)
 		{}
-		QueueFamily(QueueFamily<T>&& rhs)
+		QueueFamily(QueueFamily<T>&& rhs) noexcept
 			: Graphics(std::move(rhs.Graphics)),
 			Present(std::move(rhs.Present)),
 			Compute(std::move(rhs.Compute)),
 			Transfer(std::move(rhs.Transfer))
 		{}
-		QueueFamily& operator=(QueueFamily<T>&& rhs)
+		QueueFamily& operator=(QueueFamily<T>&& rhs) noexcept
 		{
 			Graphics = std::move(rhs.Graphics);
 			Present = std::move(rhs.Present);
@@ -41,7 +41,6 @@ public:
 			Transfer = std::move(rhs.Transfer);
 			return (*this);
 		}
-
 	};
 
 protected:
@@ -77,7 +76,7 @@ public:
 	 *
 	 * @return True if the device was created successfully, false otherwise.
 	 */
-	bool Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalDevice = VK_NULL_HANDLE);
+	bool Create(vk::SurfaceKHR& surface, vk::PhysicalDevice* physicalDevice = VK_NULL_HANDLE, vk::PhysicalDeviceFeatures features = {});
 	void Destroy();
 
 	/**

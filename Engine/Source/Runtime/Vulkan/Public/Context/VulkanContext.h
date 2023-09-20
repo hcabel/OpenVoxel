@@ -46,7 +46,7 @@ public:
 	 * @param surface The surface on which the device will draw on
 	 * @return true if the device was or were already created, false otherwise.
 	 */
-	bool CreateDevice(vk::SurfaceKHR& surface);
+	bool CreateDevice(vk::SurfaceKHR& surface, vk::PhysicalDeviceFeatures features = {});
 
 	__forceinline void AddInstanceLayer(const char* layerName) { m_Instance.AddLayer(layerName); }
 	__forceinline void AddInstanceExtension(const char* extensionName) { m_Instance.AddExtension(extensionName); }
