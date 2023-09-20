@@ -12,6 +12,12 @@ class UI_API UI
 {
 public:
 	UI() = default;
+	virtual ~UI()
+	{
+		for (auto& child : m_Children)
+			delete child;
+		m_Children.clear();
+	}
 
 protected:
 	virtual void Tick(float deltaTime) = 0;
