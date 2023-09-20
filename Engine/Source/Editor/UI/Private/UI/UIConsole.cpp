@@ -1,7 +1,6 @@
 #include "UIConsole.h"
 #include "Path.h"
 #include "HAL/File.h"
-#include "Logging/Logger.h"
 #include "UIGlobals.h"
 
 #include <imgui.h>
@@ -27,14 +26,19 @@ UIConsole::UIConsole()
 			it++;
 	}
 
-	Logger::s_OnLogMessage.BindLambda(
-		[this](LogCategory& category, Verbosity::Type verbosity, std::string_view fullyFormattedMessage)
-		{
-			if (verbosity == Verbosity::VeryVerbose)
-				return;
-			m_Logs.emplace_back(fullyFormattedMessage);
-		}
-	);
+	Logger::s_OnLogMessage.BindClassMember(this, &UIConsole::OnLogMessage);
+}
+
+UIConsole::~UIConsole()
+{
+	Logger::s_OnLogMessage.UnbindClassMember(this, &UIConsole::OnLogMessage); // Unbind all the lambdas that were bound to the OnLogMessage event by UIConsole
+}
+
+void UIConsole::OnLogMessage(LogCategory& category, Verbosity::Type verbosity, std::string_view fullyFormattedMessage)
+{
+	if (verbosity == Verbosity::VeryVerbose)
+		return;
+	m_Logs.emplace_back(fullyFormattedMessage);
 }
 
 void UIConsole::Tick(float deltaTime)
@@ -85,11 +89,8 @@ void UIConsole::Draw()
 		// If we're at the bottom of the console, scroll down in order to see the latest logs
 		if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 			ImGui::SetScrollHereY(1.0f);
-
-		ImGui::End();
-
-		DrawChildren();
 	}
+	ImGui::End();
 
 	ImGui::PopStyleVar();
 }
