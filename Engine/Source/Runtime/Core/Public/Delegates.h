@@ -94,7 +94,9 @@ public:
 	using DelegateType = OVDelegate<RetValue, Args...>;
 
 public:
-	OVDelegate() = default;
+	OVDelegate()
+		: m_Functor(nullptr)
+	{}
 	OVDelegate(DelegateType&& other) noexcept
 		: m_Functor(std::move(other.m_Functor))
 	{
@@ -141,8 +143,8 @@ public:
 private:
 	void SetFunctor(FunctorType* functor)
 	{
-		if (m_Functor)
-			delete (m_Functor);
+		if (m_Functor != nullptr)
+			delete m_Functor;
 		m_Functor = functor;
 	}
 
