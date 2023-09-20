@@ -97,6 +97,8 @@ public:
 	 */
 	void SubmitOneTimeCommandBuffer(uint8_t queueFamilyIndex, std::function<void(vk::CommandBuffer&)> lambda) const;
 
+	uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) const;
+
 public:
 	__forceinline const vk::PhysicalDevice& GetPhysicalDevice() const { return (m_PhysicalDevice); }
 	__forceinline const QueueFamily<uint8_t>& GetQueueFamilyIndicies() const { return (m_QueueFamilyIndicies); }
