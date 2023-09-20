@@ -30,13 +30,15 @@ UISwapchainFrame::UISwapchainFrame(
 	m_FrameBuffer = VulkanContext::GetDevice().createFramebuffer(framebufferCreateInfo);
 }
 
-void UISwapchainFrame::Begin() const
+const vk::CommandBuffer& UISwapchainFrame::Begin() const
 {
 	VulkanSwapchainFrame::Begin();
 
 	ImGui_ImplVulkan_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	return (m_CommandBuffer);
 }
 
 void UISwapchainFrame::End() const

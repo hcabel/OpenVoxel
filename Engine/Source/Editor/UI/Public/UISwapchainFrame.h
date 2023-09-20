@@ -23,7 +23,7 @@ public:
 	);
 
 public:
-	virtual void Begin() const override;
+	virtual const vk::CommandBuffer& Begin() const override;
 	virtual void End() const override;
 
 protected:
