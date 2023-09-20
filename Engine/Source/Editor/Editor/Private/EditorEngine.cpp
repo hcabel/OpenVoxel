@@ -21,7 +21,13 @@ void EditorEngine::EngineLoop()
 {
 	while (EngineShouldStop() == false)
 	{
-		m_Window->Tick(0.0f);
+
+		float timeStep = Time::GetTimeStep();
+
+		m_Window->Tick(timeStep);
+
+		const uint16_t fpsCount = (uint16_t)std::round(1.0f / timeStep);
+		m_Window->SetTitle(std::format("Open Voxel Editor - {:.2f}ms = {:d}fps", timeStep * 100.0f, fpsCount).c_str());
 
 		m_Window->Draw();
 
