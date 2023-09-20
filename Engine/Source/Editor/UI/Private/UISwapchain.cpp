@@ -175,6 +175,10 @@ void UISwapchain::PresentFrame()
 
 void UISwapchain::Resize(UISwapchainFrame::AxisSize width, UISwapchainFrame::AxisSize height)
 {
+	// Early exit if the size is the same
+	if (width == GetFrameWidth() && height == GetFrameHeight())
+		return;
+
 	// Recreate the swapchain
 	RecreateSwapchain(width, height);
 }
