@@ -110,13 +110,13 @@ protected:
 
 public:
 	__forceinline void AddExtension(const char* extensionName, void* feature = nullptr);
+	__forceinline void AddFeature(void* feature) { m_FeatureChain.PushBack(feature); }
 
 protected:
 	std::vector<const char*> m_ExtensionNames;
 	VulkanPNextChain m_FeatureChain;
 
 	QueueFamily<uint8_t> m_QueueFamilyIndicies;
-
 	vk::PhysicalDevice m_PhysicalDevice;
 
 	friend class VulkanContext;

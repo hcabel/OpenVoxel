@@ -51,6 +51,7 @@ public:
 	__forceinline void AddInstanceLayer(const char* layerName) { m_Instance.AddLayer(layerName); }
 	__forceinline void AddInstanceExtension(const char* extensionName) { m_Instance.AddExtension(extensionName); }
 	__forceinline void AddDeviceExtension(const char* extensionName, void* feature = nullptr) { m_Device.AddExtension(extensionName, feature); }
+	__forceinline void AddDeviceFeature(void* feature) { m_Device.AddFeature(feature); }
 
 public:
 	__forceinline static const VulkanInstance& GetInstance() { return Get().m_Instance; }
