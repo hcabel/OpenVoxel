@@ -3,7 +3,9 @@
 #include "UIGlobals.h"
 #include "ImGuiBackends.h"
 #include "Path.h"
+
 #include "UIConsole.h"
+#include "UIViewport.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -22,14 +24,33 @@ EditorWindow::EditorWindow(AxisSize width, AxisSize height, const char* title)
 	icon[0].pixels = stbi_load(path.c_str(), &icon[0].width, &icon[0].height, nullptr, STBI_rgb_alpha);
 	glfwSetWindowIcon(m_WindowPtr, 1, icon);
 
-	// Get GLFW vulkan extensions
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (uint32_t i = 0; i < glfwExtensionCount; ++i)
-		VulkanContext::Get().AddInstanceExtension(glfwExtensions[i]);
+	// Add vulkan extensions
+	{
+		// Add GLFW vulkan extensions
+		uint32_t glfwExtensionCount = 0;
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		for (uint32_t i = 0; i < glfwExtensionCount; i++)
+			VulkanContext::Get().AddInstanceExtension(glfwExtensions[i]);
 
-	// Add swapchain extension
-	VulkanContext::Get().AddDeviceExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		// Add swapchain extension
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+		// Add ray tracing Extension
+		vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingFeatures;
+		rayTracingFeatures.rayTracingPipeline = true;
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME, &rayTracingFeatures);
+
+		// Acceleration structure extension
+		vk::PhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures;
+		accelerationStructureFeatures.accelerationStructure = true;
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, &accelerationStructureFeatures);
+
+		// Required by the Acceleration structure extension
+		vk::PhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures;
+		bufferDeviceAddressFeatures.bufferDeviceAddress = true;
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, &bufferDeviceAddressFeatures);
+		VulkanContext::Get().AddDeviceExtension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+	}
 
 	// Create the vulkan instance in 1.3.224
 	// It's a static version, because I want to verify that the everything works before upgrading
@@ -41,7 +62,9 @@ EditorWindow::EditorWindow(AxisSize width, AxisSize height, const char* title)
 	if (glfwCreateWindowSurface(VulkanContext::GetInstance(), m_WindowPtr, nullptr, reinterpret_cast<VkSurfaceKHR*>(&surface)) != VK_SUCCESS)
 		return;
 
-	if (VulkanContext::Get().CreateDevice(surface) == false)
+	vk::PhysicalDeviceFeatures deviceFeatures;
+	deviceFeatures.samplerAnisotropy = true;
+	if (VulkanContext::Get().CreateDevice(surface, deviceFeatures) == false)
 		return;
 
 	/* DESCRIPTOR POOL */
@@ -157,14 +180,15 @@ EditorWindow::EditorWindow(AxisSize width, AxisSize height, const char* title)
 
 	ImGui_ImplVulkan_DestroyFontUploadObjects();
 
-	AddChild(
-		new UIConsole()
-	);
+	AddChild(new UIConsole());
+	AddChild(new UIViewport(m_Swapchain));
 }
 
 EditorWindow::~EditorWindow()
 {
 	VulkanContext::GetDevice().waitIdle();
+
+	UI::~UI();
 
 	ImGui_ImplVulkan_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -208,8 +232,11 @@ void EditorWindow::Tick(float deltaTime)
 
 	if (m_HasBeenResized)
 	{
-		UI_LOG(Verbose, "Window has been resized to {:d}x{:d}", m_Width, m_Height);
-		m_Swapchain.Resize(m_Width, m_Height);
+		if (m_Width != 0 && m_Height != 0) // Do not resize swapchain if the window is minimized
+		{
+			UI_LOG(Verbose, "Window has been resized to {:d}x{:d}", m_Width, m_Height);
+			m_Swapchain.Resize(m_Width, m_Height);
+		}
 		m_HasBeenResized = false;
 	}
 
@@ -218,12 +245,14 @@ void EditorWindow::Tick(float deltaTime)
 
 void EditorWindow::Draw()
 {
+	if (m_Width == 0 || m_Height == 0) // Don't draw if the window is minimized
+		return;
+
 	const VulkanSwapchainFrame& frame = m_Swapchain.AcquireNextFrame();
 
 	frame.Begin();
 
 	m_DockSpaceId = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode); // Make the glfw window dockable
-
 	DrawChildren();
 
 	frame.End();

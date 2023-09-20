@@ -103,8 +103,11 @@ void GameWindow::Tick(float deltaTime)
 
 	if (m_HasBeenResized)
 	{
-		OV_LOG(LogTemp, Verbose, "Window has been resized to {:d}x{:d}", m_Width, m_Height);
-		m_Swapchain.Resize(m_Width, m_Height);
+		if (m_Width != 0 && m_Height != 0) // Do not resize swapchain if the window is minimized
+		{
+			OV_LOG(LogTemp, Verbose, "Window has been resized to {:d}x{:d}", m_Width, m_Height);
+			m_Swapchain.Resize(m_Width, m_Height);
+		}
 		m_HasBeenResized = false;
 	}
 }
