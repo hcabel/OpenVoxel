@@ -177,6 +177,8 @@ void VulkanSwapchain::PresentFrame()
 
 void VulkanSwapchain::Resize(VulkanSwapchainFrame::AxisSize width, VulkanSwapchainFrame::AxisSize height)
 {
+	if (width == GetFrameWidth() && height == GetFrameHeight())
+		return;
 	// Recreate the swapchain
 	RecreateSwapchain(width, height);
 }
