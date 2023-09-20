@@ -3,6 +3,7 @@
 #include "Renderer_API.h"
 #include "Window.h"
 #include "VulkanSwapchain.h"
+#include "SceneRenderer.h"
 
 class GLFWwindow;
 class VulkanSwapchain;
@@ -31,5 +32,6 @@ private:
 	/* A ptr to the actual GLFW window */
 	GLFWwindow* m_WindowPtr;
 	VulkanSwapchain m_Swapchain;
+	SceneRenderer m_SceneRenderer;
 
 };

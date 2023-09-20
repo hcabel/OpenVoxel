@@ -1,4 +1,4 @@
-#include "GameWindow.h"
+﻿#include "GameWindow.h"
 #include "VulkanContext.h"
 #include "CoreGlobals.h"
 
@@ -24,7 +24,7 @@ GameWindow::GameWindow(AxisSize width, AxisSize height, const char* title)
 		// Add GLFW vulkan extensions
 		uint32_t glfwExtensionCount = 0;
 		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-		for (uint32_t i = 0; i < glfwExtensionCount; ++i)
+		for (uint32_t i = 0; i < glfwExtensionCount; i++)
 			VulkanContext::Get().AddInstanceExtension(glfwExtensions[i]);
 
 		// Add swapchain extension
@@ -62,6 +62,8 @@ GameWindow::GameWindow(AxisSize width, AxisSize height, const char* title)
 
 	// Create swapchain
 	m_Swapchain = VulkanSwapchain(vk::PresentModeKHR::eMailbox, surface, m_Width, m_Height);
+
+	m_SceneRenderer = SceneRenderer::Create(m_Swapchain.GetFrameCount());
 }
 
 GameWindow::~GameWindow()
@@ -112,19 +114,47 @@ void GameWindow::Draw()
 	const VulkanSwapchainFrame& frame = m_Swapchain.AcquireNextFrame();
 
 	auto cmdBuffer = frame.Begin();
-	cmdBuffer.pipelineBarrier( // Make the frame ready for presenting
-		vk::PipelineStageFlagBits::eColorAttachmentOutput,
-		vk::PipelineStageFlagBits::eColorAttachmentOutput,
-		vk::DependencyFlagBits::eByRegion,
+	cmdBuffer.pipelineBarrier( // Make the frame ready for rendering
+		vk::PipelineStageFlagBits::eTopOfPipe,
+		vk::PipelineStageFlagBits::eRayTracingShaderKHR,
+		vk::DependencyFlags(),
 		{},
 		{},
 		vk::ImageMemoryBarrier(
-			vk::AccessFlagBits::eColorAttachmentWrite,
-			vk::AccessFlagBits::eColorAttachmentWrite,
+			vk::AccessFlagBits::eMemoryRead,
+			vk::AccessFlagBits::eShaderWrite,
 			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eGeneral,
+			VulkanContext::GetDevice().GetQueueFamilyIndicies().Graphics,
+			VulkanContext::GetDevice().GetQueueFamilyIndicies().Graphics,
+			frame.GetImage(),
+			vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)
+		)
+	);
+
+	m_SceneRenderer.RenderScene(
+		SceneRenderer::RenderSceneInfo(
+			m_Swapchain.GetCurrentFrameIndex(),
+			frame.GetWidth(),
+			frame.GetHeight(),
+			frame.GetImageView(),
+			cmdBuffer
+		)
+	);
+
+	cmdBuffer.pipelineBarrier( // Make the frame ready for presenting
+		vk::PipelineStageFlagBits::eRayTracingShaderKHR,
+		vk::PipelineStageFlagBits::eBottomOfPipe,
+		vk::DependencyFlags(),
+		{},
+		{},
+		vk::ImageMemoryBarrier(
+			vk::AccessFlagBits::eShaderWrite,
+			vk::AccessFlagBits::eMemoryRead,
+			vk::ImageLayout::eGeneral,
 			vk::ImageLayout::ePresentSrcKHR,
-			VK_QUEUE_FAMILY_IGNORED,
-			VK_QUEUE_FAMILY_IGNORED,
+			VulkanContext::GetDevice().GetQueueFamilyIndicies().Graphics,
+			VulkanContext::GetDevice().GetQueueFamilyIndicies().Graphics,
 			frame.GetImage(),
 			vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)
 		)
