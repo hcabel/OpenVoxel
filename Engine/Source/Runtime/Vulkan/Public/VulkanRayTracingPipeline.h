@@ -4,70 +4,72 @@
 #include "VulkanBuffer.h"
 
 #include <vulkan/vulkan.hpp>
-#include <vector>
 
 class Path;
 
-/**
- * Wrapper around the vk::Pipeline ptr.
- *
- * To create it just call the constructor with the vk::DescriptorSetLayout as parameter.
- *
- * Here is how the whole proccess of creation should go:
- * 1- The class is automatically created with the default constructor.
- * 2- The user calls the constructor with the vk::DescriptorSetLayout as parameter.
- *   Which will create the pipeline, this pipeline can't be set by this class because it's a private member of vk::Pipeline.
- *   To assign it anyway we call a private constructor that will recreate the object and then move it to the current object members into the new instance.
- *   By doing so we have an instance which has the pipeline and all the other VulkanRayTracingPipeline members set. (moved to avoid copying)
- *   Now we need to move this object to this so the User doesn't realize that the object was recreated.
- *   That's where the = operator comes in, it will move the object to the this ptr.
- * 3- You can destroy the object by assigning it to nullptr or by calling the destructor.
- */
-class VULKAN_API VulkanRayTracingPipeline : public vk::Pipeline
+class VULKAN_API VulkanRaytracingPipeline : public vk::Pipeline
 {
+protected:
+	using ShaderModulesArray = std::array<vk::ShaderModule, 4>;
+
+#pragma region Lifecycle
+public:
+	/**
+	 * @brief Create a ray tracing pipeline and the SBT (Shader Binding Table) for it.
+	 *
+	 * @param layout The descriptor set layout used by the pipeline
+	 * @return A new VulkanRaytracingPipeline wrapper instance (not allocated on the heap)
+	 */
+	static VulkanRaytracingPipeline Create(const vk::DescriptorSetLayout& layout);
+	/**
+	 * @brief default constructor, will not create the pipeline, see @ref Create for that
+	 */
+	VulkanRaytracingPipeline() = default;
+	/**
+	 * @brief null pointer constructor, same has using the default constructor
+	 */
+	VulkanRaytracingPipeline(std::nullptr_t) : VulkanRaytracingPipeline() {}
+	~VulkanRaytracingPipeline();
+
+	/**
+	 * @brief Move constructor, will create a new instance with the data from the other instance, and un-validate the other instance
+	 *
+	 * @param other The VulkanRaytracingPipeline to move from
+	 */
+	VulkanRaytracingPipeline(VulkanRaytracingPipeline&& other) noexcept;
+	/**
+	 * @brief Move assignment operator, will move the data from the rhs to the lhs, and un-validate the rhs
+	 *
+	 * @param rhs The VulkanRaytracingPipeline to move
+	 * @return The new VulkanRaytracingPipeline
+	 */
+	VulkanRaytracingPipeline& operator=(VulkanRaytracingPipeline&& rhs) noexcept;
 
 protected:
-	// m_pipeline is a private member of vk::Pipeline, so to assigned it I recreate the object and then I move it to the current object
-	VulkanRayTracingPipeline(vk::Pipeline rayTracingPipeline, VulkanRayTracingPipeline&& self);
+	/**
+	 * @note Should only be called by @ref Create
+	 * @brief Wrapper constructor, will take all related data and wrap it in a VulkanRaytracingPipeline
+	 */
+	VulkanRaytracingPipeline(
+		vk::Pipeline&& pipeline,
+		vk::PipelineLayout&& pipelineLayout,
+		ShaderModulesArray&& shaderModules,
+		VulkanBuffer&& shaderBindingTableBuffer,
+		vk::StridedDeviceAddressRegionKHR&& raygenSbt,
+		vk::StridedDeviceAddressRegionKHR&& missSbt,
+		vk::StridedDeviceAddressRegionKHR&& hitSbt,
+		vk::StridedDeviceAddressRegionKHR&& callableSbt
+	) noexcept;
+#pragma endregion Lifecycle
 
 public:
-	VulkanRayTracingPipeline() // Default constructor
-		: vk::Pipeline(nullptr),
-		m_PipelineLayout(nullptr),
-		m_ShaderModules(0),
-		m_ShaderGroup(0),
-		m_ShaderBindingTableBuffer(),
-		m_RaygenSbt(),
-		m_MissSbt(),
-		m_HitSbt(),
-		m_CallableSbt()
-	{}
-	VulkanRayTracingPipeline(std::nullptr_t) : VulkanRayTracingPipeline() {} // default constructor 2 (for null assignment)
-	VulkanRayTracingPipeline(const vk::DescriptorSetLayout& layout); // The real constructor (the one who create the pipeline)
-	~VulkanRayTracingPipeline();
-
-	VulkanRayTracingPipeline& operator=(VulkanRayTracingPipeline&& self) noexcept
-	{
-		static_cast<vk::Pipeline*>(this)->operator=(self);
-		static_cast<vk::Pipeline&&>(self).operator=(VK_NULL_HANDLE);
-
-		m_PipelineLayout = std::move(self.m_PipelineLayout);
-		self.m_PipelineLayout = nullptr;
-
-		m_ShaderBindingTableBuffer = std::move(self.m_ShaderBindingTableBuffer);
-		self.m_ShaderBindingTableBuffer = nullptr;
-
-		m_RaygenSbt = std::move(self.m_RaygenSbt);
-		m_MissSbt = std::move(self.m_MissSbt);
-		m_HitSbt = std::move(self.m_HitSbt);
-		m_CallableSbt = std::move(self.m_CallableSbt);
-
-		m_ShaderModules = std::move(self.m_ShaderModules);
-		m_ShaderGroup = std::move(self.m_ShaderGroup);
-		return *this;
-	}
+	/**
+	 * @brief Check is the pipeline has been created or not
+	 */
+	__forceinline operator bool() const { return (vk::Pipeline::operator bool()); }
 
 public:
+	__forceinline bool IsValid() const { return (this->operator bool()); }
 	__forceinline const vk::PipelineLayout GetLayout() const { return m_PipelineLayout; }
 	__forceinline const vk::StridedDeviceAddressRegionKHR& GetRaygenSbt() const { return m_RaygenSbt; }
 	__forceinline const vk::StridedDeviceAddressRegionKHR& GetMissSbt() const { return m_MissSbt; }
@@ -75,14 +77,13 @@ public:
 	__forceinline const vk::StridedDeviceAddressRegionKHR& GetCallableSbt() const { return m_CallableSbt; }
 
 protected:
-	vk::ShaderModule CreateShaderModule(const Path& shaderModuleRelativePath);
+	static vk::ShaderModule CreateShaderModule(const Path& shaderModuleRelativePath);
 
 protected:
 	vk::PipelineLayout m_PipelineLayout;
-	std::vector<vk::ShaderModule> m_ShaderModules;
-	std::vector<vk::RayTracingShaderGroupCreateInfoKHR> m_ShaderGroup;
+	ShaderModulesArray m_ShaderModules;
 
-	VulkanBuffer m_ShaderBindingTableBuffer;
+	VulkanBuffer m_ShaderBindingTable;
 	vk::StridedDeviceAddressRegionKHR m_RaygenSbt;
 	vk::StridedDeviceAddressRegionKHR m_MissSbt;
 	vk::StridedDeviceAddressRegionKHR m_HitSbt;

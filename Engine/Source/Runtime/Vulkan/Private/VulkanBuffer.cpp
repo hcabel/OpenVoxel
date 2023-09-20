@@ -2,6 +2,7 @@
 #include "Vulkan/Log.h"
 #include "VulkanContext.h"
 
+#pragma region Lifecycle
 VulkanBuffer VulkanBuffer::Create(const vk::DeviceSize size, const vk::BufferUsageFlags usage, const vk::MemoryPropertyFlags properties, const void* pNextMemoryAllocateChain)
 {
 	// Create the buffer
@@ -13,23 +14,11 @@ VulkanBuffer VulkanBuffer::Create(const vk::DeviceSize size, const vk::BufferUsa
 	);
 	vk::Buffer buffer = VulkanContext::GetDevice().createBuffer(bufferInfo, nullptr, VulkanContext::GetDispatcher());
 
-	// Find the memory type index
-	vk::MemoryRequirements memoryRequirements = VulkanContext::GetDevice().getBufferMemoryRequirements(buffer, VulkanContext::GetDispatcher());
-	vk::PhysicalDeviceMemoryProperties memoryProperties = VulkanContext::GetPhysicalDevice().getMemoryProperties(VulkanContext::GetDispatcher());
-	uint32_t memoryTypeIndex = 0;
-	for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
-	{
-		if ((memoryRequirements.memoryTypeBits & (1 << i)) && (memoryProperties.memoryTypes[i].propertyFlags & properties) == properties)
-		{
-			memoryTypeIndex = i;
-			break;
-		}
-	}
-
 	// Allocate the memory
+	vk::MemoryRequirements memoryRequirements = VulkanContext::GetDevice().getBufferMemoryRequirements(buffer, VulkanContext::GetDispatcher());
 	vk::MemoryAllocateInfo allocateInfo(
 		memoryRequirements.size,
-		memoryTypeIndex,
+		VulkanContext::GetDevice().FindMemoryType(memoryRequirements.memoryTypeBits, properties),
 		pNextMemoryAllocateChain
 	);
 	vk::DeviceMemory bufferMemory = VulkanContext::GetDevice().allocateMemory(
@@ -51,12 +40,38 @@ VulkanBuffer VulkanBuffer::Create(const vk::DeviceSize size, const vk::BufferUsa
 
 VulkanBuffer::~VulkanBuffer()
 {
-	if (static_cast<VkBuffer>(*this))
+	if (IsValid())
+	{
 		VulkanContext::GetDevice().destroyBuffer(*this);
-
-	if (m_BufferMemory)
 		VulkanContext::GetDevice().freeMemory(m_BufferMemory);
+	}
 }
+
+VulkanBuffer::VulkanBuffer(VulkanBuffer&& other) noexcept
+	: vk::Buffer(std::move(other)),
+	m_BufferSize(std::move(other.m_BufferSize)),
+	m_BufferMemory(std::move(other.m_BufferMemory))
+{
+	other.vk::Buffer::operator=(VK_NULL_HANDLE);
+	other.m_BufferSize = 0;
+	other.m_BufferMemory = nullptr;
+}
+
+VulkanBuffer& VulkanBuffer::operator=(VulkanBuffer&& rhs) noexcept
+{
+	if (this != &rhs) // If not the same object
+	{
+		vk::Buffer::operator=(std::move(rhs));
+		m_BufferSize = std::move(rhs.m_BufferSize);
+		m_BufferMemory = std::move(rhs.m_BufferMemory);
+
+		rhs.vk::Buffer::operator=(VK_NULL_HANDLE);
+		rhs.m_BufferSize = 0;
+		rhs.m_BufferMemory = nullptr;
+	}
+	return *this;
+}
+#pragma endregion Lifecycle
 
 void* VulkanBuffer::Map(const vk::MemoryMapFlags flags) const
 {
